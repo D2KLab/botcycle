@@ -1,0 +1,3 @@
+telepot
+spacy
+git+https://github.com/MartinoMensio/pybikes.git
