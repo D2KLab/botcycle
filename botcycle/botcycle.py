@@ -26,7 +26,7 @@ def on_chat_message(msg):
                 #simpified: user asks by name of station
                 station = torino_stations.get(msg['text'], None);
                 if station:
-                    response = "station " + msg['text'] + ":\nbikes:" + str(station.bikes) + "\nfree:" + str(station.free)
+                    response = "station " + msg['text'] + ":\nFree bikes:" + str(station.bikes) + "\nEmpty slots:" + str(station.free)
                     bot.sendMessage(chat_id, response)
                 else:
                     # ask for location
@@ -49,7 +49,7 @@ def on_chat_message(msg):
 
             else:
                 res = search_nearest(user_positions[chat_id], results)
-                bot.sendMessage(chat_id, res.name + ":\nbikes:" + str(res.bikes) + "\nfree:" + str(res.free))
+                bot.sendMessage(chat_id, res.name + ":\nFree bikes:" + str(res.bikes) + "\nEmpty slots:" + str(res.free))
 
         else:
             markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
