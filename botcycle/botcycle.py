@@ -31,6 +31,10 @@ def on_chat_message(msg):
                 bot.sendMessage(chat_id, "You want to plan a trip")
                 #plan_trip(chat_id, entities)
 
+            elif intent['value'] == 'set_position':
+                bot.sendMessage(chat_id, "You want to set the position")
+                set_position_str(chat_id, entities)
+
             else:
                 bot.sendMessage(chat_id, "Unexpected intent: " + intent['value'])
 
@@ -38,8 +42,7 @@ def on_chat_message(msg):
             bot.sendMessage(chat_id, "Your sentence does not have an intent")
 
     elif content_type == 'location':
-        user_positions[chat_id] = msg['location']
-        bot.sendMessage(chat_id, "Ok I got your position: " + str(user_positions[chat_id]['latitude']) + ";" + str(user_positions[chat_id]['longitude']))
+        set_position(chat_id, msg['location'])
     else:
         bot.sendMessage(chat_id, "why did you send " + content_type + "?")
 
@@ -62,6 +65,16 @@ def search_nearest(position, results_set):
             best = idx
 
     return results_set[best]
+
+def set_position_str(chat_id, entities):
+    location = getLocation(chat_id, entities)
+    print(location)
+    if location:
+        set_position(chat_id, location)
+
+def set_position(chat_id, location):
+    user_positions[chat_id] = location
+    bot.sendMessage(chat_id, "Ok I got your position: " + str(location['latitude']) + ";" + str(location['longitude']))
 
 def askPosition(chat_id):
     markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
