@@ -22,6 +22,14 @@ In order to authenticate the bot on Telegram, it is required to ask to [BotFathe
 }
 ```
 
+### Wit.ai token
+
+The token for `wit.ai` is linked to the online model. You can create your own token but the classifier that is used has been configured online (entities and intent) and trained with some sentences.
+
+An *export data* exists on `wit.ai` in order to download all the data (expressions and entities). Can be useful.
+
+The `wit.ai` token has to be stored in the `tokens.json` file as for the telegram one.
+
 ## Running the bot
 
 Launch the bot: `python botcycle/botcycle.py tokens.json`
