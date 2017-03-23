@@ -36,13 +36,10 @@ Launch the bot: `python botcycle/botcycle.py tokens.json`
 
 ## Using the bot
 
-The bot simply understands three commands:
+The bot understands three intents:
 
-- `/p <search a place>`: to set the position:
-  - if the search string matches exactly a name of a station, the position of the station is set
-  - otherwise asks to openstreetmap for a translation from string to position, and sets the user position to the result
-  - if also the request to openstreetmap fails (no results), the position is not set
-- `/b` asks for the nearest station to the user position, having bikes available
-- `/f` asks for the nearest station to the user position, having at least one free slot
+- search a bike
+- search an empty slot
+- plan a trip (not implemented)
 
 The position can be sent as an attachment in any moment, also when the bot does not make request.
