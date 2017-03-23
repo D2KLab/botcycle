@@ -29,7 +29,7 @@ def on_chat_message(msg):
 
             elif intent['value'] == 'plan_trip':
                 bot.sendMessage(chat_id, "You want to plan a trip")
-                plan_trip(chat_id, entities)
+                #plan_trip(chat_id, entities)
 
             else:
                 bot.sendMessage(chat_id, "Unexpected intent: " + intent['value'])
@@ -37,54 +37,12 @@ def on_chat_message(msg):
         else:
             bot.sendMessage(chat_id, "Your sentence does not have an intent")
 
-        #doc = nlp(msg['text'])
-"""
-        if msg['text'][0] == '/':
-            if msg['text'][1] == 'b':
-                results = stations_with_bikes
-
-            elif msg['text'][1] == 'f':
-                results = stations_with_free
-
-            elif msg['text'][1] == 'p':
-                #simpified: user asks by name of station
-                station = torino_stations.get(msg['text'], None);
-                if station:
-                    response = "station " + msg['text'] + ":\nFree bikes:" + str(station.bikes) + "\nEmpty slots:" + str(station.free)
-                    bot.sendMessage(chat_id, response)
-                else:
-                    # ask for location
-                    places_found = requests.get('http://nominatim.openstreetmap.org/search?format=json&q=' + msg['text'][3:]).json()
-                    if len(places_found) > 0:
-                        user_positions[chat_id] = {}
-                        user_positions[chat_id]['latitude'] = float(places_found[0]['lat'])
-                        user_positions[chat_id]['longitude'] = float(places_found[0]['lon'])
-                        bot.sendMessage(chat_id, "Got your position: " + places_found[0]['display_name'])
-                    else:
-                        bot.sendMessage(chat_id, "Unable to get this place")
-
-            else:
-                # other '/' command
-                bot.sendMessage(chat_id, "i don't understand")
-
-            if user_positions.get(chat_id, None) == None:
-                markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
-                bot.sendMessage(chat_id, 'Where are you?', reply_markup=markup)
-
-            else:
-                res = search_nearest(user_positions[chat_id], results)
-                bot.sendMessage(chat_id, res.name + ":\nFree bikes:" + str(res.bikes) + "\nEmpty slots:" + str(res.free))
-
-        else:
-            markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
-            bot.sendMessage(chat_id, 'Where are you?', reply_markup=markup)
-
     elif content_type == 'location':
         user_positions[chat_id] = msg['location']
         bot.sendMessage(chat_id, "Ok I got your position: " + str(user_positions[chat_id]['latitude']) + ";" + str(user_positions[chat_id]['longitude']))
     else:
         bot.sendMessage(chat_id, "why did you send " + content_type + "?")
-"""
+
 
 # working on global variables?? SRSLY?
 def update_data():
@@ -93,17 +51,73 @@ def update_data():
     stations_with_bikes = [station for station in torino_bikeshare.stations if station.bikes>0]
     stations_with_free = [station for station in torino_bikeshare.stations if station.free>0]
 
-def search_nearest(user_position, results_set):
+def search_nearest(position, results_set):
     distance_sq = float('inf')
     best = -1
     print("results_set has size: " + str(len(results_set)))
     for idx, val in enumerate(results_set):
-        d2 = (user_position['latitude']-val.latitude) **2 + (user_position['longitude']-val.longitude) **2
+        d2 = (position['latitude']-val.latitude) **2 + (position['longitude']-val.longitude) **2
         if d2 < distance_sq:
             distance_sq = d2
             best = idx
 
     return results_set[best]
+
+def askPosition(chat_id):
+    markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
+    bot.sendMessage(chat_id, 'Where are you?', reply_markup=markup)
+
+def provideResult(chat_id, station, search_type):
+    response = "Station " + station.name + ":\n"
+    if search_type == 'bikes':
+        response += "Free bikes: " + str(station.bikes) + "\n"
+
+    elif search_type == 'slots':
+        response += "Empty slots: " + str(station.free) + "\n"
+    bot.sendMessage(chat_id, response)
+
+def search_place(place_name):
+    result = {}
+    places_found = requests.get('http://nominatim.openstreetmap.org/search?format=json&q=' + place_name).json()
+    if len(places_found) > 0:
+        result['latitude'] = float(places_found[0]['lat'])
+        result['longitude'] = float(places_found[0]['lon'])
+
+    return result
+
+def getLocation(chat_id, entities):
+    location_obj = entities.get('location', None)
+    user_position = user_positions.get(chat_id, None)
+    if location_obj:
+        location_name = location_obj.get('value', None)
+        location = search_place(location_name)
+        if not location:
+            bot.sendMessage(chat_id, 'I could not find a place named ' + location_name)
+
+    elif user_position:
+        location = user_position
+
+    else:
+        location = None
+    return location
+
+def search_bike(chat_id, entities):
+    location = getLocation(chat_id, entities)
+    if not location:
+        askPosition(chat_id)
+        return
+
+    result = search_nearest(location, stations_with_bikes)
+    provideResult(chat_id, result, 'bikes')
+
+def search_slot(chat_id, entities):
+    location = getLocation(chat_id, entities)
+    if not location:
+        askPosition(chat_id)
+        return
+
+    result = search_nearest(location, stations_with_free)
+    provideResult(chat_id, result, 'slots')
 
 # load the token from file
 with open(sys.argv[1]) as tokens_file:
