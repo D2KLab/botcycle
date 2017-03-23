@@ -29,7 +29,7 @@ def on_chat_message(msg):
 
             elif intent['value'] == 'plan_trip':
                 bot.sendMessage(chat_id, "You want to plan a trip")
-                #plan_trip(chat_id, entities)
+                plan_trip(chat_id, entities)
 
             elif intent['value'] == 'set_position':
                 bot.sendMessage(chat_id, "You want to set the position")
@@ -98,7 +98,18 @@ def search_place(place_name):
 
     return result
 
+def getEntity(entities, key):
+    entity_obj = entities.get(key, None)
+    if entity_obj:
+        result = entity_obj.get('value', None)
+
+    else:
+        result = None
+
+    return result
+
 def getLocation(chat_id, entities):
+    # TODO use getEntity
     location_obj = entities.get('location', None)
     user_position = user_positions.get(chat_id, None)
     if location_obj:
@@ -131,6 +142,48 @@ def search_slot(chat_id, entities):
 
     result = search_nearest(location, stations_with_free)
     provideResult(chat_id, result, 'slots')
+
+def plan_trip(chat_id, entities):
+    location = getLocation(chat_id, entities)
+    loc_from_str = getEntity(entities, 'from')
+    loc_to_str = getEntity(entities, 'to')
+
+    loc_from = loc_to = None
+
+    if loc_from_str:
+        loc_from = search_place(loc_from_str)
+        if not loc_from:
+            bot.sendMessage(chat_id, 'I could not find a place named ' + loc_from_str)
+
+    if loc_to_str:
+        loc_to = search_place(loc_to_str)
+        if not loc_to:
+            bot.sendMessage(chat_id, 'I could not find a place named ' + loc_to_str)
+
+    if not loc_from and not loc_to:
+        bot.sendMessage(chat_id, "Your trip has no origin and no destination")
+        return
+
+    if not loc_from or not loc_to:
+        # if only one of them is missing, ca use the user location as backup
+        if not location:
+            askPosition(chat_id)
+            return
+
+        else:
+            if loc_from:
+                loc_to = location
+
+            else:
+                loc_from = location
+
+    result_from = search_nearest(loc_from, stations_with_bikes)
+    result_to = search_nearest(loc_to, stations_with_free)
+
+    provideResult(chat_id, result_from, 'bikes')
+    provideResult(chat_id, result_to, 'slots')
+
+
 
 # load the token from file
 with open(sys.argv[1]) as tokens_file:
