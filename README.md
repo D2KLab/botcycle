@@ -41,5 +41,6 @@ The bot understands three intents:
 - search a bike
 - search an empty slot
 - plan a trip (not implemented)
+- set the user position (useful for other intents with missing entities)
 
 The position can be sent as an attachment in any moment, also when the bot does not make request.
