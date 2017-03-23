@@ -7,14 +7,38 @@ import telepot
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 import spacy
 import pybikes
+import witEntities
 
 def on_chat_message(msg):
     content_type, chat_type, chat_id =telepot.glance(msg)
     print(content_type, chat_type, chat_id)
     results = stations_with_bikes
     if content_type == 'text':
-        #doc = nlp(msg['text'])
 
+        intent, entities = extractor.parse(msg['text'])
+        print(intent, entities)
+
+        if intent:
+            if intent['value'] == 'search_bike':
+                bot.sendMessage(chat_id, "You want to search a bike")
+                search_bike(chat_id, entities)
+
+            elif intent['value'] == 'search_slot':
+                bot.sendMessage(chat_id, "You want to search an empty slot")
+                search_slot(chat_id, entities)
+
+            elif intent['value'] == 'plan_trip':
+                bot.sendMessage(chat_id, "You want to plan a trip")
+                plan_trip(chat_id, entities)
+
+            else:
+                bot.sendMessage(chat_id, "Unexpected intent: " + intent['value'])
+
+        else:
+            bot.sendMessage(chat_id, "Your sentence does not have an intent")
+
+        #doc = nlp(msg['text'])
+"""
         if msg['text'][0] == '/':
             if msg['text'][1] == 'b':
                 results = stations_with_bikes
@@ -60,6 +84,7 @@ def on_chat_message(msg):
         bot.sendMessage(chat_id, "Ok I got your position: " + str(user_positions[chat_id]['latitude']) + ";" + str(user_positions[chat_id]['longitude']))
     else:
         bot.sendMessage(chat_id, "why did you send " + content_type + "?")
+"""
 
 # working on global variables?? SRSLY?
 def update_data():
@@ -84,9 +109,12 @@ def search_nearest(user_position, results_set):
 with open(sys.argv[1]) as tokens_file:
     data = json.load(tokens_file)
     telegram_token = data['telegram']
+    wit_token = data['wit.ai']
 
 # TODO enable this fro nlp stuff. Now only dealing with fixed queries
 #nlp = spacy.load('en')
+
+extractor = witEntities.Extractor(wit_token)
 
 torino_bikeshare = pybikes.get('to-bike')
 torino_bikeshare.update()
