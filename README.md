@@ -1,5 +1,15 @@
 # personalized-chatbot
 
+## Required libraries
+
+This repository requires python 3
+
+```bash
+sudo apt install python3-pip python3-venv libgeos-dev
+export LC_ALL=C # locale
+sudo pip3 install virtualenv
+```
+
 ## Setting up the environment
 
 1. Clone/download this repository
@@ -7,8 +17,6 @@
   - `virtualenv venv`
   - `source venv/bin/activate`
   - `pip install -r requirements.txt`
-
-This repository for now requires python 3
 
 ## Get required tokens
 

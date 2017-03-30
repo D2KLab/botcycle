@@ -1,5 +1,5 @@
 # the tokens file
-tokens.json
+tokens*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
