@@ -11,12 +11,12 @@ import witEntities
 
 def on_chat_message(msg):
     content_type, chat_type, chat_id =telepot.glance(msg)
-    print(content_type, chat_type, chat_id)
+    #print(content_type, chat_type, chat_id)
     results = stations_with_bikes
     if content_type == 'text':
-
+        log_msg(msg)
         intent, entities = extractor.parse(msg['text'])
-        print(intent, entities)
+        log_entities(intent, entities)
 
         if intent:
             if intent['value'] == 'search_bike':
@@ -57,7 +57,7 @@ def update_data():
 def search_nearest(position, results_set):
     distance_sq = float('inf')
     best = -1
-    print("results_set has size: " + str(len(results_set)))
+    #print("results_set has size: " + str(len(results_set)))
     for idx, val in enumerate(results_set):
         d2 = (position['latitude']-val.latitude) **2 + (position['longitude']-val.longitude) **2
         if d2 < distance_sq:
@@ -68,25 +68,31 @@ def search_nearest(position, results_set):
 
 def set_position_str(chat_id, entities):
     location = getLocation(chat_id, entities)
-    print(location)
+    #print(location)
     if location:
         set_position(chat_id, location)
 
 def set_position(chat_id, location):
     user_positions[chat_id] = location
-    bot.sendMessage(chat_id, "Ok I got your position: " + str(location['latitude']) + ";" + str(location['longitude']))
+    response = "Ok I got your position: " + str(location['latitude']) + ";" + str(location['longitude'])
+    log_response(response)
+    bot.sendMessage(chat_id, response)
 
 def askPosition(chat_id):
     markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
-    bot.sendMessage(chat_id, 'Where are you?', reply_markup=markup)
+    response = 'Where are you?'
+    log_response(response)
+    bot.sendMessage(chat_id, response, reply_markup=markup)
 
 def provideResult(chat_id, station, search_type):
     response = "Station " + station.name + ":\n"
     if search_type == 'bikes':
-        response += "Free bikes: " + str(station.bikes) + "\n"
+        response += "Free bikes: " + str(station.bikes)
 
     elif search_type == 'slots':
-        response += "Empty slots: " + str(station.free) + "\n"
+        response += "Empty slots: " + str(station.free)
+
+    log_response(response)
     bot.sendMessage(chat_id, response)
 
 def search_place(place_name):
@@ -116,7 +122,8 @@ def getLocation(chat_id, entities):
         location_name = location_obj.get('value', None)
         location = search_place(location_name)
         if not location:
-            bot.sendMessage(chat_id, 'I could not find a place named ' + location_name)
+            response = 'I could not find a place named ' + location_name
+            bot.sendMessage(chat_id, response)
 
     elif user_position:
         location = user_position
@@ -153,15 +160,21 @@ def plan_trip(chat_id, entities):
     if loc_from_str:
         loc_from = search_place(loc_from_str)
         if not loc_from:
-            bot.sendMessage(chat_id, 'I could not find a place named ' + loc_from_str)
+            response = 'I could not find a place named ' + loc_from_str
+            log_response(response)
+            bot.sendMessage(chat_id, response)
 
     if loc_to_str:
         loc_to = search_place(loc_to_str)
         if not loc_to:
-            bot.sendMessage(chat_id, 'I could not find a place named ' + loc_to_str)
+            response = 'I could not find a place named ' + loc_to_str
+            log_response('I could not find a place named ' + loc_to_str)
+            bot.sendMessage(chat_id, response)
 
     if not loc_from and not loc_to:
-        bot.sendMessage(chat_id, "Your trip has no origin and no destination")
+        response = "Your trip has no origin and no destination"
+        log_response(response)
+        bot.sendMessage(chat_id, response)
         return
 
     if not loc_from or not loc_to:
@@ -183,6 +196,18 @@ def plan_trip(chat_id, entities):
     provideResult(chat_id, result_from, 'bikes')
     provideResult(chat_id, result_to, 'slots')
 
+def log_msg(msg):
+    log(str(msg['from']['id']) + '-->' + msg['text'])
+
+def log_entities(intent, entities):
+    log('intent:' + str(intent) + ' entities: ' + str(entities))
+
+def log_response(response):
+    log('<--' + response)
+
+def log(string):
+    log_file.write(string + '\n')
+
 
 
 # load the token from file
@@ -190,6 +215,9 @@ with open(sys.argv[1]) as tokens_file:
     data = json.load(tokens_file)
     telegram_token = data['telegram']
     wit_token = data['wit.ai']
+
+# 1 means line buffered
+log_file = open('chat.log', 'a', 1)
 
 # TODO enable this fro nlp stuff. Now only dealing with fixed queries
 #nlp = spacy.load('en')
