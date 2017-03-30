@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import json
@@ -11,6 +12,11 @@ import witEntities
 
 def on_chat_message(msg):
     content_type, chat_type, chat_id =telepot.glance(msg)
+    user_data_path = 'users_data/' + str(chat_id)
+    if not os.path.isdir(user_data_path):
+        os.makedirs(user_data_path)
+        bot.sendMessage(chat_id, "Welcome! I am BotCycle and can give you bike sharing informations")
+
     #print(content_type, chat_type, chat_id)
     results = stations_with_bikes
     if content_type == 'text':
@@ -73,7 +79,9 @@ def set_position_str(chat_id, entities):
         set_position(chat_id, location)
 
 def set_position(chat_id, location):
-    user_positions[chat_id] = location
+    with open('users_data/'+str(chat_id)+'/last_position', 'w+') as last_position_file:
+        json.dump(location, last_position_file)
+
     response = "Ok I got your position: " + str(location['latitude']) + ";" + str(location['longitude'])
     log_response(response)
     bot.sendMessage(chat_id, response)
@@ -117,7 +125,13 @@ def getEntity(entities, key):
 def getLocation(chat_id, entities):
     # TODO use getEntity
     location_obj = entities.get('location', None)
-    user_position = user_positions.get(chat_id, None)
+    user_position = None
+    try:
+        with open('users_data/'+str(chat_id)+'/last_position', 'r') as last_position_file:
+            user_position = json.load(last_position_file)
+    except FileNotFoundError:
+        pass
+
     if location_obj:
         location_name = location_obj.get('value', None)
         location = search_place(location_name)
@@ -126,6 +140,7 @@ def getLocation(chat_id, entities):
             bot.sendMessage(chat_id, response)
 
     elif user_position:
+        # TODO check when it was set
         location = user_position
 
     else:
@@ -229,9 +244,6 @@ torino_bikeshare.update()
 torino_stations = {x.name:x for x in torino_bikeshare.stations}
 stations_with_bikes = [station for station in torino_bikeshare.stations if station.bikes>0]
 stations_with_free = [station for station in torino_bikeshare.stations if station.free>0]
-
-# TODO persistency
-user_positions = {}
 
 bot = telepot.Bot(telegram_token)
 pprint(bot.getMe())

@@ -1,5 +1,7 @@
 # the tokens file
 tokens*.json
+# the users_data folder
+users_data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
