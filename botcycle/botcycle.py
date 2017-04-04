@@ -26,20 +26,38 @@ def on_chat_message(msg):
 
         if intent:
             if intent['value'] == 'search_bike':
-                bot.sendMessage(chat_id, "You want to search a bike")
+                #bot.sendMessage(chat_id, "You want to search a bike")
                 search_bike(chat_id, entities)
 
             elif intent['value'] == 'search_slot':
-                bot.sendMessage(chat_id, "You want to search an empty slot")
+                #bot.sendMessage(chat_id, "You want to search an empty slot")
                 search_slot(chat_id, entities)
 
             elif intent['value'] == 'plan_trip':
-                bot.sendMessage(chat_id, "You want to plan a trip")
+                #bot.sendMessage(chat_id, "You want to plan a trip")
                 plan_trip(chat_id, entities)
 
             elif intent['value'] == 'set_position':
-                bot.sendMessage(chat_id, "You want to set the position")
+                #bot.sendMessage(chat_id, "You want to set the position")
                 set_position_str(chat_id, entities)
+
+            elif intent['value'] == 'ask_position':
+                askPosition(chat_id)
+
+            elif intent['value'] == 'greeting':
+                response = 'Hi there! How can I help?'
+                log_response(chat_id, response)
+                bot.sendMessage(chat_id, response)
+
+            elif intent['value'] == 'thank':
+                response = 'You\'re welcome!'
+                log_response(chat_id, response)
+                bot.sendMessage(chat_id, response)
+
+            elif intent['value'] == 'info':
+                response = 'I am BotCycle, a bot that can give you informations about bike sharing in your city.\nTry to ask me something! ;)'
+                log_response(chat_id, response)
+                bot.sendMessage(chat_id, response)
 
             else:
                 bot.sendMessage(chat_id, "Unexpected intent: " + intent['value'])
@@ -77,35 +95,41 @@ def set_position_str(chat_id, entities):
     #print(location)
     if location:
         set_position(chat_id, location)
+        bot.sendLocation(chat_id, location['latitude'], location['longitude'])
 
 def set_position(chat_id, location):
+    location['time'] = time.strftime("%c")
     with open('users_data/'+str(chat_id)+'/last_position', 'w+') as last_position_file:
         json.dump(location, last_position_file)
 
-    response = "Ok I got your position: " + str(location['latitude']) + ";" + str(location['longitude'])
+    response = "Ok I got your position"
     log_response(chat_id, response)
     bot.sendMessage(chat_id, response)
 
 def askPosition(chat_id):
     markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
-    response = 'Where are you?'
+    response = 'Where are you? Use the button below or just tell me!'
     log_response(chat_id, response)
     bot.sendMessage(chat_id, response, reply_markup=markup)
 
 def provideResult(chat_id, station, search_type):
-    response = "Station " + station.name + ":\n"
     if search_type == 'bikes':
-        response += "Free bikes: " + str(station.bikes)
+        response = "You can find " + str(station.bikes) + " free bikes at station " + station.name
 
     elif search_type == 'slots':
-        response += "Empty slots: " + str(station.free)
+        response = "You can find " + str(station.free) + " empty slots at station " + station.name
 
     log_response(chat_id, response)
     bot.sendMessage(chat_id, response)
+    bot.sendLocation(chat_id, station.latitude, station.longitude)
 
 def search_place(place_name):
     result = {}
-    places_found = requests.get('http://nominatim.openstreetmap.org/search?format=json&q=' + place_name).json()
+    try:
+        places_found = requests.get('http://nominatim.openstreetmap.org/search?format=json&q=' + place_name).json()
+    except Exception as e:
+        print("error in communication with nominatim.openstreetmap.org: " + e)
+
     if len(places_found) > 0:
         result['latitude'] = float(places_found[0]['lat'])
         result['longitude'] = float(places_found[0]['lon'])
@@ -223,7 +247,7 @@ def log_response(chat_id, response):
 def log(chat_id, string):
     # 1 means line buffered
     with open('users_data/' + str(chat_id) + '/chat.log', 'a', 1) as log_file:
-        log_file.write(string + '\n')
+        log_file.write(time.strftime("%c") + "\t" + string + '\n')
 
 
 
