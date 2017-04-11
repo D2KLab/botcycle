@@ -1,0 +1,60 @@
+{
+  "greeting" : {
+    "requirements": [],
+    "steps": [],
+    "output": "greet_back"
+  },
+  "search_bike": {
+    "requirements": [{
+      "name": "position",
+      "consequence": "ask_position"
+    }],
+    "steps": [{
+      "name": "find_bike",
+      "args": ["position"]
+    }, {
+      "name": "check_meteo",
+      "args": ["position"]
+    }],
+    "output": "give_bike_result"
+  },
+  "search_slot": {
+    "requirements": [{
+      "name": "position",
+      "consequence": "ask_position"
+    }],
+    "steps": [{
+      "name": "find_slot",
+      "args": ["position"]
+    }, {
+      "name": "check_meteo",
+      "args": ["position"]
+    }],
+    "output": "give_slot_result"
+  },
+  "plan_trip": {
+    "requirements": [{
+      "name": "from",
+      "consequence": "ask_position"
+    }, {
+      "name": "to",
+      "consequence": "reformulate_question"
+    }],
+    "steps": [{
+      "name": "find_bike",
+      "args": ["from"]
+    }, {
+      "name": "find_slot",
+      "args": ["to"]
+    }, {
+      "name": "check_meteo",
+      "args": ["from", "to"]
+    }],
+    "output": "give_trip_results"
+  },
+  "other": {
+    "requirements": [],
+    "steps":["audit"],
+    "output": "apologize"
+  }
+}
