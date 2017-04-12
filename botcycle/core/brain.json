@@ -7,6 +7,7 @@
   "search_bike": {
     "requirements": [{
       "name": "position",
+      "candidate_entities": ["location", "user_position"],
       "consequence": "ask_position"
     }],
     "steps": [{
@@ -21,6 +22,7 @@
   "search_slot": {
     "requirements": [{
       "name": "position",
+      "candidate_entities": ["location", "user_position"],
       "consequence": "ask_position"
     }],
     "steps": [{
@@ -35,9 +37,11 @@
   "plan_trip": {
     "requirements": [{
       "name": "from",
+      "candidate_entities": ["from", "user_position"],
       "consequence": "ask_position"
     }, {
       "name": "to",
+      "candidate_entities": ["to"],
       "consequence": "reformulate_question"
     }],
     "steps": [{
@@ -51,6 +55,17 @@
       "args": ["from", "to"]
     }],
     "output": "give_trip_results"
+  },
+  "set_position": {
+    "requirements": [{
+      "name": "position",
+      "candidate_entities": ["location", "user_position"]
+    }],
+    "steps": [{
+      "name": "set_position",
+      "args": ["position"]
+    }],
+    "output": "give_position_ack"
   },
   "other": {
     "requirements": [],

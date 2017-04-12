@@ -23,6 +23,8 @@ class Extractor:
         for key,value in all_entities.items():
             if key != 'intent':
                 entities[key] = value[0]
+                if key == 'location' or key == 'to' or key == 'from':
+                    entities[key]['type'] = 'location'
 
         return intent, entities
 

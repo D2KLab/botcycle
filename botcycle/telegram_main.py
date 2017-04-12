@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import telepot
@@ -5,6 +6,14 @@ import time
 from pprint import pprint
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 from chain import Chain
+import urllib3
+import telepot.api
+
+# proxy stuff https://github.com/nickoala/telepot/issues/83
+myproxy_url = os.environ.get('HTTPS_PROXY')
+if myproxy_url:
+    telepot.api._pools = {'default': urllib3.ProxyManager(proxy_url=myproxy_url, num_pools=3, maxsize=10, retries=False, timeout=30),}
+    telepot.api._onetime_pool_spec = (urllib3.ProxyManager, dict(proxy_url=myproxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
 
 
 def on_chat_message(msg):
@@ -15,10 +24,11 @@ def on_chat_message(msg):
     pprint(request)
 
     # TODO process the request in the chain
-    result = chain.process(request)
+    results = chain.process(request)
 
-    # TODO provide the result
-    sendResponse(result)
+    for result in results:
+        # TODO provide the result
+        sendResponse(result)
 
 
 # this function provide uniform message structure across multiple apps
