@@ -9,6 +9,16 @@ from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 import spacy
 import pybikes
 import witEntities
+import urllib3
+import telepot.api
+
+# proxy stuff https://github.com/nickoala/telepot/issues/83
+myproxy_url = os.environ.get('HTTPS_PROXY')
+if myproxy_url:
+    telepot.api._pools = {'default': urllib3.ProxyManager(proxy_url=myproxy_url, num_pools=3, maxsize=10, retries=False, timeout=30),}
+    telepot.api._onetime_pool_spec = (urllib3.ProxyManager, dict(proxy_url=myproxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
+
+
 
 def on_chat_message(msg):
     content_type, chat_type, chat_id =telepot.glance(msg)
@@ -23,6 +33,10 @@ def on_chat_message(msg):
         log_msg(chat_id, msg['text'])
         intent, entities = extractor.parse(msg['text'])
         log_entities(chat_id, intent, entities)
+
+        if msg['text'] == '/start':
+            bot.sendMessage(chat_id, "Try to ask me something about bike sharing! ;)")
+            return
 
         if intent:
             if intent['value'] == 'search_bike':
