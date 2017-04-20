@@ -16,7 +16,7 @@ class Nlu:
             data['nlu']['intent'] = intent
             data['nlu']['entities'] = entities
 
-            data['nlu']['entities_resolved'] = self.entity_resolver.resolve(data['chat_id'], entities, utils)
+            self.entity_resolver.resolve(data['chat_id'], entities, utils)
 
             # TODO get the last known user position (don't check validity of it there, it's on the core responsibility to check requirements)
             data['nlu']['entities']['user_position'] = None

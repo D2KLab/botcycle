@@ -8,7 +8,11 @@
     "requirements": [{
       "name": "position",
       "candidate_entities": ["location", "user_position"],
-      "consequence": "ask_position"
+      "consequence": {
+        "action": "ask_position",
+        "inject": "location",
+        "candidate_intents": ["set_position"]
+      }
     }],
     "steps": [{
       "name": "find_bike",
@@ -23,7 +27,11 @@
     "requirements": [{
       "name": "position",
       "candidate_entities": ["location", "user_position"],
-      "consequence": "ask_position"
+      "consequence": {
+        "action": "ask_position",
+        "inject": "location",
+        "candidate_intents": ["set_position"]
+      }
     }],
     "steps": [{
       "name": "find_slot",
@@ -38,11 +46,19 @@
     "requirements": [{
       "name": "from",
       "candidate_entities": ["from", "user_position"],
-      "consequence": "ask_position"
+      "consequence": {
+        "action": "ask_position",
+        "inject": "from",
+        "candidate_intents": ["set_position"]
+      }
     }, {
       "name": "to",
       "candidate_entities": ["to"],
-      "consequence": "reformulate_question"
+      "consequence": {
+        "action": "ask_destination",
+        "inject": "to",
+        "candidate_intents": []
+      }
     }],
     "steps": [{
       "name": "find_bike",

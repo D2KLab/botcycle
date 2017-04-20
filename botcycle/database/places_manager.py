@@ -2,9 +2,10 @@ import requests
 from pprint import pprint
 
 class Places_manager:
-    
-    def __init__(self, tokens):
+
+    def __init__(self, tokens, db_conn):
         self.key = tokens['google_places']
+        self.db_conn = db_conn
 
     def getPlaceByName(self, place_name):
         result = {}
@@ -16,6 +17,8 @@ class Places_manager:
         result['name'] = response['results'][0]['name']
         result['placeId'] = response['results'][0]['id']
         result['types'] = response['results'][0]['types']
+
+        self.savePlaceIfAbsent(result)
 
         return result
 
@@ -31,4 +34,14 @@ class Places_manager:
         result['placeId'] = response['results'][0]['id']
         result['types'] = response['results'][0]['types']
 
+        self.savePlaceIfAbsent(result)
+
         return result
+
+    def savePlaceIfAbsent(self, place):
+        place_arr = (place['placeId'], place['name'], place['latitude'], place['longitude'])
+        self.db_conn.execute("INSERT OR IGNORE INTO Place (id, name, description, lat, lng, category) VALUES (?, ?, NULL, ?, ?, NULL)", place_arr)
+        self.db_conn.commit()
+
+    def saveEvent(self, event):
+        pass

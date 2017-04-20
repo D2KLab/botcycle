@@ -26,10 +26,6 @@ def on_chat_message(msg):
     # TODO process the request in the chain
     results = chain.process(request)
 
-    for result in results:
-        # TODO provide the result
-        sendResponse(result)
-
 
 # this function provide uniform message structure across multiple apps
 # (telegram,messenger)
@@ -67,7 +63,7 @@ with open(sys.argv[1]) as tokens_file:
     telegram_token = tokens_data['telegram']
 
 # TODO create chain
-chain = Chain(tokens_data)
+chain = Chain(tokens_data, sendResponse)
 
 bot = telepot.Bot(telegram_token)
 pprint(bot.getMe())

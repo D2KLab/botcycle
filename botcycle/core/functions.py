@@ -7,14 +7,14 @@ passed as the brain.json file specifies.
 """
 
 def find_bike(data, utils, args):
-    # TODO get position from args (must be passed by the core)
-    result = utils['data_manager'].bikeshare['torino'].search_nearest({'latitude':44, 'longitude': 7}, feature='bike')
+    # TODO be more generic than Torino
+    result = utils['data_manager'].bikeshare['torino'].search_nearest(args['position']['resolved']['location'], feature='bike')
     data['info'] = {}
     data['info']['stations'] = [result]
 
 def find_slot(data, utils, args):
-    # TODO get position from args (must be passed by the core)
-    result = utils['data_manager'].bikeshare['torino'].search_nearest({'latitude':44, 'longitude': 7}, feature='slot')
+    # TODO be more generic than Torino
+    result = utils['data_manager'].bikeshare['torino'].search_nearest(args['position']['resolved']['location'], feature='slot')
     data['info'] = {}
     data['info']['stations'] = [result]
 

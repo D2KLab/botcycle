@@ -11,7 +11,8 @@ create table if not exists Place (
   description text,
   lat double precision not null,
   lng double precision not null,
-  category varchar(50)
+  category varchar(50),
+  primary key (id)
 );
 
 create table if not exists Event (
