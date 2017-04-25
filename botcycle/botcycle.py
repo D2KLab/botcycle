@@ -28,7 +28,6 @@ def on_chat_message(msg):
         bot.sendMessage(chat_id, "Welcome! I am BotCycle and can give you bike sharing informations")
 
     #print(content_type, chat_type, chat_id)
-    results = stations_with_bikes
     if content_type == 'text':
         log_msg(chat_id, msg['text'])
         intent, entities = extractor.parse(msg['text'])
@@ -86,13 +85,63 @@ def on_chat_message(msg):
 
 
 # working on global variables?? SRSLY?
-def update_data():
+def update_data(which_to_update):
+    print('update_data called on : ' + str(which_to_update))
+    result = {}
+    for value in which_to_update:
+        print('going to get info on ' + value)
+        try:
+            bikeshare = pybikes.get(value);
+            bikeshare.update()
+
+            result[value] = {
+                'stations': {x.name:x for x in bikeshare.stations},
+                'with_bikes': [station for station in bikeshare.stations if station.bikes>0],
+                'with_slots': [station for station in bikeshare.stations if station.free>0]
+            }
+
+        except Exception as e:
+            print('something bad while getting info for ' + value + ': ' + str(e) + '\n, discarding this city')
+            which_to_update.remove(value)
+
+
+
+    return result
+
+    """
+    torino_bikeshare = pybikes.get('to-bike')
     torino_bikeshare.update()
     torino_stations = {x.name:x for x in torino_bikeshare.stations}
     stations_with_bikes = [station for station in torino_bikeshare.stations if station.bikes>0]
-    stations_with_free = [station for station in torino_bikeshare.stations if station.free>0]
+    stations_with_free = [station for station in torino_bikeshare.stations if station.free>0]"""
 
-def search_nearest(position, results_set):
+def get_city_cached(position):
+    global bike_info, to_update
+
+    city = nearest_city_find(position)
+    result = bike_info.get(city, None)
+    if not result:
+        to_update.append(city)
+        bike_info = update_data(to_update)
+        # now the city must be there or something bad happened
+        result = bike_info.get(city, None)
+
+    return result
+
+
+def search_nearest(position, search_type):
+
+    info = get_city_cached(position)
+
+    if not info:
+        return None
+
+    if search_type == 'bikes':
+        results_set = info['with_bikes']
+
+    else:
+        results_set = info['with_slots']
+
     distance_sq = float('inf')
     best = -1
     #print("results_set has size: " + str(len(results_set)))
@@ -127,7 +176,10 @@ def askPosition(chat_id):
     bot.sendMessage(chat_id, response, reply_markup=markup)
 
 def provideResult(chat_id, station, search_type):
-    if search_type == 'bikes':
+    if not station:
+        response = "Impossible to find informations"
+
+    elif search_type == 'bikes':
         response = "You can find " + str(station.bikes) + " free bikes at station " + station.name
 
     elif search_type == 'slots':
@@ -135,7 +187,8 @@ def provideResult(chat_id, station, search_type):
 
     log_response(chat_id, response)
     bot.sendMessage(chat_id, response)
-    bot.sendLocation(chat_id, station.latitude, station.longitude)
+    if station:
+        bot.sendLocation(chat_id, station.latitude, station.longitude)
 
 def search_place(place_name):
     result = {}
@@ -191,7 +244,7 @@ def search_bike(chat_id, entities):
         askPosition(chat_id)
         return
 
-    result = search_nearest(location, stations_with_bikes)
+    result = search_nearest(location, 'bikes')
     provideResult(chat_id, result, 'bikes')
 
 def search_slot(chat_id, entities):
@@ -200,7 +253,7 @@ def search_slot(chat_id, entities):
         askPosition(chat_id)
         return
 
-    result = search_nearest(location, stations_with_free)
+    result = search_nearest(location, 'slots')
     provideResult(chat_id, result, 'slots')
 
 def plan_trip(chat_id, entities):
@@ -243,8 +296,8 @@ def plan_trip(chat_id, entities):
             else:
                 loc_from = location
 
-    result_from = search_nearest(loc_from, stations_with_bikes)
-    result_to = search_nearest(loc_to, stations_with_free)
+    result_from = search_nearest(loc_from, 'bikes')
+    result_to = search_nearest(loc_to, 'slots')
 
     provideResult(chat_id, result_from, 'bikes')
     provideResult(chat_id, result_to, 'slots')
@@ -264,6 +317,34 @@ def log(chat_id, string):
         log_file.write(time.strftime("%c") + "\t" + string + '\n')
 
 
+def nearest_city_find(position):
+    where_to_search = {}
+    for schema in pybikes.get_all_data():
+        data = pybikes.get_data(schema)
+        instances = data.get('instances', None)
+        if not instances:
+            instances = []
+            for key, value in data['class'].items():
+                instances.extend(value['instances'])
+
+        for instance in instances:
+            where_to_search[instance['tag']] = instance['meta']
+
+    # now where_to_search contains a map (tag, {latitude, longitude, ...})
+    #pprint(where_to_search)
+
+    distance_sq = float('inf')
+    best = -1
+    #print("results_set has size: " + str(len(results_set)))
+    for key, value in where_to_search.items():
+        d2 = (position['latitude']-value['latitude']) **2 + (position['longitude']-value['longitude']) **2
+        if d2 < distance_sq:
+            distance_sq = d2
+            best = key
+
+    #print("nearest is " + best)
+    return best
+
 
 # load the token from file
 with open(sys.argv[1]) as tokens_file:
@@ -276,11 +357,8 @@ with open(sys.argv[1]) as tokens_file:
 
 extractor = witEntities.Extractor(wit_token)
 
-torino_bikeshare = pybikes.get('to-bike')
-torino_bikeshare.update()
-torino_stations = {x.name:x for x in torino_bikeshare.stations}
-stations_with_bikes = [station for station in torino_bikeshare.stations if station.bikes>0]
-stations_with_free = [station for station in torino_bikeshare.stations if station.free>0]
+to_update = []
+bike_info = update_data(to_update)
 
 bot = telepot.Bot(telegram_token)
 pprint(bot.getMe())
@@ -288,8 +366,9 @@ bot.message_loop({'chat': on_chat_message})
 
 while 1:
     # keep updating the bike-sharing data every 1 min
-    time.sleep(60)
-    torino_bikeshare.update()
-    torino_stations = {x.name:x for x in torino_bikeshare.stations}
-    stations_with_bikes = [station for station in torino_bikeshare.stations if station.bikes>0]
-    stations_with_free = [station for station in torino_bikeshare.stations if station.free>0]
+    try:
+        time.sleep(60)
+        bike_info = update_data(to_update)
+
+    except Exception as e:
+        print('something bad happened: ' + str(e))
