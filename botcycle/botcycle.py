@@ -95,6 +95,7 @@ def update_data(which_to_update):
             bikeshare.update()
 
             result[value] = {
+                'city': bikeshare.meta['city'],
                 'stations': {x.name:x for x in bikeshare.stations},
                 'with_bikes': [station for station in bikeshare.stations if station.bikes>0],
                 'with_slots': [station for station in bikeshare.stations if station.free>0]
@@ -118,13 +119,13 @@ def update_data(which_to_update):
 def get_city_cached(position):
     global bike_info, to_update
 
-    city = nearest_city_find(position)
-    result = bike_info.get(city, None)
+    tag = nearest_city_find(position)
+    result = bike_info.get(tag, None)
     if not result:
-        to_update.append(city)
+        to_update.append(tag)
         bike_info = update_data(to_update)
         # now the city must be there or something bad happened
-        result = bike_info.get(city, None)
+        result = bike_info.get(tag, None)
 
     return result
 
@@ -134,7 +135,7 @@ def search_nearest(position, search_type):
     info = get_city_cached(position)
 
     if not info:
-        return None
+        return None, None
 
     if search_type == 'bikes':
         results_set = info['with_bikes']
@@ -151,7 +152,10 @@ def search_nearest(position, search_type):
             distance_sq = d2
             best = idx
 
-    return results_set[best]
+    if best is -1:
+        return info['city'], None
+
+    return info['city'], results_set[best]
 
 def set_position_str(chat_id, entities):
     location = getLocation(chat_id, entities)
@@ -244,7 +248,7 @@ def search_bike(chat_id, entities):
         askPosition(chat_id)
         return
 
-    result = search_nearest(location, 'bikes')
+    city, result = search_nearest(location, 'bikes')
     provideResult(chat_id, result, 'bikes')
 
 def search_slot(chat_id, entities):
@@ -253,7 +257,7 @@ def search_slot(chat_id, entities):
         askPosition(chat_id)
         return
 
-    result = search_nearest(location, 'slots')
+    city, result = search_nearest(location, 'slots')
     provideResult(chat_id, result, 'slots')
 
 def plan_trip(chat_id, entities):
@@ -296,8 +300,14 @@ def plan_trip(chat_id, entities):
             else:
                 loc_from = location
 
-    result_from = search_nearest(loc_from, 'bikes')
-    result_to = search_nearest(loc_to, 'slots')
+    city1, result_from = search_nearest(loc_from, 'bikes')
+    city2, result_to = search_nearest(loc_to, 'slots')
+
+    if city1 and city2 and city1 is not city2:
+        response = 'Your trip starts at ' + city1 + ' and ends at ' + city2 + '. You cannot take a bike from one city to another one!'
+        log_response(chat_id, response)
+        bot.sendMessage(chat_id, response)
+        return
 
     provideResult(chat_id, result_from, 'bikes')
     provideResult(chat_id, result_to, 'slots')
