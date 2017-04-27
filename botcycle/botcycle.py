@@ -34,8 +34,17 @@ def on_chat_message(msg):
         log_entities(chat_id, intent, entities)
 
         if msg['text'] == '/start':
-            bot.sendMessage(chat_id, "Try to ask me something about bike sharing! ;)")
+            bot.sendMessage(chat_id, "I am BotCycle. Try to ask me something about bike sharing!")
             return
+
+        if msg['text'] == '👍':
+            #TODO collect positive feedback
+            return
+
+        if msg['text'] == '👎':
+            #TODO collect negative feedback
+            return
+
 
         if intent:
             if intent['value'] == 'search_bike':
@@ -174,12 +183,12 @@ def set_position(chat_id, location):
     bot.sendMessage(chat_id, response)
 
 def askPosition(chat_id):
-    markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]])
+    markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]], resize_keyboard=True, one_time_keyboard=True)
     response = 'Where are you? Use the button below or just tell me!'
     log_response(chat_id, response)
     bot.sendMessage(chat_id, response, reply_markup=markup)
 
-def provideResult(chat_id, station, search_type):
+def provideResult(chat_id, station, search_type, keyboard=None):
     if not station:
         response = "Impossible to find informations"
 
@@ -190,7 +199,7 @@ def provideResult(chat_id, station, search_type):
         response = "You can find " + str(station.free) + " empty slots at station " + station.name
 
     log_response(chat_id, response)
-    bot.sendMessage(chat_id, response)
+    bot.sendMessage(chat_id, response, reply_markup=keyboard)
     if station:
         bot.sendLocation(chat_id, station.latitude, station.longitude)
 
@@ -249,7 +258,8 @@ def search_bike(chat_id, entities):
         return
 
     city, result = search_nearest(location, 'bikes')
-    provideResult(chat_id, result, 'bikes')
+    provideResult(chat_id, result, 'bikes', keyboard=askFeedback())
+
 
 def search_slot(chat_id, entities):
     location = getLocation(chat_id, entities)
@@ -258,7 +268,8 @@ def search_slot(chat_id, entities):
         return
 
     city, result = search_nearest(location, 'slots')
-    provideResult(chat_id, result, 'slots')
+    provideResult(chat_id, result, 'slots', keyboard=askFeedback())
+
 
 def plan_trip(chat_id, entities):
     location = getLocation(chat_id, entities)
@@ -310,7 +321,12 @@ def plan_trip(chat_id, entities):
         return
 
     provideResult(chat_id, result_from, 'bikes')
-    provideResult(chat_id, result_to, 'slots')
+    provideResult(chat_id, result_to, 'slots', keyboard=askFeedback())
+
+
+def askFeedback():
+    return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='👍'), KeyboardButton(text='👎')]], resize_keyboard=True, one_time_keyboard=True)
+
 
 def log_msg(chat_id, msg):
     log(chat_id, '-->' + msg)
