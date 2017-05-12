@@ -1,4 +1,6 @@
-# personalized-chatbot
+# BotCycle
+
+BotCycle offers personalized recommendations of bike availabilities and contextual information of a city through a natural interaction via a chatbot.  
 
 ## Required libraries
 
