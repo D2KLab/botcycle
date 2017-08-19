@@ -4,28 +4,26 @@ import time
 import json
 import requests
 from pprint import pprint
-import telepot
-from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
+import asyncio
+#from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 import spacy
 import pybikes
-import witEntities
+from botcycle.witEntities import witEntities
 import urllib3
 import telepot.api
 
-# proxy stuff https://github.com/nickoala/telepot/issues/83
-myproxy_url = os.environ.get('HTTPS_PROXY')
-if myproxy_url:
-    telepot.api._pools = {'default': urllib3.ProxyManager(proxy_url=myproxy_url, num_pools=3, maxsize=10, retries=False, timeout=30),}
-    telepot.api._onetime_pool_spec = (urllib3.ProxyManager, dict(proxy_url=myproxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
+sendMessageFunction = None
 
+async def process(msg, sendMessage):
+    global sendMessageFunction
+    sendMessageFunction = sendMessage
 
-
-def on_chat_message(msg):
-    content_type, chat_type, chat_id =telepot.glance(msg)
+    content_type =  'text' if (msg['text'] != '') else ('location' if (msg.get('position', None) != None) else 'other')
+    chat_id = msg['userId']
     user_data_path = 'users_data/' + str(chat_id)
     if not os.path.isdir(user_data_path):
         os.makedirs(user_data_path)
-        bot.sendMessage(chat_id, "Welcome! I am BotCycle and can give you bike sharing informations")
+        sendMessageFunction(chat_id, "Welcome! I am BotCycle and can give you bike sharing informations")
 
     #print(content_type, chat_type, chat_id)
     if content_type == 'text':
@@ -34,7 +32,7 @@ def on_chat_message(msg):
         log_entities(chat_id, intent, entities)
 
         if msg['text'] == '/start':
-            bot.sendMessage(chat_id, "I am BotCycle. Try to ask me something about bike sharing!")
+            sendMessageFunction(chat_id, "I am BotCycle. Try to ask me something about bike sharing!")
             return
 
         if msg['text'] == '👍':
@@ -48,19 +46,19 @@ def on_chat_message(msg):
 
         if intent:
             if intent['value'] == 'search_bike':
-                #bot.sendMessage(chat_id, "You want to search a bike")
+                #sendMessageFunction(chat_id, "You want to search a bike")
                 search_bike(chat_id, entities)
 
             elif intent['value'] == 'search_slot':
-                #bot.sendMessage(chat_id, "You want to search an empty slot")
+                #sendMessageFunction(chat_id, "You want to search an empty slot")
                 search_slot(chat_id, entities)
 
             elif intent['value'] == 'plan_trip':
-                #bot.sendMessage(chat_id, "You want to plan a trip")
+                #sendMessageFunction(chat_id, "You want to plan a trip")
                 plan_trip(chat_id, entities)
 
             elif intent['value'] == 'set_position':
-                #bot.sendMessage(chat_id, "You want to set the position")
+                #sendMessageFunction(chat_id, "You want to set the position")
                 set_position_str(chat_id, entities)
 
             elif intent['value'] == 'ask_position':
@@ -69,28 +67,28 @@ def on_chat_message(msg):
             elif intent['value'] == 'greeting':
                 response = 'Hi there! How can I help?'
                 log_response(chat_id, response)
-                bot.sendMessage(chat_id, response)
+                sendMessageFunction(chat_id, response)
 
             elif intent['value'] == 'thank':
                 response = 'You\'re welcome!'
                 log_response(chat_id, response)
-                bot.sendMessage(chat_id, response)
+                sendMessageFunction(chat_id, response)
 
             elif intent['value'] == 'info':
                 response = 'I am BotCycle, a bot that can give you informations about bike sharing in your city.\nTry to ask me something! ;)'
                 log_response(chat_id, response)
-                bot.sendMessage(chat_id, response)
+                sendMessageFunction(chat_id, response)
 
             else:
-                bot.sendMessage(chat_id, "Unexpected intent: " + intent['value'])
+                sendMessageFunction(chat_id, "Unexpected intent: " + intent['value'])
 
         else:
-            bot.sendMessage(chat_id, "Your sentence does not have an intent")
+            sendMessageFunction(chat_id, "Your sentence does not have an intent")
 
     elif content_type == 'location':
         set_position(chat_id, msg['location'])
     else:
-        bot.sendMessage(chat_id, "why did you send " + content_type + "?")
+        sendMessageFunction(chat_id, "why did you send " + content_type + "?")
 
 
 # working on global variables?? SRSLY?
@@ -171,24 +169,29 @@ def set_position_str(chat_id, entities):
     #print(location)
     if location:
         set_position(chat_id, location)
-        bot.sendLocation(chat_id, location['latitude'], location['longitude'])
+        attachments = [{'type': 'location', 'latitude': location['latitude'], 'longitude': location['longitude']}]
+        sendMessageFunction(chat_id, '', attachments=attachments)
 
 def set_position(chat_id, location):
+    global sendMessageFunction
     location['time'] = time.strftime("%c")
     with open('users_data/'+str(chat_id)+'/last_position', 'w+') as last_position_file:
         json.dump(location, last_position_file)
 
     response = "Ok I got your position"
     log_response(chat_id, response)
-    bot.sendMessage(chat_id, response)
+    sendMessageFunction(chat_id, response)
 
 def askPosition(chat_id):
-    markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]], resize_keyboard=True, one_time_keyboard=True)
+    global sendMessageFunction
+    #markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]], resize_keyboard=True, one_time_keyboard=True)
+    attachments = [{'type': 'button', 'value': 'Send position'}]
     response = 'Where are you? Use the button below or just tell me!'
     log_response(chat_id, response)
-    bot.sendMessage(chat_id, response, reply_markup=markup)
+    sendMessageFunction(chat_id, response, attachments=attachments)
 
-def provideResult(chat_id, station, search_type, keyboard=None):
+def provideResult(chat_id, station, search_type, attachments=None):
+    global sendMessageFunction
     if not station:
         response = "Impossible to find informations"
 
@@ -199,9 +202,10 @@ def provideResult(chat_id, station, search_type, keyboard=None):
         response = "You can find " + str(station.free) + " empty slots at station " + station.name
 
     log_response(chat_id, response)
-    bot.sendMessage(chat_id, response, reply_markup=keyboard)
+    sendMessageFunction(chat_id, response, attachments=attachments)
     if station:
-        bot.sendLocation(chat_id, station.latitude, station.longitude)
+        attachments = [{'type': 'location', 'latitude': station.latitude, 'longitude': station.longitude}]
+        sendMessageFunction(chat_id, '', attachments=attachments)
 
 def search_place(place_name):
     result = {}
@@ -227,6 +231,7 @@ def getEntity(entities, key):
     return result
 
 def getLocation(chat_id, entities):
+    global sendMessageFunction
     # TODO use getEntity
     location_obj = entities.get('location', None)
     user_position = None
@@ -241,7 +246,7 @@ def getLocation(chat_id, entities):
         location = search_place(location_name)
         if not location:
             response = 'I could not find a place named ' + location_name
-            bot.sendMessage(chat_id, response)
+            sendMessageFunction(chat_id, response)
 
     elif user_position:
         # TODO check when it was set
@@ -258,7 +263,7 @@ def search_bike(chat_id, entities):
         return
 
     city, result = search_nearest(location, 'bikes')
-    provideResult(chat_id, result, 'bikes', keyboard=askFeedback())
+    provideResult(chat_id, result, 'bikes', attachments=askFeedback())
 
 
 def search_slot(chat_id, entities):
@@ -268,10 +273,11 @@ def search_slot(chat_id, entities):
         return
 
     city, result = search_nearest(location, 'slots')
-    provideResult(chat_id, result, 'slots', keyboard=askFeedback())
+    provideResult(chat_id, result, 'slots', attachments=askFeedback())
 
 
 def plan_trip(chat_id, entities):
+    global sendMessageFunction
     location = getLocation(chat_id, entities)
     loc_from_str = getEntity(entities, 'from')
     loc_to_str = getEntity(entities, 'to')
@@ -283,19 +289,19 @@ def plan_trip(chat_id, entities):
         if not loc_from:
             response = 'I could not find a place named ' + loc_from_str
             log_response(chat_id, response)
-            bot.sendMessage(chat_id, response)
+            sendMessageFunction(chat_id, response)
 
     if loc_to_str:
         loc_to = search_place(loc_to_str)
         if not loc_to:
             response = 'I could not find a place named ' + loc_to_str
             log_response(chat_id, 'I could not find a place named ' + loc_to_str)
-            bot.sendMessage(chat_id, response)
+            sendMessageFunction(chat_id, response)
 
     if not loc_from and not loc_to:
         response = "Your trip has no origin and no destination"
         log_response(chat_id, response)
-        bot.sendMessage(chat_id, response)
+        sendMessageFunction(chat_id, response)
         return
 
     if not loc_from or not loc_to:
@@ -317,15 +323,16 @@ def plan_trip(chat_id, entities):
     if city1 and city2 and city1 is not city2:
         response = 'Your trip starts at ' + city1 + ' and ends at ' + city2 + '. You cannot take a bike from one city to another one!'
         log_response(chat_id, response)
-        bot.sendMessage(chat_id, response)
+        sendMessageFunction(chat_id, response)
         return
 
     provideResult(chat_id, result_from, 'bikes')
-    provideResult(chat_id, result_to, 'slots', keyboard=askFeedback())
+    provideResult(chat_id, result_to, 'slots', attachments=askFeedback())
 
 
 def askFeedback():
-    return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='👍'), KeyboardButton(text='👎')]], resize_keyboard=True, one_time_keyboard=True)
+    #return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='👍'), KeyboardButton(text='👎')]], resize_keyboard=True, one_time_keyboard=True)
+    return [{'type': 'button', 'value': '👍'}, {'type': 'button', 'value': '👎'}]
 
 
 def log_msg(chat_id, msg):
@@ -372,11 +379,7 @@ def nearest_city_find(position):
     return best
 
 
-# load the token from file
-with open(sys.argv[1]) as tokens_file:
-    data = json.load(tokens_file)
-    telegram_token = data['telegram']
-    wit_token = data['wit.ai']
+wit_token = os.environ['WIT_TOKEN']
 
 # TODO enable this fro nlp stuff. Now only dealing with fixed queries
 #nlp = spacy.load('en')
@@ -386,15 +389,16 @@ extractor = witEntities.Extractor(wit_token)
 to_update = []
 bike_info = update_data(to_update)
 
-bot = telepot.Bot(telegram_token)
-pprint(bot.getMe())
-bot.message_loop({'chat': on_chat_message})
+async def keepRunningUpdates():
+    while 1:
+        # keep updating the bike-sharing data every 1 min
+        try:
+            time.sleep(60)
+            bike_info = update_data(to_update)
 
-while 1:
-    # keep updating the bike-sharing data every 1 min
-    try:
-        time.sleep(60)
-        bike_info = update_data(to_update)
+        except Exception as e:
+            print('something bad happened: ' + str(e))
 
-    except Exception as e:
-        print('something bad happened: ' + str(e))
+
+# TODO re-enable periodic updates
+#asyncio.ensure_future(keepRunningUpdates())

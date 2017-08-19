@@ -1,3 +1,4 @@
 telepot
 spacy
+websockets
 git+https://github.com/MartinoMensio/pybikes.git

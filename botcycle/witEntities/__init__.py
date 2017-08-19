@@ -1,1 +1,1 @@
-from witEntities.witEntities import Extractor
+from botcycle.witEntities.witEntities import Extractor
