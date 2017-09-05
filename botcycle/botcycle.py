@@ -86,7 +86,7 @@ async def process(msg, sendMessage):
             sendMessageFunction(chat_id, "Your sentence does not have an intent")
 
     elif content_type == 'location':
-        set_position(chat_id, msg['location'])
+        set_position(chat_id, msg['position'])
     else:
         sendMessageFunction(chat_id, "why did you send " + content_type + "?")
 
@@ -185,7 +185,7 @@ def set_position(chat_id, location):
 def askPosition(chat_id):
     global sendMessageFunction
     #markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]], resize_keyboard=True, one_time_keyboard=True)
-    attachments = [{'type': 'button', 'value': 'Send position'}]
+    attachments = [{'type': 'request_location', 'value': 'Send position'}]
     response = 'Where are you? Use the button below or just tell me!'
     log_response(chat_id, response)
     sendMessageFunction(chat_id, response, attachments=attachments)
@@ -210,13 +210,15 @@ def provideResult(chat_id, station, search_type, attachments=None):
 def search_place(place_name):
     result = {}
     try:
-        places_found = requests.get('http://nominatim.openstreetmap.org/search?format=json&q=' + place_name).json()
+        response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?key=' + os.environ['MAPS_TOKEN'] + '&address=' + place_name).json()
     except Exception as e:
         print("error in communication with nominatim.openstreetmap.org: " + e)
 
+    places_found = response['results']
+
     if len(places_found) > 0:
-        result['latitude'] = float(places_found[0]['lat'])
-        result['longitude'] = float(places_found[0]['lon'])
+        result['latitude'] = float(places_found[0]['geometry']['location']['lat'])
+        result['longitude'] = float(places_found[0]['geometry']['location']['lng'])
 
     return result
 
