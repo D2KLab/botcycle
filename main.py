@@ -3,6 +3,10 @@ import asyncio
 import json
 import traceback
 import websockets
+from dotenv import load_dotenv, find_dotenv
+
+# load environment from file if exists
+load_dotenv(find_dotenv())
 
 from botcycle import botcycle
 

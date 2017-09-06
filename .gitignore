@@ -1,5 +1,5 @@
 # the tokens file
-tokens*.json
+.env
 # the users_data folder
 users_data/*
 
