@@ -23,7 +23,8 @@ def send_message(ws, user_id, message, attachments):
         msg_type = attachments[0]['type']
     if msg_type == 'button':
         msg_type = 'buttons'
-    msg = {'userId': user_id, 'text': message, 'type': msg_type, 'attachments': attachments}
+    msg = {'userId': user_id, 'text': message,
+           'type': msg_type, 'attachments': attachments}
     print('sending a message')
     print(msg)
     asyncio.ensure_future(ws.send(json.dumps(msg)))
@@ -46,13 +47,17 @@ async def main():
             print('trying to resume!')
 
 websocket_token = os.environ.get(
-    'WEBSOCKET_TOKEN', None) or 'pizza'  # TODO delete pizza
-botkit_location = os.environ.get(
-    'BOTKIT_LOCATION', None) or 'botcycle-botkit.herokuapp.com'
+    'WEBSOCKET_TOKEN', None)
+# the websocket token is compulsory
 if not websocket_token:
     raise Exception('WEBSOCKET_TOKEN env variable missing!')
+# default location on heroku
+botkit_location = os.environ.get(
+    'BOTKIT_LOCATION', 'botcycle-botkit.herokuapp.com')
+# default using secured web socket, unless environment variable changes
+ws_proto = os.environ.get('WS_PROTO', 'wss')
 
-websocket_location = 'wss://{}/brain?jwt={}'.format(
-    botkit_location, websocket_token)
+websocket_location = '{}://{}/brain?jwt={}'.format(
+    ws_proto, botkit_location, websocket_token)
 
 asyncio.get_event_loop().run_until_complete(main())
