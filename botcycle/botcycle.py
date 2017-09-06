@@ -5,12 +5,12 @@ import json
 import requests
 from pprint import pprint
 import asyncio
-#from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 import spacy
 import pybikes
-from botcycle.witEntities import witEntities
 import urllib3
-import telepot.api
+
+from botcycle.witEntities import witEntities
+import botcycle.persistence as persistence
 
 sendMessageFunction = None
 
@@ -20,16 +20,15 @@ async def process(msg, sendMessage):
 
     content_type =  'text' if (msg['text'] != '') else ('location' if (msg.get('position', None) != None) else 'other')
     chat_id = msg['userId']
-    user_data_path = 'users_data/' + str(chat_id)
-    if not os.path.isdir(user_data_path):
-        os.makedirs(user_data_path)
+
+    ## TODO check if first message
+    if persistence.is_first_msg(chat_id):
         sendMessageFunction(chat_id, "Welcome! I am BotCycle and can give you bike sharing informations")
 
     #print(content_type, chat_type, chat_id)
     if content_type == 'text':
-        log_msg(chat_id, msg['text'])
         intent, entities = extractor.parse(msg['text'])
-        log_entities(chat_id, intent, entities)
+        log_msg(chat_id, msg['text'], intent, entities)
 
         if msg['text'] == '/start':
             sendMessageFunction(chat_id, "I am BotCycle. Try to ask me something about bike sharing!")
@@ -174,9 +173,7 @@ def set_position_str(chat_id, entities):
 
 def set_position(chat_id, location):
     global sendMessageFunction
-    location['time'] = time.strftime("%c")
-    with open('users_data/'+str(chat_id)+'/last_position', 'w+') as last_position_file:
-        json.dump(location, last_position_file)
+    persistence.save_position(chat_id, location)
 
     response = "Ok I got your position"
     log_response(chat_id, response)
@@ -237,11 +234,8 @@ def getLocation(chat_id, entities):
     # TODO use getEntity
     location_obj = entities.get('location', None)
     user_position = None
-    try:
-        with open('users_data/'+str(chat_id)+'/last_position', 'r') as last_position_file:
-            user_position = json.load(last_position_file)
-    except FileNotFoundError:
-        pass
+    
+    user_position = persistence.get_position(chat_id)
 
     if location_obj:
         location_name = location_obj.get('value', None)
@@ -337,14 +331,11 @@ def askFeedback():
     return [{'type': 'button', 'value': '👍'}, {'type': 'button', 'value': '👎'}]
 
 
-def log_msg(chat_id, msg):
-    log(chat_id, '-->' + msg)
-
-def log_entities(chat_id, intent, entities):
-    log(chat_id, 'intent:' + str(intent) + ' entities: ' + str(entities))
+def log_msg(chat_id, msg, intent, entities):
+    persistence.save_req(chat_id, {'text': msg, 'intent': intent, 'entities': entities})
 
 def log_response(chat_id, response):
-    log(chat_id, '<--' + response)
+    persistence.save_res(chat_id, response)
 
 def log(chat_id, string):
     # 1 means line buffered

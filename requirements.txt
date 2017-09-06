@@ -2,4 +2,5 @@ telepot
 spacy
 websockets
 python-dotenv
+pymongo
 git+https://github.com/MartinoMensio/pybikes.git
