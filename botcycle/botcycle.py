@@ -168,27 +168,25 @@ def set_position_str(chat_id, entities):
     location = getLocation(chat_id, entities)
     #print(location)
     if location:
-        set_position(chat_id, location)
-        attachments = [{'type': 'location', 'latitude': location['latitude'], 'longitude': location['longitude']}]
-        sendMessageFunction(chat_id, '', attachments=attachments)
+        set_position(chat_id, location, verbose=False)
+        markers = [{'type': 'location', 'latitude': location['latitude'], 'longitude': location['longitude']}]
+        sendMessageFunction(chat_id, 'Ok I got your position', msg_type='map', markers=markers)
 
-def set_position(chat_id, location):
+def set_position(chat_id, location, verbose=True):
     global sendMessageFunction
     persistence.save_position(chat_id, location)
-
-    response = "Ok I got your position"
-    log_response(chat_id, response)
-    sendMessageFunction(chat_id, response)
+    if verbose:
+        response = "Ok I got your position"
+        log_response(chat_id, response)
+        sendMessageFunction(chat_id, response)
 
 def askPosition(chat_id):
     global sendMessageFunction
-    #markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Send position', request_location=True)]], resize_keyboard=True, one_time_keyboard=True)
-    attachments = [{'type': 'request_location', 'value': 'Send position'}]
-    response = 'Where are you? Use the button below or just tell me!'
+    response = 'Where are you?'
     log_response(chat_id, response)
-    sendMessageFunction(chat_id, response, attachments=attachments)
+    sendMessageFunction(chat_id, response, msg_type='request_location')
 
-def provideResult(chat_id, station, search_type, attachments=None):
+def provideResult(chat_id, station, search_type, buttons=None):
     global sendMessageFunction
     if not station:
         response = "Impossible to find informations"
@@ -200,10 +198,12 @@ def provideResult(chat_id, station, search_type, attachments=None):
         response = "You can find " + str(station.free) + " empty slots at station " + station.name
 
     log_response(chat_id, response)
-    sendMessageFunction(chat_id, response, attachments=attachments)
     if station:
-        attachments = [{'type': 'location', 'latitude': station.latitude, 'longitude': station.longitude}]
-        sendMessageFunction(chat_id, '', attachments=attachments)
+        markers = [{'type': 'location', 'latitude': station.latitude, 'longitude': station.longitude}]
+        sendMessageFunction(chat_id, response, msg_type='map', markers=markers, buttons=buttons)
+    else:
+        sendMessageFunction(chat_id, response, buttons=buttons)
+
 
 def search_place(place_name):
     result = {}
@@ -260,7 +260,7 @@ def search_bike(chat_id, entities):
         return
 
     city, result = search_nearest(location, 'bikes')
-    provideResult(chat_id, result, 'bikes', attachments=askFeedback())
+    provideResult(chat_id, result, 'bikes', buttons=askFeedback())
 
 
 def search_slot(chat_id, entities):
@@ -270,7 +270,7 @@ def search_slot(chat_id, entities):
         return
 
     city, result = search_nearest(location, 'slots')
-    provideResult(chat_id, result, 'slots', attachments=askFeedback())
+    provideResult(chat_id, result, 'slots', buttons=askFeedback())
 
 
 def plan_trip(chat_id, entities):
@@ -324,12 +324,11 @@ def plan_trip(chat_id, entities):
         return
 
     provideResult(chat_id, result_from, 'bikes')
-    provideResult(chat_id, result_to, 'slots', attachments=askFeedback())
+    provideResult(chat_id, result_to, 'slots', buttons=askFeedback())
 
 
 def askFeedback():
-    #return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='👍'), KeyboardButton(text='👎')]], resize_keyboard=True, one_time_keyboard=True)
-    return [{'type': 'button', 'value': '👍'}, {'type': 'button', 'value': '👎'}]
+    return [{'type': 'text', 'value': '👍'}, {'type': 'text', 'value': '👎'}]
 
 
 def log_msg(chat_id, msg, intent, entities):
