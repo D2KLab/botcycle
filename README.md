@@ -22,15 +22,9 @@ sudo pip3 install virtualenv
 
 ## Get required tokens
 
-### Telegram tokens
+### Botkit token
 
-In order to authenticate the bot on Telegram, it is required to ask to [BotFather](https://telegram.me/BotFather) a token and place it into a file named `tokens.json` as in the following:
-
-```json
-{
-  "telegram": "PUT HERE YOUR TELEGRAM TOKEN"
-}
-```
+The communication with messaging platforms is done talking to [botcycle-botkit](https://github.com/MartinoMensio/botcycle-botkit) over a websocket with an authentication token. This token must be placed in the `.env` file as `WEBSOCKET_TOKEN`.
 
 ### Wit.ai token
 
@@ -38,11 +32,15 @@ The token for `wit.ai` is linked to the online model. You can create your own to
 
 An *export data* exists on `wit.ai` in order to download all the data (expressions and entities). Can be useful.
 
-The `wit.ai` token has to be stored in the `tokens.json` file as for the telegram one.
+The `WIT_TOKEN` token has to be stored in the `.env` file.
+
+### Google maps API token
+
+This app uses google maps API for geocoding. The environment variable `MAPS_TOKEN` needs to be provided too.
 
 ## Running the bot
 
-Launch the bot: `python botcycle/botcycle.py tokens.json`
+Launch the bot: `python main.py`
 
 ## Using the bot
 
