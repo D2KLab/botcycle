@@ -2,6 +2,9 @@ import os
 import asyncio
 import json
 import traceback
+import threading
+import schedule
+import time
 import websockets
 from dotenv import load_dotenv, find_dotenv
 
@@ -59,5 +62,16 @@ ws_proto = os.environ.get('WS_PROTO', 'wss')
 
 websocket_location = '{}://{}/brain?jwt={}'.format(
     ws_proto, botkit_location, websocket_token)
+
+# The job_thread will execute this function, that every 5 seconds checks if some jobs need execution
+def job_monitor():
+    while 1:
+        #print('checking jobs')
+        schedule.run_pending()
+        time.sleep(5)
+
+job_thread = threading.Thread(target=job_monitor)
+job_thread.daemon = True
+job_thread.start()
 
 asyncio.get_event_loop().run_until_complete(main())

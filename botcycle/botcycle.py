@@ -8,6 +8,7 @@ import asyncio
 import spacy
 import pybikes
 import urllib3
+import schedule
 
 from botcycle.witEntities import witEntities
 import botcycle.persistence as persistence
@@ -380,18 +381,17 @@ wit_token = os.environ['WIT_TOKEN']
 extractor = witEntities.Extractor(wit_token)
 
 to_update = []
+
+# initial run
 bike_info = update_data(to_update)
 
-async def keepRunningUpdates():
-    while 1:
-        # keep updating the bike-sharing data every 1 min
-        try:
-            time.sleep(60)
-            bike_info = update_data(to_update)
+def update():
+    global bike_info
+    try:
+        bike_info = update_data(to_update)
 
-        except Exception as e:
-            print('something bad happened: ' + str(e))
+    except Exception as e:
+        print('something bad happened: ' + str(e))
 
-
-# TODO re-enable periodic updates
-#asyncio.ensure_future(keepRunningUpdates())
+# schedule execution of update every minute
+schedule.every(1).minutes.do(update)
