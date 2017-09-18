@@ -19,10 +19,18 @@ async def process(msg, sendMessage):
     global sendMessageFunction
     sendMessageFunction = sendMessage
 
-    content_type =  'text' if (msg['text'] != '') else ('location' if (msg.get('position', None) != None) else 'other')
     chat_id = msg['userId']
 
-    ## TODO check if first message
+    # TODO improve type checking
+    msg_type = msg.get('type', None)
+    if msg_type == 'login':
+        print('user ' + chat_id + ' logged in; received code')
+        # TODO send to fb_graph module and wait for successful token verification
+        sendMessageFunction(chat_id, 'Thanks for your contribution! Every person that logs in helps me provide better results to everyone!')
+        return
+
+    content_type =  'text' if (msg['text'] != '') else ('location' if (msg.get('position', None) != None) else 'other')
+
     if persistence.is_first_msg(chat_id):
         sendMessageFunction(chat_id, "Welcome! I am BotCycle and can give you bike sharing informations")
 
@@ -41,6 +49,11 @@ async def process(msg, sendMessage):
 
         if msg['text'] == '👎':
             #TODO collect negative feedback
+            return
+
+        # TODO this is to test facebook login
+        if msg['text'] == 'login':
+            sendMessageFunction(chat_id, 'please login with facebook to improve recommendations', 'login')
             return
 
 
