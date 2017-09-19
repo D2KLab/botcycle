@@ -41,3 +41,6 @@ def get_position(chat_id):
     if not user:
         return None
     return user.get('last_position', None)
+
+def save_user_token(chat_id, token):
+    users.update_one({'_id': chat_id}, {"$set": {'access_token': token}})
