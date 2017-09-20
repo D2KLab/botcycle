@@ -267,6 +267,18 @@ def getLocation(chat_id, entities):
         location = None
     return location
 
+def recommend(chat_id, results):
+    # TODO this should be done in separate thread
+    # TODO this is very rude
+    global sendMessageFunction
+    recs = personalization.get_recommend_places(chat_id, results)
+    rec = recs[0]
+
+    markers = [{'type': 'location', 'latitude': rec['location']['lat'], 'longitude': rec['location']['lng']}]
+    buttons = askFeedback() # TODO on messenger and skype no more than three buttons per card
+    buttons.append({'type': 'link', 'title': 'details', 'value': rec['url']})
+    sendMessageFunction(chat_id, 'You could try this interesting place: ' + rec['name'], msg_type='map', markers=markers, buttons=buttons)
+
 def search_bike(chat_id, entities):
     location = getLocation(chat_id, entities)
     if not location:
@@ -275,6 +287,8 @@ def search_bike(chat_id, entities):
 
     city, result = search_nearest(location, 'bikes')
     provideResult(chat_id, result, 'bikes', buttons=askFeedback())
+
+    recommend(chat_id, [result])
 
 
 def search_slot(chat_id, entities):
@@ -285,6 +299,8 @@ def search_slot(chat_id, entities):
 
     city, result = search_nearest(location, 'slots')
     provideResult(chat_id, result, 'slots', buttons=askFeedback())
+
+    recommend(chat_id, [result])
 
 
 def plan_trip(chat_id, entities):
@@ -339,6 +355,8 @@ def plan_trip(chat_id, entities):
 
     provideResult(chat_id, result_from, 'bikes')
     provideResult(chat_id, result_to, 'slots', buttons=askFeedback())
+
+    recommend(chat_id, [result_from, result_to])
 
 
 def askFeedback():

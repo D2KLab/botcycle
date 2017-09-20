@@ -1,3 +1,5 @@
+import numpy as np
+
 from . import fb_graph
 from . import persistence
 from . import foursquare
@@ -29,6 +31,15 @@ def update_facebook_profile(facebook_id):
     print('tagged places matches: {}'.format(len(foursquare_tagged_places)))
 
     # TODO get the categories
+
+
+def get_recommend_places(chat_id, locations):
+    # TODO this is a very rude recommendation, only done to submit the facebook app for permissions
+    # WARNING: is always enabled
+    locations = list(map(lambda station: [station.latitude, station.longitude], locations))
+    locations = np.array(locations)
+    center = locations.mean(axis=0)
+    return foursquare.get_top_picks(center[0],center[1])
 
 
 def __find_places_matches(facebook_pages):
