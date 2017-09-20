@@ -26,7 +26,7 @@ async def process(msg, sendMessage):
     msg_type = msg.get('type', None)
     if msg_type == 'login':
         print('user ' + chat_id + ' logged in; received code')
-        personalization.add_data_from_login(chat_id, msg['token'])
+        personalization.add_data_from_login(chat_id, msg['facebookId'], msg['token'])
         sendMessageFunction(chat_id, 'Thanks for your contribution! Every person that logs in helps me provide better results to everyone!')
         return
 

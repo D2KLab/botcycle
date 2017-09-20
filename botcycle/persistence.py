@@ -12,6 +12,8 @@ users = db['users']
 
 messages = db['messages']
 
+facebook_users = db['facebook_users']
+
 
 def is_first_msg(chat_id):
     user = users.find_one({'_id': chat_id})
@@ -42,5 +44,13 @@ def get_position(chat_id):
         return None
     return user.get('last_position', None)
 
-def save_user_token(chat_id, token):
-    users.update_one({'_id': chat_id}, {"$set": {'access_token': token}})
+def save_facebook_token(chat_id, facebook_id, access_token):
+    """save the link between chat_id and facebook_id, and store the token for the facebook_user"""
+    users.update_one({'_id': chat_id}, {"$set": {'facebook_id': facebook_id}})
+    facebook_users.update_one({'_id': facebook_id}, {"$set": {'access_token': access_token}}, upsert=True)
+
+def get_facebook_user(facebook_id):
+    return facebook_users.find_one({'_id': facebook_id})
+
+def get_facebook_users():
+    return facebook_users.find({})

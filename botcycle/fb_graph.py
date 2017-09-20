@@ -38,4 +38,6 @@ def get_user_profile(token):
 def get_user_tagged_places(token):
     params = {'fields': 'place{category_list,name,location}'}
     results = __get_unpaged(graph_endpoint + '/me/tagged_places', params, token)
+    # take out the nested 'place' object
+    results = list(map(lambda tagged: tagged['place'], results))
     return results
