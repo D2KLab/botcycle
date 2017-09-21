@@ -4,7 +4,6 @@ import time
 import json
 import requests
 from pprint import pprint
-import asyncio
 import spacy
 import pybikes
 import urllib3
@@ -16,7 +15,7 @@ from . import personalization
 
 sendMessageFunction = None
 
-async def process(msg, sendMessage):
+def process(msg, sendMessage):
     global sendMessageFunction
     sendMessageFunction = sendMessage
 
@@ -273,6 +272,7 @@ def recommend(chat_id, results):
     global sendMessageFunction
     recs = personalization.get_recommend_places(chat_id, results)
     rec = recs[0]
+    time.sleep(3)
 
     markers = [{'type': 'location', 'latitude': rec['location']['lat'], 'longitude': rec['location']['lng']}]
     buttons = askFeedback() # TODO on messenger and skype no more than three buttons per card
