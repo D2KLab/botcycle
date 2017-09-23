@@ -63,7 +63,7 @@ async def main():
                     
 
         except websockets.exceptions.ConnectionClosed as e:
-            print('Connecton closed, trying to resume!')
+            print(e)
         except OSError:
             print('unreachable botkit websocket')
         except Exception as e:
@@ -72,6 +72,7 @@ async def main():
         time.sleep(2)
 
 
+websocket_path = os.environ.get('WEBSOCKET_PATH', 'main')
 websocket_token = os.environ.get(
     'WEBSOCKET_TOKEN', None)
 # the websocket token is compulsory
@@ -83,8 +84,8 @@ botkit_location = os.environ.get(
 # default using secured web socket, unless environment variable changes
 ws_proto = os.environ.get('WS_PROTO', 'wss')
 
-websocket_location = '{}://{}/brain?jwt={}'.format(
-    ws_proto, botkit_location, websocket_token)
+websocket_location = '{}://{}/{}?token={}'.format(
+    ws_proto, botkit_location, websocket_path, websocket_token)
 
 """
 The job_thread will execute this function, that every 5 seconds checks
