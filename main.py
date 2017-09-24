@@ -13,15 +13,25 @@ from dotenv import load_dotenv, find_dotenv
 # load environment from file if exists
 load_dotenv(find_dotenv())
 
-from botcycle import botcycle
+from botcycle import botcycle, persistence
 
 outgoing_messages = Queue()
+
+
+def log_msg(message):
+    """Log incoming message"""
+    persistence.save_req(message['userId'], message['text'], message)
+
+
+def log_response(chat_id, text, response):
+    persistence.save_res(chat_id, text, response)
 
 
 async def get_message(ws):
     message = await ws.recv()
     print(message)
     return json.loads(message)
+
 
 def send_messages(websocket):
     """this is executed by a dedicated thread. Gets messages from the outgoing_messages queue and sends them on the websocket"""
@@ -32,19 +42,22 @@ def send_messages(websocket):
             msg = outgoing_messages.get()
             print(msg)
             # run the async function in synchronous context
-            future = asyncio.run_coroutine_threadsafe(websocket.send(json.dumps(msg)), loop)
+            future = asyncio.run_coroutine_threadsafe(
+                websocket.send(json.dumps(msg)), loop)
             future.result()
     except websockets.exceptions.ConnectionClosed as e:
         # this exception occurred because the connection was closed
         # put back the message in the queue
-        # TODO find the way to put on the first place, without using deque that does not block
+        # TODO find the way to put on the first place, without using deque that
+        # does not block
         outgoing_messages.put(msg)
 
 
-def queue_message(user_id, message, msg_type='text', buttons=None, markers=None):
-    msg = {'userId': user_id, 'text': message,
+def queue_message(user_id, text, msg_type='text', buttons=None, markers=None):
+    msg = {'userId': user_id, 'text': text,
            'type': msg_type, 'buttons': buttons, 'markers': markers}
     #print('enqueued a message')
+    log_response(user_id, text, msg)
     outgoing_messages.put(msg)
 
 
@@ -53,14 +66,16 @@ async def main():
         try:
             async with websockets.connect(websocket_location) as websocket:
                 print('connected to botkit')
-                sender_thread = threading.Thread(target=send_messages, args=[websocket])
+                sender_thread = threading.Thread(
+                    target=send_messages, args=[websocket])
                 sender_thread.daemon = True
                 sender_thread.start()
                 with ThreadPoolExecutor() as executor:
                     while True:
                         message = await get_message(websocket)
-                        executor.submit(botcycle.process, message, queue_message)
-                    
+                        log_msg(message)
+                        executor.submit(botcycle.process,
+                                        message, queue_message)
 
         except websockets.exceptions.ConnectionClosed as e:
             print(e)

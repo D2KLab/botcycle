@@ -3,7 +3,7 @@ import time
 import requests
 
 from . import bikes
-from . import witEntities
+from .nlu import wit
 from . import persistence
 from . import personalization
 
@@ -36,7 +36,6 @@ def process(msg, sendMessage):
     #print(content_type, chat_type, chat_id)
     if content_type == 'text':
         intent, entities = extractor.parse(msg['text'])
-        log_msg(chat_id, msg['text'], intent, entities)
 
         if msg['text'] == '/start':
             sendMessageFunction(
@@ -79,17 +78,14 @@ def process(msg, sendMessage):
 
             elif intent['value'] == 'greeting':
                 response = 'Hi there! How can I help?'
-                log_response(chat_id, response)
                 sendMessageFunction(chat_id, response)
 
             elif intent['value'] == 'thank':
                 response = 'You\'re welcome!'
-                log_response(chat_id, response)
                 sendMessageFunction(chat_id, response)
 
             elif intent['value'] == 'info':
                 response = 'I am BotCycle, a bot that can give you informations about bike sharing in your city.\nTry to ask me something! ;)'
-                log_response(chat_id, response)
                 sendMessageFunction(chat_id, response)
 
             else:
@@ -122,14 +118,12 @@ def set_position(chat_id, location, verbose=True):
     persistence.save_position(chat_id, location)
     if verbose:
         response = "Ok I got your position"
-        log_response(chat_id, response)
         sendMessageFunction(chat_id, response)
 
 
 def askPosition(chat_id):
     global sendMessageFunction
     response = 'Where are you?'
-    log_response(chat_id, response)
     sendMessageFunction(chat_id, response, msg_type='request_location')
 
 
@@ -146,7 +140,6 @@ def provideResult(chat_id, station, search_type, buttons=None):
         response = "You can find " + \
             str(station.free) + " empty slots at station " + station.name
 
-    log_response(chat_id, response)
     if station:
         markers = [{'type': 'location', 'latitude': station.latitude,
                     'longitude': station.longitude}]
@@ -211,6 +204,7 @@ def getLocation(chat_id, entities):
 
 
 def recommend(chat_id, results):
+    return
     # TODO this should be done in separate thread
     # TODO this is very rude
     global sendMessageFunction
@@ -263,20 +257,16 @@ def plan_trip(chat_id, entities):
         loc_from = search_place(loc_from_str)
         if not loc_from:
             response = 'I could not find a place named ' + loc_from_str
-            log_response(chat_id, response)
             sendMessageFunction(chat_id, response)
 
     if loc_to_str:
         loc_to = search_place(loc_to_str)
         if not loc_to:
             response = 'I could not find a place named ' + loc_to_str
-            log_response(
-                chat_id, 'I could not find a place named ' + loc_to_str)
             sendMessageFunction(chat_id, response)
 
     if not loc_from and not loc_to:
         response = "Your trip has no origin and no destination"
-        log_response(chat_id, response)
         sendMessageFunction(chat_id, response)
         return
 
@@ -299,7 +289,6 @@ def plan_trip(chat_id, entities):
     if city1 and city2 and city1 is not city2:
         response = 'Your trip starts at ' + city1 + ' and ends at ' + city2 + \
             '. You cannot take a bike from one city and go to another one!'
-        log_response(chat_id, response)
         sendMessageFunction(chat_id, response)
         return
 
@@ -312,15 +301,5 @@ def plan_trip(chat_id, entities):
 def askFeedback():
     return [{'type': 'text', 'value': '👍'}, {'type': 'text', 'value': '👎'}]
 
-
-def log_msg(chat_id, msg, intent, entities):
-    persistence.save_req(
-        chat_id, {'text': msg, 'intent': intent, 'entities': entities})
-
-
-def log_response(chat_id, response):
-    persistence.save_res(chat_id, response)
-
-
 wit_token = os.environ['WIT_TOKEN']
-extractor = witEntities.Extractor(wit_token)
+extractor = wit.Extractor(wit_token)

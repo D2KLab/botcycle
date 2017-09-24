@@ -1,4 +1,5 @@
 import requests
+from .. import persistence
 
 class Extractor:
     def __init__(self, token):
@@ -23,6 +24,8 @@ class Extractor:
         for key,value in all_entities.items():
             if key != 'intent':
                 entities[key] = value[0]
+
+        persistence.log_nlu({'text': sentence, 'intent': intent, 'entities': entities})
 
         return intent, entities
 

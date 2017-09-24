@@ -14,25 +14,34 @@ messages = db['messages']
 
 facebook_users = db['facebook_users']
 
+nlu_history = db['nlu_history']
+
 
 def is_first_msg(chat_id):
     user = users.find_one({'_id': chat_id})
     if user:
         return False
     else:
+        time = datetime.datetime.utcnow()
+        users.update_one({'_id': chat_id}, {"$set": {'time': time}}, upsert=True)
         return True
 
 
-def save_req(chat_id, message):
+def save_req(chat_id, text, message):
+    """message is the full object received"""
     time = datetime.datetime.utcnow()
-    users.update_one({'_id': chat_id}, {"$set": {'time': time}}, upsert=True)
-    messages.insert_one({'chat_id': chat_id, 'request': message, 'time': time})
+    messages.insert_one({'chat_id': chat_id, 'type': 'request', 'text': text, 'message': message, 'time': time})
 
 
-def save_res(chat_id, response):
+def save_res(chat_id, text, message):
+    """message is the full object that is being sent"""
     time = datetime.datetime.utcnow()
-    messages.insert_one(
-        {'chat_id': chat_id, 'response': response, 'time': time})
+    messages.insert_one({'chat_id': chat_id, 'type': 'response', 'text': text, 'message': message, 'time': time})
+
+def log_nlu(nlu_data):
+    nlu_data['time'] = datetime.datetime.utcnow()
+    nlu_history.insert_one(nlu_data)
+
 
 def save_position(chat_id, position):
     position['time'] = datetime.datetime.utcnow()
