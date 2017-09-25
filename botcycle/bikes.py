@@ -66,7 +66,7 @@ def update_data(which_to_update):
 def get_city_cached(position):
     global bike_info, to_update
 
-    tag = nearest_city_find(position)
+    tag, _ = nearest_city_find(position)
     result = bike_info.get(tag, None)
     if not result:
         to_update.append(tag)

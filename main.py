@@ -74,8 +74,9 @@ async def main():
                     while True:
                         message = await get_message(websocket)
                         log_msg(message)
-                        executor.submit(botcycle.process,
-                                        message, queue_message)
+                        # execute directly to show stack on exceptions
+                        # TODO reenable threading
+                        botcycle.process(message, queue_message)
 
         except websockets.exceptions.ConnectionClosed as e:
             print(e)
