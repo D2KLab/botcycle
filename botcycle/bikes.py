@@ -38,7 +38,7 @@ def update_data(which_to_update):
     for value in which_to_update:
         print('going to get info on ' + value)
         try:
-            bikeshare = pybikes.get(value);
+            bikeshare = pybikes.get(value)
             bikeshare.update()
 
             result[value] = {
@@ -102,7 +102,7 @@ def nearest_city_find(position):
             best = key
 
     #print("nearest is " + best)
-    return best
+    return best, where_to_search[best]
 
 
 def update():

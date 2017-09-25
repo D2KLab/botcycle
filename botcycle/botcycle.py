@@ -2,6 +2,8 @@ import os
 import time
 import requests
 
+from math import radians, cos, sin, asin, sqrt
+
 from . import bikes
 from .nlu import wit
 from . import persistence
@@ -87,6 +89,9 @@ def process(msg, sendMessage):
             elif intent['value'] == 'info':
                 response = 'I am BotCycle, a bot that can give you informations about bike sharing in your city.\nTry to ask me something! ;)'
                 sendMessageFunction(chat_id, response)
+
+            elif intent['value'] == 'city_supported':
+                get_nearest_supported_city(chat_id, entities)
 
             elif intent['value'] == 'booking':
                 response = 'Sorry but you can\'t book bikes'
@@ -238,6 +243,35 @@ def search_bike(chat_id, entities):
     provideResult(chat_id, result, 'bikes', buttons=askFeedback())
 
     recommend(chat_id, [result])
+
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    km = 6367 * c
+    return km
+
+def get_nearest_supported_city(chat_id, entities):
+    global sendMessageFunction
+    location = getLocation(chat_id, entities)
+
+    tag, meta = bikes.nearest_city_find(location)
+    supported_city_name = meta['city']
+    result_latlng = search_place(supported_city_name)
+    # is the city if distance < 500m
+    if (haversine(location['longitude'], location['latitude'], result_latlng['longitude'], result_latlng['latitude']) < 0.5):
+        response = 'Yes, {} is supported'.format(meta['city'])
+    else:
+        response = 'Nearest supported city is ' + meta['city']
+    sendMessageFunction(chat_id, response)
 
 
 def search_slot(chat_id, entities):
