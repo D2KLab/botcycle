@@ -38,6 +38,10 @@ def save_res(chat_id, text, message):
     time = datetime.datetime.utcnow()
     messages.insert_one({'chat_id': chat_id, 'type': 'response', 'text': text, 'message': message, 'time': time})
 
+def save_end_of_sequence(chat_id):
+    time = datetime.datetime.utcnow()
+    messages.insert_one({'chat_id': chat_id, 'type': 'EOS', 'time': time})
+
 def log_nlu(nlu_data):
     nlu_data['time'] = datetime.datetime.utcnow()
     nlu_history.insert_one(nlu_data)

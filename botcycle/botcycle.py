@@ -88,6 +88,13 @@ def process(msg, sendMessage):
                 response = 'I am BotCycle, a bot that can give you informations about bike sharing in your city.\nTry to ask me something! ;)'
                 sendMessageFunction(chat_id, response)
 
+            elif intent['value'] == 'booking':
+                response = 'Sorry but you can\'t book bikes'
+                sendMessageFunction(chat_id, response)
+
+            elif intent['value'] == 'end_discussion':
+                persistence.save_end_of_sequence(chat_id)
+
             else:
                 sendMessageFunction(
                     chat_id, "Unexpected intent: " + intent['value'])
