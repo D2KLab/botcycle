@@ -1,0 +1,5 @@
+spacy # TODO how to run command to download language?
+keras
+tensorflow
+pandas
+# TODO find all

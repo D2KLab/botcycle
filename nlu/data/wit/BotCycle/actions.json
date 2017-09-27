@@ -1,0 +1,20 @@
+{
+  "data" : [
+    {
+      "id" : "function-searchBike",
+      "type" : "function",
+      "name" : "searchBike"
+    },
+    {
+      "id" : "template-I found: {bike_result}",
+      "type" : "template",
+      "template" : "I found: {bike_result}",
+      "requirements" : [
+        {
+          "name" : "bike_result",
+          "negative" : false
+        }
+      ]
+    }
+  ]
+}

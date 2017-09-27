@@ -1,0 +1,52 @@
+drop=0.9 learn_rate=0.001
+#iterations
+3 folds 1 iterations f1 on test data: 0.714298870572 f1 on train data: 0.707387815647
+3 folds 5 iterations f1 on test data: 0.758930044849 f1 on train data: 0.790726035859
+3 folds 10 iterations f1 on test data: 0.828355410691 f1 on train data: 0.902943725197
+3 folds 20 iterations f1 on test data: 0.910812182295 f1 on train data: 0.962314984778
+3 folds 40 iterations f1 on test data: 0.934162949256 f1 on train data: 0.99267342282
+3 folds 80 iterations f1 on test data: 0.968152635228 f1 on train data: 0.99853333742
+3 folds 160 iterations f1 on test data: 0.94013553866 f1 on train data: 1.0
+3 folds 320 iterations f1 on test data: 0.965235953986 f1 on train data: 1.0
+3 folds 640 iterations f1 on test data: 0.965278234308 f1 on train data: 1.0
+3 folds 1000 iterations f1 on test data: 0.976718129112 f1 on train data: 1.0
+
+#dropout
+3 folds 100 iterations 0 dropout f1 on test data: 0.940732919922 f1 on train data: 1.0
+3 folds 100 iterations 0.1 dropout f1 on test data: 0.954490321 f1 on train data: 1.0
+3 folds 100 iterations 0.2 dropout f1 on test data: 0.959787814448 f1 on train data: 1.0
+3 folds 100 iterations 0.3 dropout f1 on test data: 0.959678211776 f1 on train data: 1.0
+3 folds 100 iterations 0.4 dropout f1 on test data: 0.948801611125 f1 on train data: 1.0
+3 folds 100 iterations 0.5 dropout f1 on test data: 0.94539156394 f1 on train data: 1.0
+3 folds 100 iterations 0.6 dropout f1 on test data: 0.942477904844 f1 on train data: 1.0
+3 folds 100 iterations 0.7 dropout f1 on test data: 0.979616389427 f1 on train data: 1.0
+3 folds 100 iterations 0.8 dropout f1 on test data: 0.970862901284 f1 on train data: 1.0
+3 folds 100 iterations 0.9 dropout f1 on test data: 0.965235953986 f1 on train data: 1.0
+3 folds 100 iterations 1.0 dropout f1 on test data: 0.932441414099 f1 on train data: 1.0
+
+3 folds 40 iterations 0.0 dropout f1 on test data: 0.909165919763 f1 on train data: 0.994152046784
+3 folds 40 iterations 0.1 dropout f1 on test data: 0.918482012332 f1 on train data: 1.0
+3 folds 40 iterations 0.2 dropout f1 on test data: 0.943674946648 f1 on train data: 1.0
+3 folds 40 iterations 0.3 dropout f1 on test data: 0.965388734204 f1 on train data: 1.0
+3 folds 40 iterations 0.4 dropout f1 on test data: 0.956706304589 f1 on train data: 1.0
+3 folds 40 iterations 0.5 dropout f1 on test data: 0.962422504697 f1 on train data: 1.0
+3 folds 40 iterations 0.6 dropout f1 on test data: 0.954100672363 f1 on train data: 1.0
+3 folds 40 iterations 0.7 dropout f1 on test data: 0.962577212979 f1 on train data: 1.0
+3 folds 40 iterations 0.8 dropout f1 on test data: 0.951201894954 f1 on train data: 1.0
+3 folds 40 iterations 0.9 dropout f1 on test data: 0.942962487533 f1 on train data: 0.981023084351
+3 folds 40 iterations 1.0 dropout f1 on test data: 0.946525665143 f1 on train data: 1.0
+
+#learn_rate
+3 folds 40 iterations 0.0 learn_rate 0.9 dropout f1 on test data: nan f1 on train data: nan
+3 folds 40 iterations 1e-09 learn_rate 0.9 dropout f1 on test data: 0.897293556788 f1 on train data: 0.964610901057
+3 folds 40 iterations 1e-08 learn_rate 0.9 dropout f1 on test data: 0.911008642646 f1 on train data: 0.964238726172
+3 folds 40 iterations 1e-07 learn_rate 0.9 dropout f1 on test data: 0.912386363588 f1 on train data: 0.975630858792
+3 folds 40 iterations 1e-06 learn_rate 0.9 dropout f1 on test data: 0.907659077387 f1 on train data: 0.965819923053
+3 folds 40 iterations 1e-05 learn_rate 0.9 dropout f1 on test data: 0.89784997817 f1 on train data: 0.977040183346
+3 folds 40 iterations 0.0001 learn_rate 0.9 dropout f1 on test data: 0.906874248995 f1 on train data: 0.971033901281
+3 folds 40 iterations 0.001 learn_rate 0.9 dropout f1 on test data: 0.951277266315 f1 on train data: 0.991205651195
+3 folds 40 iterations 0.01 learn_rate 0.9 dropout f1 on test data: 0.931454546087 f1 on train data: 0.986823920565
+3 folds 40 iterations 0.1 learn_rate 0.9 dropout f1 on test data: 0.953969306556 f1 on train data: 0.991223345047
+3 folds 40 iterations 1.0 learn_rate 0.9 dropout f1 on test data: 0.915747303476 f1 on train data: 0.956703119014
+3 folds 40 iterations 10.0 learn_rate 0.9 dropout f1 on test data: 0.822939390964 f1 on train data: 0.910628835097
+3 folds 40 iterations 100.0 learn_rate 0.9 dropout f1 on test data: 0.860023908855 f1 on train data: 0.911588918868

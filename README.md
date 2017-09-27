@@ -1,6 +1,12 @@
 # BotCycle
 
-BotCycle offers personalized recommendations of bike availabilities and contextual information of a city through a natural interaction via a chatbot.  
+BotCycle offers personalized recommendations of bike availabilities and contextual information of a city through a natural interaction via a chatbot.
+
+## Modules
+
+The module `brain` receives and sends messages and is the main component of the bot
+
+The module `nlu` contains some experiments on Natural Language Understanding. For the moment it is standalone and not used by the `brain` module.
 
 ## Required libraries
 
@@ -15,28 +21,14 @@ sudo pip3 install virtualenv
 ## Setting up the environment
 
 1. Clone/download this repository
-2. Install the dependencies:
+2. For each of the modules install the dependencies in a virtual environment:
   - `virtualenv venv`
   - `source venv/bin/activate`
   - `pip install -r requirements.txt`
 
-## Get required tokens
+## Other requirements
 
-### Botkit token
-
-The communication with messaging platforms is done talking to [botcycle-botkit](https://github.com/MartinoMensio/botcycle-botkit) over a websocket with an authentication token. This token must be placed in the `.env` file as `WEBSOCKET_TOKEN`.
-
-### Wit.ai token
-
-The token for `wit.ai` is linked to the online model. You can create your own token but the classifier that is used has been configured online (entities and intent) and trained with some sentences.
-
-An *export data* exists on `wit.ai` in order to download all the data (expressions and entities). Can be useful.
-
-The `WIT_TOKEN` token has to be stored in the `.env` file.
-
-### Google maps API token
-
-This app uses google maps API for geocoding. The environment variable `MAPS_TOKEN` needs to be provided too.
+The brain module requires some environment variables, see the module `README.md`
 
 ## Running the bot
 

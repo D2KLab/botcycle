@@ -1,0 +1,57 @@
+{
+  "data" : {
+    "lookups" : [
+      "trait"
+    ],
+    "name" : "intent",
+    "lang" : "en",
+    "exotic" : false,
+    "id" : "intent",
+    "values" : [
+      {
+        "value" : "ask_position"
+      },
+      {
+        "value" : "booking"
+      },
+      {
+        "value" : "city_supported"
+      },
+      {
+        "value" : "end_discussion"
+      },
+      {
+        "value" : "greeting"
+      },
+      {
+        "value" : "info"
+      },
+      {
+        "value" : "plan_trip",
+        "expressions" : [
+          "plan_trip"
+        ]
+      },
+      {
+        "value" : "search_bike",
+        "expressions" : [
+          "search_bike"
+        ]
+      },
+      {
+        "value" : "search_slot",
+        "expressions" : [
+          "search_slot"
+        ]
+      },
+      {
+        "value" : "set_position"
+      },
+      {
+        "value" : "thank"
+      }
+    ],
+    "doc" : "User-defined entity",
+    "builtin" : false
+  }
+}

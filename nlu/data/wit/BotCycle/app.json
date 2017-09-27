@@ -1,0 +1,9 @@
+{
+  "version" : 20160513,
+  "zip-command" : "zip BotCycle.zip BotCycle/app.json BotCycle/entities/*.json BotCycle/actions.json BotCycle/stories.json BotCycle/expressions.json",
+  "data" : {
+    "name" : "BotCycle",
+    "description" : "",
+    "lang" : "en"
+  }
+}
