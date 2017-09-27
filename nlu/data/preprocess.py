@@ -20,7 +20,13 @@ def atis_preprocess():
     with open('atis/source/atis.train.w-intent.iob') as txt_file:
         train_set = txt_file.readlines()
     train_tagged, entity_types, intent_types = atis_lines_to_json(train_set)
-    test_tagged, _, _ = atis_lines_to_json(test_set)
+    test_tagged, test_entity_types, test_intent_types = atis_lines_to_json(test_set)
+
+    # some entities and intents may appear only in test
+    entity_types.update(test_entity_types)
+    intent_types.update(test_intent_types)
+    entity_types = list(sorted(entity_types))
+    intent_types = list(sorted(intent_types))
 
     with open('atis/intent_types.json', 'w') as outfile:
         json.dump(intent_types, outfile)
@@ -93,7 +99,7 @@ def atis_lines_to_json(content):
                         entity['value'] = element['text'][entity['start']:entity['end']]
                         entities.append(entity)
                     # beginning of new entity
-                    entity = {'entity': tag[1], 'start': sum(
+                    entity = {'type': tag[1], 'start': sum(
                         map(len, chunks[:idx])) + idx}
                     entity_types.add(tag[1])
 
@@ -118,7 +124,7 @@ def atis_lines_to_json(content):
         element['entities'] = entities
         result.append(element)
 
-    return result, list(sorted(entity_types)), list(sorted(intent_types))
+    return result, entity_types, intent_types
 
 
 def wit_preprocess():

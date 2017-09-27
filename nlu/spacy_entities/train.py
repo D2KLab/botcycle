@@ -36,7 +36,9 @@ import spacy
 from spacy.gold import GoldParse
 from spacy.tagger import Tagger
 
+# my modules
 from data import loader
+import utils
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.environ['DATASET']
@@ -45,6 +47,7 @@ SPACY_MODEL_NAME = os.environ.get('SPACY_MODEL_NAME', 'en')
 DROP = float(os.environ.get('DROP', 0.9))
 LEARN_RATE = float(os.environ.get('LEARN_RATE', 0.001))
 MODEL_OUTPUT_FOLDER = os.environ.get('MODEL_OUTPUT_FOLDER', '{}/models/{}'.format(MY_PATH, DATASET))
+VERBOSE = os.environ.get('VERBOSE', False)
 
 def get_entities_lookup(entities):
     """From a list of entities gives back a dictionary that maps the value to the index in the original list"""
@@ -53,7 +56,11 @@ def get_entities_lookup(entities):
         entities_lookup[value] = index
     return entities_lookup
 
-def train_and_evaluate(train, test, entities_lookup):
+def json2spacy_ent(json_data):
+    return list(map(lambda x: (x['text'], list(map(lambda ent: (
+        ent['start'], ent['end'], ent['type']), x['entities']))), json_data))
+
+def train_and_evaluate(train, test, entities_lookup, save=False):
     # dimensions +1 because also no entity class (indexed last)
     extended_entities_lookup = entities_lookup.copy()
     extended_entities_lookup['NONE'] = len(entities_lookup)
@@ -61,33 +68,86 @@ def train_and_evaluate(train, test, entities_lookup):
     history = {'train': [], 'test': []}
 
     nlp = spacy.load(SPACY_MODEL_NAME)
-    # passing None because don't want to save every fold model
-    # TODO there
-    train_ner(nlp, train, test, [key for key in entities_lookup], None, tot_iterations, drop, learn_rate)
-    
-    train_confusion_partial = eval_confusion(data[train], nlp, extended_entities_lookup)
-    test_confusion_partial = eval_confusion(data[test], nlp, extended_entities_lookup)
 
-    train_confusion_sum += train_confusion_partial
-    test_confusion_sum += test_confusion_partial
+    train_data = json2spacy_ent(train)
+    test_data = json2spacy_ent(test)
+    for entity_name in entities_lookup:
+            nlp.entity.add_label(entity_name)
+
+    # Add new words to vocab
+    for raw_text, _ in train_data:
+        doc = nlp.make_doc(raw_text)
+        for word in doc:
+            _ = nlp.vocab[word.orth]
+    random.seed(0)
+    # You may need to change the learning rate. It's generally difficult to
+    # guess what rate you should set, especially when you have limited data.
+    nlp.entity.model.learn_rate = LEARN_RATE
+
+    for itn in range(MAX_ITERATIONS):
+        random.shuffle(train_data)
+        loss = 0.
+        for raw_text, entity_offsets in train_data:
+            doc = nlp.make_doc(raw_text)
+            gold = GoldParse(doc, entities=entity_offsets)
+            nlp.tagger(doc)
+            # As of 1.9, spaCy's parser now lets you supply a dropout probability
+            # This might help the model generalize better from only a few
+            # examples.
+            loss += nlp.entity.update(doc, gold, drop=DROP)
+
+        if loss == 0:
+            break
+
+        # every k iterations evaluate on train and test
+        if (itn + 1) % 1 == 0:
+            train_confusion = eval_confusion(train, nlp, extended_entities_lookup)
+            f1 = f1_score(train_confusion)
+            print('train iteration', itn, 'f1', f1)
+            history['train'].append(f1)
+            if test:
+                test_confusion = eval_confusion(test, nlp, extended_entities_lookup)
+                f1 = f1_score(test_confusion)
+                print('test iteration', itn, 'f1', f1)
+                history['test'].append(f1)
+
+
+    # This step averages the model's weights. This may or may not be good for
+    # your situation --- it's empirical.
+    nlp.end_training()
+
+    # final evaluation
+    train_confusion = eval_confusion(train, nlp, extended_entities_lookup)
+    f1_train = f1_score(train_confusion)
+    print('train final', 'f1', f1_train)
+    if test:
+        test_confusion = eval_confusion(test, nlp, extended_entities_lookup)
+        f1_test = f1_score(test_confusion)
+        print('test final', 'f1', f1_test)
+    else:
+        f1_test = None
+
+    # Save to directory
+    if save and MODEL_OUTPUT_FOLDER:
+        nlp.save_to_directory(MODEL_OUTPUT_FOLDER)
+
+    # convert to numpy
+    history['test'] = np.array(history['test'])
+    history['train'] = np.array(history['train'])
 
     # free memory before death
     del nlp
     gc.collect()
 
-    f1_train = f1_score(train_confusion_sum)
-    f1_test = f1_score(test_confusion_sum)
-    
-    print('final confusion matrix:\n', test_confusion_sum)
-    return test_confusion_sum, extended_entities_lookup, f1_test, f1_train
+    return history, f1_test, f1_train
 
 def eval_confusion(evaluation_data, nlp, extended_entities_lookup):
     confusion_sum = np.zeros((len(extended_entities_lookup), len(extended_entities_lookup)))
     for test_data in evaluation_data:
-        # test_data is like {'text':'', 'entities':{'entity','value','start','end'}}
+        # test_data is like {'text':'', 'entities':{'type','value','start','end'}}
         doc = nlp(test_data['text'])
-        # true_ents maps 'start_index:end_index' of entity to entity name, e.g. {'10:16': 'LOCATION'}
-        true_ents = {'{}:{}'.format(true_ent['start'], true_ent['end']): true_ent['entity'].upper() for true_ent in test_data['entities']}
+        # true_ents maps 'start_index:end_index' of entity to entity type, e.g. {'10:16': 'LOCATION'}
+        true_ents = {'{}:{}'.format(true_ent['start'], true_ent['end']): true_ent['type'] for true_ent in test_data['entities']}
         
         for predicted_ent in doc.ents:
             # on match an entry from true_ents is removed (see below computation of false negatives)
@@ -99,10 +159,12 @@ def eval_confusion(evaluation_data, nlp, extended_entities_lookup):
             confusion_sum[true_class, predicted_class] += 1
             if predicted_class is not true_class:
                 # TODO careful to boundaries
-                print('wrong prediction in "' + str(doc) + '". "' + str(predicted_ent.text) + '" was classified as', predicted_class, 'but was', true_class)
+                if VERBOSE:
+                    print('wrong prediction in "' + str(doc) + '". "' + str(predicted_ent.text) + '" was classified as', predicted_class, 'but was', true_class)
 
         for false_negative in true_ents.values():
-            print('false negative found: ' + false_negative)
+            if VERBOSE:
+                print('false negative found: ' + false_negative)
             confusion_sum[extended_entities_lookup[false_negative], extended_entities_lookup['NONE']] += 1
 
         # now also add some NONE->NONE values, one for each sentence? TODO
@@ -110,51 +172,6 @@ def eval_confusion(evaluation_data, nlp, extended_entities_lookup):
     
     return confusion_sum
 
-def train_ner(nlp, data, entity_names, output_directory, tot_iterations, drop, learn_rate):
-    train_data = list(map(lambda x: (x['text'], list(map(lambda ent: (
-        ent['start'], ent['end'], ent['entity'].upper()), x['entities']))), data))
-    for entity_name in entity_names:
-            nlp.entity.add_label(entity_name)
-
-    # Add new words to vocab
-    for raw_text, _ in train_data:
-        doc = nlp.make_doc(raw_text)
-        for word in doc:
-            _ = nlp.vocab[word.orth]
-    random.seed(0)
-    # You may need to change the learning rate. It's generally difficult to
-    # guess what rate you should set, especially when you have limited data.
-    nlp.entity.model.learn_rate = learn_rate
-
-    # average of last iterations, for printing something
-    tot_loss = 0.
-    for itn in range(tot_iterations):
-        random.shuffle(train_data)
-        loss = 0.
-        for raw_text, entity_offsets in train_data:
-            doc = nlp.make_doc(raw_text)
-            gold = GoldParse(doc, entities=entity_offsets)
-            nlp.tagger(doc)
-            # As of 1.9, spaCy's parser now lets you supply a dropout probability
-            # This might help the model generalize better from only a few
-            # examples.
-            loss += nlp.entity.update(doc, gold, drop=drop)
-
-        tot_loss += loss / len(train_data)
-
-        if loss == 0:
-            break
-
-        if (itn + 1) % 50 == 0:
-            print('loss: ' + str(tot_loss / 50))
-            tot_loss = 0.
-    # This step averages the model's weights. This may or may not be good for
-    # your situation --- it's empirical.
-    nlp.end_training()
-
-    # Save to directory
-    if output_directory:
-        nlp.save_to_directory(output_directory)
 
 def f1_score(confusion):
     tps = np.diagonal(confusion)
@@ -180,41 +197,44 @@ def plot_confusion(confusion, label_values, path):
     plt.clf()
 
 
-def main(learn_rate='0.001', drop='0.9', model_name='en', output_directory='models'):
-    print("Loading initial model", model_name)
-    if not os.path.isdir(output_directory):
-        os.makedirs(output_directory)
+def main():
+    if not os.path.isdir(MODEL_OUTPUT_FOLDER):
+        os.makedirs(MODEL_OUTPUT_FOLDER)
 
-    data, entity_types, intent_types = loader.load_data('wit')
-    entities = list(map(str.upper,entity_types))
+    data, entity_types, intent_types = loader.load_data(DATASET)
     entities_lookup = get_entities_lookup(entity_types)
 
     if len(data) == 2:
         # only test, train in this order (alphabetical)
         test, train = data[0], data[1]
-        result = train_and_evaluate(train, test, entities_lookup)
+        print('Running with', len(train), 'train samples and', len(test), 'test samples')
+        history, f1_test, f1_train = train_and_evaluate(train, test, entities_lookup)
     else:
         # evaluate 5-fold
+        histories = []
         for idx, test in enumerate(data):
             train = sum([example for index, example in enumerate(data) if index != idx], [])
-            print('Running Fold', idx + 1, '/', n_folds, 'with', len(train), 'train samples and', len(test), 'test samples')
-            result = train_and_evaluate(train, test, entities_lookup)
-            # TODO average of folds
+            print('Running Fold', idx + 1, '/', len(data), 'with', len(train), 'train samples and', len(test), 'test samples')
+            history_i, f1_test_i, f1_train_i = train_and_evaluate(train, test, entities_lookup)
+            histories.append(history_i)
+        # do average of history on the folds
+        h_f1_train = np.zeros((MAX_ITERATIONS))
+        h_f1_test = np.zeros((MAX_ITERATIONS))
+        for hist in histories:
+            h_f1_train += hist['train']
+            h_f1_test += hist['test']
 
-    # TODO plot the measures
+        h_f1_train /= len(histories)
+        h_f1_test /= len(histories)
+        history = {'train': h_f1_train, 'test': h_f1_test}
 
+    # plot the measures
+    utils.plot_f1_history(MODEL_OUTPUT_FOLDER + '/f1_over_epochs.png', history['train'], history['test'])
 
-    drop = float(drop)
-    learn_rate = float(learn_rate)
-    if True:
-        test_confusion, extended_entities_lookup, f1_test, f1_train = kfold(model_name, n_folds, data, entities_lookup, tot_iterations, drop, learn_rate)
-        plot_confusion(test_confusion, [key for key in extended_entities_lookup], output_directory + '/confusion_' + str(n_folds) + 'folds_' + str(tot_iterations) + 'iteration_' + str(drop) + 'drop_' + str(learn_rate) + 'learnrate')
-
-        print(n_folds, 'folds', tot_iterations, 'iterations', learn_rate, 'learn_rate', drop, 'dropout', 'f1 on test data:', f1_test, 'f1 on train data:', f1_train)
-
-    # now train on full data
-    nlp = spacy.load('en')
-    train_ner(nlp, data, entities, output_directory, tot_iterations, drop, learn_rate)
+    # now train of full dataset for top performances
+    print('doing full train')
+    train = sum([example for index, example in enumerate(data)], [])
+    history, _, f1_train = train_and_evaluate(train, [], entities_lookup, True)
 
 if __name__ == '__main__':
     import plac

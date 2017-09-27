@@ -1,7 +1,12 @@
+import os
 import spacy
 import sys
 
-nlp = spacy.load('en', path='models')
+MY_PATH = os.path.dirname(os.path.abspath(__file__))
+DATASET = os.environ['DATASET']
+MODEL_PATH = os.environ.get('MODEL_PATH', '{}/models/{}'.format(MY_PATH, DATASET))
+
+nlp = spacy.load('en', path=MODEL_PATH)
 
 print('Test your sentences.')
 print('> ', end='', flush=True)

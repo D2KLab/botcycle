@@ -9,8 +9,20 @@ download:
 preprocess:
 	pushd data && python preprocess.py && popd
 
-train_entities:
-	DATASET=wit MAX_ITERATIONS=1000 python -m spacy_entities.train
+train_atis_entities:
+	DATASET=atis MAX_ITERATIONS=4 python -m spacy_entities.train
 
-train_intents:
+train_wit_entities:
+	DATASET=wit MAX_ITERATIONS=50 python -m spacy_entities.train
+
+train_atis_intents:
+	echo TODO
+
+train_wit_intents:
+	echo TODO
+
+test_wit_entities:
+	DATASET=wit python -m spacy_entities.test
+
+test_wit_intents:
 	echo TODO
