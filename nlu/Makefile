@@ -16,7 +16,7 @@ train_wit_entities:
 	DATASET=wit MAX_ITERATIONS=500 python -m spacy_entities.train
 
 train_atis_intents:
-	DATASET=atis MODEL_NAME=mean_1l MAX_ITERATIONS=500 python -m intent_classifier.mean_model
+	DATASET=atis MODEL_NAME=bidirectional_lstm MAX_ITERATIONS=100 python -m intent_classifier.model_rnn
 
 train_wit_intents:
 	DATASET=wit MODEL_NAME=mean_1l MAX_ITERATIONS=500 python -m intent_classifier.mean_model

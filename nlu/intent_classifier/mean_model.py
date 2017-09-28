@@ -1,3 +1,4 @@
+import json
 import os
 import spacy
 import time
@@ -24,7 +25,7 @@ import utils
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.environ['DATASET']
 MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', 40))
-MODEL_OUTPUT_FOLDER = os.environ.get('MODEL_OUTPUT_FOLDER', '{}/models/{}'.format(MY_PATH, DATASET))
+MODEL_OUTPUT_FOLDER = os.environ.get('MODEL_OUTPUT_FOLDER', '{}/models/{}/{}'.format(MY_PATH, DATASET, str(time.time())))
 
 MAX_SEQUENCE_LENGTH = 100
 EMBEDDING_DIM = 300 # spacy has glove with 300-dimensional embeddings
@@ -51,12 +52,11 @@ def two_layers(len_output):
     model = Model(sequence_input, preds)
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',
-                  metrics=[f1_score])
+                  metrics=[utils.f1_score])
 
     return model
 
 MODEL_NAME = os.environ['MODEL_NAME']
-folder_name = MODEL_NAME + '__' + str(time.time())
 models_available = {
     # very bad
     'mean_1l': one_layer,
@@ -97,7 +97,6 @@ def train_and_evaluate(train, test, intents_lookup, save=False):
         test_inputs, test_labels = prepare_inputs_and_outputs(test, intents_lookup)
         validation_data = test_inputs, test_labels
 
-    # TODO work from this
     print('Number of sentences for each intent, train and test')
     print([key for key in intents_lookup])
     print(train_labels.sum(axis=0))
@@ -134,6 +133,11 @@ def train_and_evaluate(train, test, intents_lookup, save=False):
     print(f1_test, f1_train)
     if save:
         model.save(MODEL_OUTPUT_FOLDER + '/model.h5')
+        stats = {}
+        stats['model_name'] = MODEL_NAME
+        stats['model'] = model.get_config()
+        with open(MODEL_OUTPUT_FOLDER+'/stats.json', 'w+') as stats_file:
+            json.dump(stats, stats_file)
 
     return history, f1_test, f1_train
 
