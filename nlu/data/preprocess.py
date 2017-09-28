@@ -5,6 +5,8 @@ import json
 import os
 import numpy as np
 
+NO_SLOT_NAME = True
+
 
 def atis_preprocess():
     """
@@ -92,6 +94,11 @@ def atis_lines_to_json(content):
             tag = tag.split('-')
             next_state = tag[0]
             if len(tag) == 2:
+                simple_tag = tag[1]
+                if NO_SLOT_NAME:
+                    # entities can be slot_name.entity_type or entity_type
+                    # take only the entity_type
+                    simple_tag = simple_tag.split('.')[-1]
                 if next_state == 'B':
                     if state == 'B':
                         # close previous entity
@@ -99,9 +106,9 @@ def atis_lines_to_json(content):
                         entity['value'] = element['text'][entity['start']:entity['end']]
                         entities.append(entity)
                     # beginning of new entity
-                    entity = {'type': tag[1], 'start': sum(
+                    entity = {'type': simple_tag, 'start': sum(
                         map(len, chunks[:idx])) + idx}
-                    entity_types.add(tag[1])
+                    entity_types.add(simple_tag)
 
             if next_state == 'O' and state != 'O':
                 # end of entity inside the sentence
