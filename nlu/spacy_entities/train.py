@@ -49,13 +49,6 @@ LEARN_RATE = float(os.environ.get('LEARN_RATE', 0.001))
 MODEL_OUTPUT_FOLDER = os.environ.get('MODEL_OUTPUT_FOLDER', '{}/models/{}'.format(MY_PATH, DATASET))
 VERBOSE = os.environ.get('VERBOSE', False)
 
-def get_entities_lookup(entities):
-    """From a list of entities gives back a dictionary that maps the value to the index in the original list"""
-    entities_lookup = {}
-    for index, value in enumerate(entities):
-        entities_lookup[value] = index
-    return entities_lookup
-
 def json2spacy_ent(json_data):
     return list(map(lambda x: (x['text'], list(map(lambda ent: (
         ent['start'], ent['end'], ent['type']), x['entities']))), json_data))
@@ -198,43 +191,7 @@ def plot_confusion(confusion, label_values, path):
 
 
 def main():
-    if not os.path.isdir(MODEL_OUTPUT_FOLDER):
-        os.makedirs(MODEL_OUTPUT_FOLDER)
-
-    data, entity_types, intent_types = loader.load_data(DATASET)
-    entities_lookup = get_entities_lookup(entity_types)
-
-    if len(data) == 2:
-        # only test, train in this order (alphabetical)
-        test, train = data[0], data[1]
-        print('Running with', len(train), 'train samples and', len(test), 'test samples')
-        history, f1_test, f1_train = train_and_evaluate(train, test, entities_lookup)
-    else:
-        # evaluate 5-fold
-        histories = []
-        for idx, test in enumerate(data):
-            train = sum([example for index, example in enumerate(data) if index != idx], [])
-            print('Running Fold', idx + 1, '/', len(data), 'with', len(train), 'train samples and', len(test), 'test samples')
-            history_i, f1_test_i, f1_train_i = train_and_evaluate(train, test, entities_lookup)
-            histories.append(history_i)
-        # do average of history on the folds
-        h_f1_train = np.zeros((MAX_ITERATIONS))
-        h_f1_test = np.zeros((MAX_ITERATIONS))
-        for hist in histories:
-            h_f1_train += hist['train']
-            h_f1_test += hist['test']
-
-        h_f1_train /= len(histories)
-        h_f1_test /= len(histories)
-        history = {'train': h_f1_train, 'test': h_f1_test}
-
-    # plot the measures
-    utils.plot_f1_history(MODEL_OUTPUT_FOLDER + '/f1_over_epochs.png', history['train'], history['test'])
-
-    # now train of full dataset for top performances
-    print('doing full train')
-    train = sum([example for index, example in enumerate(data)], [])
-    history, _, f1_train = train_and_evaluate(train, [], entities_lookup, True)
+    utils.main_flow_entities(DATASET, train_and_evaluate, MODEL_OUTPUT_FOLDER)
 
 if __name__ == '__main__':
     import plac
