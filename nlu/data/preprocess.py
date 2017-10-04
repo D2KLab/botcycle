@@ -14,16 +14,21 @@ def atis_preprocess():
     Produces in output the files entity_types.json, fold_train.json, fold_test.json
     """
     # TODO define flag to use entity.subentity or only entity
+    with open('atis/source/atis-2.dev.w-intent.iob') as txt_file:
+        dev_set = txt_file.readlines()
     with open('atis/source/atis.test.w-intent.iob') as txt_file:
         test_set = txt_file.readlines()
-    with open('atis/source/atis.train.w-intent.iob') as txt_file:
+    with open('atis/source/atis-2.train.w-intent.iob') as txt_file:
         train_set = txt_file.readlines()
     train_tagged, entity_types, intent_types = atis_lines_to_json(train_set)
     test_tagged, test_entity_types, test_intent_types = atis_lines_to_json(test_set)
+    dev_tagged, dev_entity_types, dev_intent_types = atis_lines_to_json(dev_set)
 
-    # some entities and intents may appear only in test
+    # some entities and intents may appear only in test/dev
     entity_types.update(test_entity_types)
+    entity_types.update(dev_entity_types)
     intent_types.update(test_intent_types)
+    intent_types.update(dev_intent_types)
     entity_types = list(sorted(entity_types))
     intent_types = list(sorted(intent_types))
 
@@ -36,7 +41,10 @@ def atis_preprocess():
     with open('atis/fold_train.json', 'w') as outfile:
         json.dump(train_tagged, outfile)
 
-    with open('atis/fold_test.json', 'w') as outfile:
+    with open('atis/fold_dev.json', 'w') as outfile:
+        json.dump(dev_tagged, outfile)
+
+    with open('atis/test_fold.json', 'w') as outfile:
         json.dump(test_tagged, outfile)
 
 
