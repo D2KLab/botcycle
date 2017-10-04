@@ -21,8 +21,5 @@ train_atis_intents:
 train_wit_intents:
 	DATASET=wit MODEL_NAME=bidirectional_lstm MAX_ITERATIONS=100 python -m intent_classifier.model_rnn
 
-test_wit_entities:
-	DATASET=wit python -m spacy_entities.test
-
-test_wit_intents:
-	echo TODO
+test_wit:
+	INTENT_MODEL_PATH=`exec ls -d1 intent_classifier/models/wit/** | sort -n | tail -1` DATASET=wit LANG_MODEL_PATH=spacy_entities/models/wit python -m intent_classifier.test_intent

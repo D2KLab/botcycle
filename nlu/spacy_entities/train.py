@@ -123,6 +123,8 @@ def train_and_evaluate(train, test, entities_lookup, save=False):
     # Save to directory
     if save and MODEL_OUTPUT_FOLDER:
         nlp.save_to_directory(MODEL_OUTPUT_FOLDER)
+        # TODO this should be done only once, word embeddings don't change
+        nlp.vocab.dump_vectors(MODEL_OUTPUT_FOLDER + "/vocab/vec.bin")
 
     # convert to numpy
     history['test'] = np.array(history['test'])

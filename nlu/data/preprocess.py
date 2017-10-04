@@ -116,10 +116,6 @@ def wit_preprocess():
     To download the updated dataset, use the download.sh script.
     Saves the tagged dataset, the enitity_types and the intent_types"""
     enitites_path = 'wit/BotCycle/entities'
-    entities_files = os.listdir(enitites_path)
-    # remove .json suffix
-    entity_types = list(map(lambda file_name: file_name[:-5], entities_files))
-    entity_types.remove('intent')
 
     with open(enitites_path + '/intent.json') as json_file:
         intents = json.load(json_file)
@@ -129,7 +125,7 @@ def wit_preprocess():
     with open('wit/BotCycle/expressions.json') as json_file:
         expressions = json.load(json_file)
 
-    dataset = wit_get_normalized_data(expressions)
+    dataset, entity_types = wit_get_normalized_data(expressions)
 
     # perform the split on 5 folds
     dataset = np.array(dataset)
@@ -154,8 +150,10 @@ def wit_preprocess():
 
 def wit_get_normalized_data(expressions):
     """Returns a list of objects like `{'text': SENTENCE, 'intent': ,
-    'entities': [{'entity': ENTITY_NAME, 'value': ENTITY_VALUE, 'start': INT, 'end', INT}]}`"""
-    # TODO consider role ??
+    'entities': [{'entity': (role.)?ENTITY_NAME, 'value': ENTITY_VALUE, 'start': INT, 'end', INT}]}`
+    
+    followed by the entity types"""
+    entity_types = set()
     items = expressions['data']
     results = []
     for item in items:
@@ -164,13 +162,16 @@ def wit_get_normalized_data(expressions):
             if e_or_i['entity'] == 'intent':
                 result['intent'] = e_or_i['value'].strip('"')
             else:
-                entity = {'type': e_or_i['entity'], 'value': e_or_i['value'].strip(
-                    '"'), 'start': e_or_i['start'], 'end': e_or_i['end']}
+                entity_type = e_or_i['entity']
+                if 'role' in e_or_i:
+                    entity_type = e_or_i['role'] + '.' + entity_type
+                entity_types.add(entity_type)
+                entity = {'type': entity_type, 'value': e_or_i['value'].strip('"'), 'start': e_or_i['start'], 'end': e_or_i['end']}
                 result['entities'].append(entity)
 
         results.append(result)
 
-    return results
+    return results, list(sorted(entity_types))
 
 
 atis_preprocess()
