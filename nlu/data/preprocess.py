@@ -5,8 +5,6 @@ import json
 import os
 import numpy as np
 
-NO_SLOT_NAME = True
-
 
 def atis_preprocess():
     """
@@ -17,8 +15,7 @@ def atis_preprocess():
     """
     # TODO define flag to use entity.subentity or only entity
     with open('atis/source/atis.test.w-intent.iob') as txt_file:
-        raw_test_set = txt_file.read()
-    test_set = atis_normalize_raw_set(raw_test_set)
+        test_set = txt_file.readlines()
     with open('atis/source/atis.train.w-intent.iob') as txt_file:
         train_set = txt_file.readlines()
     train_tagged, entity_types, intent_types = atis_lines_to_json(train_set)
@@ -41,22 +38,6 @@ def atis_preprocess():
 
     with open('atis/fold_test.json', 'w') as outfile:
         json.dump(test_tagged, outfile)
-
-
-def atis_normalize_raw_set(content):
-    """Put the test set in the same form as the train set"""
-    items = content.split('\n\n')
-    results = []
-    for item in items:
-        lines = item.splitlines()
-        chunks = np.array((len(lines), 2))
-        chunks = np.array(list(map(lambda l: np.array(l.split()), lines)))
-        if chunks.size:
-            line = '{}\t{}'.format(
-                ' '.join(chunks[:, 0]), ' '.join(chunks[:, 1]))
-            results.append(line)
-
-    return results
 
 
 def atis_lines_to_json(content):
@@ -95,10 +76,6 @@ def atis_lines_to_json(content):
             next_state = tag[0]
             if len(tag) == 2:
                 simple_tag = tag[1]
-                if NO_SLOT_NAME:
-                    # entities can be slot_name.entity_type or entity_type
-                    # take only the entity_type
-                    simple_tag = simple_tag.split('.')[-1]
                 if next_state == 'B':
                     if state == 'B':
                         # close previous entity
