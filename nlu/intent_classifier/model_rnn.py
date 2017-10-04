@@ -39,7 +39,7 @@ def bidirectional_lstm(len_output):
     model = Model(sequence_input, preds)
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',
-                  metrics=[utils.f1_score])
+                  metrics=[utils.f1_score, 'categorical_accuracy'])
 
     """
     model.add(Bidirectional(LSTM(shape['nr_hidden'])))
@@ -61,7 +61,7 @@ def lstm(len_output):
     model = Model(sequence_input, preds)
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',
-                  metrics=[utils.f1_score])
+                  metrics=[utils.f1_score, 'categorical_accuracy'])
 
     return model
 
@@ -74,7 +74,7 @@ def gru(len_output):
     model = Model(sequence_input, preds)
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',
-                  metrics=[utils.f1_score])
+                  metrics=[utils.f1_score, 'categorical_accuracy'])
 
     return model
 
@@ -87,7 +87,7 @@ def bidirectional_gru(len_output):
     model = Model(sequence_input, preds)
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',
-                  metrics=[utils.f1_score])
+                  metrics=[utils.f1_score, 'categorical_accuracy'])
 
     return model
 
@@ -146,7 +146,7 @@ def train_and_evaluate(train, test, intents_lookup, save=False):
     # first iteration
     # model.summary()
     # this requires graphviz binaries also
-    plot_model(model, to_file=MODEL_OUTPUT_FOLDER + '/model.png', show_shapes=True)
+    #plot_model(model, to_file=MODEL_OUTPUT_FOLDER + '/model.png', show_shapes=True)
 
     history = model.fit(train_inputs, train_labels, validation_data=validation_data, epochs=MAX_ITERATIONS, batch_size=50)
 

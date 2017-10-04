@@ -6,17 +6,6 @@ import tensorflow as tf
 from data import loader
 
 def f1_score(y_true, y_pred):
-    """
-    supports = confusion.sum(axis=1)
-    # TODO remove this ignore divide by 0, shouldn't happen
-    with np.errstate(divide='ignore', invalid='ignore'):
-        precisions = np.true_divide(tps, confusion.sum(axis=0))
-        recalls = np.true_divide(tps, supports)
-        f1s = 2*np.true_divide((precisions*recalls),(precisions+recalls))
-        f1s[f1s == np.inf] = 0
-        f1s = np.nan_to_num(f1s)
-    f1 = np.average(f1s, weights=supports)
-    """
     from keras import backend as K
 
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)), axis=0)
