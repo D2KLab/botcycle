@@ -1,0 +1,22 @@
+version: '3'
+services:
+  # brain is a python3 container
+  brain:
+    build:
+      context: brain
+    command: python main.py
+    volumes:
+      - ./brain:/app
+    depends_on:
+    - mongodb
+
+  # container for mongo database
+  mongodb:
+    image: mongo:latest
+    ports:
+      # map the port of the container to the port of the host, in order to be able to connect via cli
+      - "27017:27017"
+    volumes:
+      - mongo_storage_volume:/data/db
+volumes:
+  mongo_storage_volume:

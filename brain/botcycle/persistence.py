@@ -3,7 +3,8 @@ import datetime
 from pymongo import MongoClient
 
 
-mongodb_uri = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/botcycle')
+# default host is the mongo container name
+mongodb_uri = os.environ.get('MONGODB_URI', 'mongodb://mongodb:27017/botcycle')
 client = MongoClient(mongodb_uri)
 
 db = client.get_default_database()
