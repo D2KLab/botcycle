@@ -9,6 +9,8 @@ services:
       - ./brain:/app
     depends_on:
     - mongodb
+    environment:
+    - PYTHONUNBUFFERED=0
 
   # container for mongo database
   mongodb:
