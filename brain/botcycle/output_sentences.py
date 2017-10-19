@@ -44,7 +44,7 @@ sentences = {
         "SUPPORTED_AFFIRMATIVE": "Sì, {city} è supportata",
         "SUPPORTED_NEGATIVE": "La città supportata più vicina è {nearest_city}",
         "INCOMPLETE_TRIP": "Il tuo viaggio non ha né un punto di partenza né un punto di arrivo",
-        "INTERCITY_TRIP": "Il tuo viaggio inizia a  {source} e finisce a {destination}. Non puoi prendere una bici in una città e portarla in un'altra!"
+        "INTERCITY_TRIP": "Il tuo viaggio inizia a {source} e finisce a {destination}. Non puoi prendere una bici in una città e portarla in un'altra!"
     }
 }
 

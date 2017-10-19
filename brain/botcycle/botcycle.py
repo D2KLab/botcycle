@@ -272,7 +272,7 @@ def get_nearest_supported_city(chat_id, entities):
     if (haversine(location['longitude'], location['latitude'], result_latlng['longitude'], result_latlng['latitude']) < 0.5):
         response = output_sentences.get(LANGUAGE, 'SUPPORTED_AFFIRMATIVE').format(city=meta['city'])
     else:
-        response = output_sentences.get(LANGUAGE, 'SUPPORTED_NEGATIVE').format(nearest_supported=meta['city'])
+        response = output_sentences.get(LANGUAGE, 'SUPPORTED_NEGATIVE').format(nearest_city=meta['city'])
     sendMessageFunction(chat_id, response)
 
 
