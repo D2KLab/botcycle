@@ -12,6 +12,35 @@ services:
     environment:
     - PYTHONUNBUFFERED=0
 
+  it_brain:
+    build:
+      context: brain
+    command: python main.py
+    volumes:
+      - ./brain:/app
+    depends_on:
+      - mongodb
+    environment:
+      - PYTHONUNBUFFERED=0
+      - MONGODB_URI=mongodb://mongodb/botcycle_it
+      - BOT_LANGUAGE=IT  
+      - BOTKIT_LOCATION=botcycle-it.herokuapp.com
+
+#
+#  slack_brain:
+#    build:
+#      context: brain
+#    command: python main.py
+#    volumes:
+#      - ./brain:/app
+#    depends_on:
+#    - mongodb
+#    environment:
+#      - MONGODB_URI=mongodb://mongodb/slack_test
+#      - WEBSOCKET_PATH=slack
+#      - WEBSOCKET_TOKEN=GOTCHA
+#      - PYTHONUNBUFFERED=0
+
   # container for mongo database
   mongodb:
     image: mongo:latest
