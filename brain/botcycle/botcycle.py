@@ -15,6 +15,9 @@ print('language is ' + LANGUAGE)
 
 sendMessageFunction = None
 
+# chat contexts
+contexts = {}
+
 
 def process(msg, sendMessage):
     global sendMessageFunction
@@ -78,6 +81,7 @@ def process(msg, sendMessage):
             elif intent['value'] == 'set_position':
                 #sendMessageFunction(chat_id, "You want to set the position")
                 set_position_str(chat_id, entities)
+                context_continue(chat_id)
 
             elif intent['value'] == 'ask_position':
                 askPosition(chat_id)
@@ -114,12 +118,15 @@ def process(msg, sendMessage):
 
     elif content_type == 'location':
         set_position(chat_id, msg['position'])
+        context_continue(chat_id)
     else:
         sendMessageFunction(chat_id, output_sentences.get(LANGUAGE, 'UNSUPPORTED_CONTENT_TYPE').format(type=content_type))
 
 
 def set_position_str(chat_id, entities):
     location = getLocation(chat_id, entities)
+    if location is None:
+        sendMessageFunction(chat_id, output_sentences.get(LANGUAGE, 'REQUIRED_POSITION'))
     # print(location)
     if location:
         set_position(chat_id, location, verbose=False)
@@ -131,6 +138,7 @@ def set_position_str(chat_id, entities):
 
 def set_position(chat_id, location, verbose=True):
     global sendMessageFunction
+    print('saving current position')
     persistence.save_position(chat_id, location)
     if verbose:
         response = output_sentences.get(LANGUAGE, 'ACK_POSITION')
@@ -238,6 +246,7 @@ def search_bike(chat_id, entities):
     location = getLocation(chat_id, entities)
     if not location:
         askPosition(chat_id)
+        save_context(chat_id, 'search_bike', entities)
         return
 
     city, result = bikes.search_nearest(location, 'bikes')
@@ -280,6 +289,7 @@ def search_slot(chat_id, entities):
     location = getLocation(chat_id, entities)
     if not location:
         askPosition(chat_id)
+        save_context(chat_id, 'search_bike', entities)
         return
 
     city, result = bikes.search_nearest(location, 'slots')
@@ -317,6 +327,7 @@ def plan_trip(chat_id, entities):
         # if only one of them is missing, ca use the user location as backup
         if not location:
             askPosition(chat_id)
+            save_context(chat_id, 'search_bike', entities)
             return
 
         else:
@@ -338,6 +349,21 @@ def plan_trip(chat_id, entities):
     provideResult(chat_id, result_to, 'slots', buttons=askFeedback())
 
     recommend(chat_id, [result_from, result_to])
+
+def save_context(chat_id, intent, entities):
+    contexts[chat_id] = {'intent': intent, 'entities': entities}
+
+def context_continue(chat_id):
+    print('context_continue for user' + chat_id)
+    context = contexts.pop(chat_id, None)
+    print(context)
+    if context:
+        if context['intent'] == 'search_bike':
+            search_bike(chat_id, context['entities'])
+        elif context['intent'] == 'search_slot':
+            search_slot(chat_id, context['entities'])
+        elif context['intent'] == 'plan_trip':
+            plan_trip(chat_id, context['entities'])
 
 
 def askFeedback():

@@ -21,7 +21,8 @@ sentences = {
         "SUPPORTED_AFFIRMATIVE": "Yes, {city} is supported",
         "SUPPORTED_NEGATIVE": "Nearest supported city is {nearest_city}",
         "INCOMPLETE_TRIP": "Your trip has no source and no destination",
-        "INTERCITY_TRIP": "Your trip starts at {source} and ends at {destination}. You cannot take a bike from one city and go to another one!"
+        "INTERCITY_TRIP": "Your trip starts at {source} and ends at {destination}. You cannot take a bike from one city and go to another one!",
+        "REQUIRED_POSITION": "I didn't manage to extract a position from your sentence"
     },
     "IT": {
         "THANK_LOGGED_IN": "Grazie per il contributo! Ogni persona che effettua il login mi aiuta a fornire risultati migliori a tutti!",
@@ -44,7 +45,8 @@ sentences = {
         "SUPPORTED_AFFIRMATIVE": "Sì, {city} è supportata",
         "SUPPORTED_NEGATIVE": "La città supportata più vicina è {nearest_city}",
         "INCOMPLETE_TRIP": "Il tuo viaggio non ha né un punto di partenza né un punto di arrivo",
-        "INTERCITY_TRIP": "Il tuo viaggio inizia a {source} e finisce a {destination}. Non puoi prendere una bici in una città e portarla in un'altra!"
+        "INTERCITY_TRIP": "Il tuo viaggio inizia a {source} e finisce a {destination}. Non puoi prendere una bici in una città e portarla in un'altra!",
+        "REQUIRED_POSITION": "Non sono riuscito ad estrarre una posizione dalla tua frase"
     }
 }
 
