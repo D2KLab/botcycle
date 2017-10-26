@@ -1,0 +1,683 @@
+{
+  "data" : [
+    {
+      "text" : "A Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 2,
+          "end" : 8
+        }
+      ]
+    },
+    {
+      "text" : "Ciao",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Ciao\"",
+          "start" : 0,
+          "end" : 4
+        }
+      ]
+    },
+    {
+      "text" : "Ciao!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Dove posso parcheggiare la bici vicino a Torino Porta Nuova?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino Porta Nuova\"",
+          "start" : 41,
+          "end" : 59
+        }
+      ]
+    },
+    {
+      "text" : "Funzioni a los Angeles?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"los Angeles\"",
+          "start" : 11,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "Grazie",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "Hei!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Mi serve una bici per andare al museo egizio",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"museo egizio\"",
+          "role" : "to",
+          "start" : 32,
+          "end" : 44
+        }
+      ]
+    },
+    {
+      "text" : "Quali città sono supportate?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        }
+      ]
+    },
+    {
+      "text" : "Torino è supportata?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 0,
+          "end" : 6
+        }
+      ]
+    },
+    {
+      "text" : "Trovami una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Vorrei parcheggiare una bicicletta nei pressi del Politecnico di Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico di Torino\"",
+          "start" : 50,
+          "end" : 71
+        }
+      ]
+    },
+    {
+      "text" : "Vorrei prendere una bicicletta",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Vorrei una bicicletta a Torino Porta Susa",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino Porta Susa\"",
+          "start" : 24,
+          "end" : 41
+        }
+      ]
+    },
+    {
+      "text" : "Vorrei una bicicletta vicino a Piazza Castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piazza Castello\"",
+          "start" : 31,
+          "end" : 46
+        }
+      ]
+    },
+    {
+      "text" : "cerco una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "chi sei?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
+      "text" : "ciao",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "cosa puoi fare?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
+      "text" : "dammi una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "dove mi trovo?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "dove posso lasciare la bici?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "dove posso parcheggiare vicino a via madama cristina 23?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via madama cristina 23\"",
+          "start" : 33,
+          "end" : 55
+        }
+      ]
+    },
+    {
+      "text" : "dove posso parcheggiare?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "dove posso trovare una bici in centro torino?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"centro torino\"",
+          "start" : 31,
+          "end" : 44
+        }
+      ]
+    },
+    {
+      "text" : "dove sono?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "finito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
+      "text" : "funzioni a Parigi?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Parigi\"",
+          "start" : 11,
+          "end" : 17
+        }
+      ]
+    },
+    {
+      "text" : "funzioni a saluzzo?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 11,
+          "end" : 18
+        }
+      ]
+    },
+    {
+      "text" : "grazie",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "localizzami",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "mi puoi aiutare a Roma?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Roma\"",
+          "start" : 18,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "mi trovo in piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "to",
+          "start" : 12,
+          "end" : 27
+        }
+      ]
+    },
+    {
+      "text" : "ok",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
+      "text" : "prenotami una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"booking\""
+        }
+      ]
+    },
+    {
+      "text" : "puoi lavorare a New York?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"New York\"",
+          "start" : 16,
+          "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "puoi lavorare a pagno?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 16,
+          "end" : 21
+        }
+      ]
+    },
+    {
+      "text" : "riservami una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"booking\""
+        }
+      ]
+    },
+    {
+      "text" : "sono a torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 7,
+          "end" : 13
+        }
+      ]
+    },
+    {
+      "text" : "sono in piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "start" : 8,
+          "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "sono in via borsellino torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via borsellino torino\"",
+          "start" : 8,
+          "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "sono in via principi d'acaja",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via principi d'acaja\"",
+          "start" : 8,
+          "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "trovami",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "trovami una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare a casa",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"casa\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 20
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare a new york",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"new york\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare a torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 16,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare da piazza statuto a piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza statuto\"",
+          "role" : "from",
+          "start" : 17,
+          "end" : 31
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "to",
+          "start" : 34,
+          "end" : 49
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare da torino a new york",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "role" : "from",
+          "start" : 17,
+          "end" : 23
+        },
+        {
+          "entity" : "location",
+          "value" : "\"new york\"",
+          "role" : "to",
+          "start" : 26,
+          "end" : 34
+        }
+      ]
+    },
+    {
+      "text" : "voglio raggiungere piazza carducci dal poli",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza carducci\"",
+          "role" : "to",
+          "start" : 19,
+          "end" : 34
+        },
+        {
+          "entity" : "location",
+          "value" : "\"poli\"",
+          "role" : "from",
+          "start" : 39,
+          "end" : 43
+        }
+      ]
+    },
+    {
+      "text" : "voglio una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "voglio una bici a torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 18,
+          "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "voglio una bici vicino al poli",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"poli\"",
+          "start" : 26,
+          "end" : 30
+        }
+      ]
+    }
+  ]
+}

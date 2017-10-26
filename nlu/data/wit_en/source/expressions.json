@@ -159,6 +159,21 @@
       ]
     },
     {
+      "text" : "I am at nizza",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"nizza\"",
+          "start" : 8,
+          "end" : 13
+        }
+      ]
+    },
+    {
       "text" : "I am at piazza castello torino",
       "entities" : [
         {
@@ -170,6 +185,21 @@
           "value" : "\"piazza castello torino\"",
           "start" : 8,
           "end" : 30
+        }
+      ]
+    },
+    {
+      "text" : "I am at polito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"polito\"",
+          "start" : 8,
+          "end" : 14
         }
       ]
     },
@@ -215,6 +245,21 @@
           "value" : "\"via paolo borsellino torino\"",
           "start" : 8,
           "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "I am at via pier Carlo boggio torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via pier Carlo boggio torino\"",
+          "start" : 8,
+          "end" : 36
         }
       ]
     },
@@ -300,6 +345,22 @@
       ]
     },
     {
+      "text" : "I want to go to paris",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"paris\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 21
+        }
+      ]
+    },
+    {
       "text" : "I want to go to piazza carducci torino",
       "entities" : [
         {
@@ -316,6 +377,22 @@
       ]
     },
     {
+      "text" : "I want to go to place massena nizza",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"place massena nizza\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 35
+        }
+      ]
+    },
+    {
       "text" : "I want to go to venaria",
       "entities" : [
         {
@@ -328,6 +405,21 @@
           "role" : "to",
           "start" : 16,
           "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "I'm in piazza castello, Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello, Torino\"",
+          "start" : 7,
+          "end" : 30
         }
       ]
     },
@@ -391,6 +483,15 @@
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "ask my position",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
         }
       ]
     },
@@ -1001,6 +1102,21 @@
           "value" : "\"corso francia torino\"",
           "start" : 8,
           "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "i am at istituto superiore mario boella torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"istituto superiore mario boella torino\"",
+          "start" : 8,
+          "end" : 46
         }
       ]
     },
@@ -2362,6 +2478,22 @@
           "role" : "to",
           "start" : 16,
           "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 23
         }
       ]
     },

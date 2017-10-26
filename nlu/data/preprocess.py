@@ -27,16 +27,19 @@ def atis_preprocess():
     entity_types = list(sorted(entity_types))
     intent_types = list(sorted(intent_types))
 
-    with open('atis/intent_types.json', 'w') as outfile:
+    if not os.path.exists('atis/preprocessed'):
+        os.makedirs('atis/preprocessed')
+
+    with open('atis/preprocessed/intent_types.json', 'w') as outfile:
         json.dump(intent_types, outfile)
 
-    with open('atis/entity_types.json', 'w') as outfile:
+    with open('atis/preprocessed/entity_types.json', 'w') as outfile:
         json.dump(entity_types, outfile)
 
-    with open('atis/fold_train.json', 'w') as outfile:
+    with open('atis/preprocessed/fold_train.json', 'w') as outfile:
         json.dump(train_tagged, outfile)
 
-    with open('atis/fold_test.json', 'w') as outfile:
+    with open('atis/preprocessed/fold_test.json', 'w') as outfile:
         json.dump(test_tagged, outfile)
 
 
@@ -111,18 +114,19 @@ def atis_lines_to_json(content):
     return result, entity_types, intent_types
 
 
-def wit_preprocess():
-    """Preprocesses the wit.ai dataset from the folder wit/BotCycle.
+def wit_preprocess(path):
+    """Preprocesses the wit.ai dataset from the folder path passed as parameter.
     To download the updated dataset, use the download.sh script.
     Saves the tagged dataset, the enitity_types and the intent_types"""
-    enitites_path = 'wit/BotCycle/entities'
+    path_source = path + '/source'
+    enitites_path = '{}/entities'.format(path_source)
 
     with open(enitites_path + '/intent.json') as json_file:
         intents = json.load(json_file)
     
     intent_types = list(map(lambda val: val['value'], intents['data']['values']))
 
-    with open('wit/BotCycle/expressions.json') as json_file:
+    with open('{}/expressions.json'.format(path_source)) as json_file:
         expressions = json.load(json_file)
 
     dataset, entity_types = wit_get_normalized_data(expressions)
@@ -137,14 +141,17 @@ def wit_preprocess():
     folds = [dataset[:fold_size], dataset[fold_size:2 * fold_size],
              dataset[2 * fold_size:3 * fold_size], dataset[3 * fold_size:4 * fold_size], dataset[4 * fold_size:]]
 
+    if not os.path.exists('{}/preprocessed'.format(path)):
+        os.makedirs('{}/preprocessed'.format(path))
+
     for idx, fold in enumerate(folds):
-        with open('wit/fold_{}.json'.format(idx + 1), 'w') as outfile:
+        with open('{}/preprocessed/fold_{}.json'.format(path, idx + 1), 'w') as outfile:
             json.dump(fold.tolist(), outfile)
 
-    with open('wit/intent_types.json', 'w') as outfile:
+    with open('{}/preprocessed/intent_types.json'.format(path), 'w') as outfile:
         json.dump(intent_types, outfile)
 
-    with open('wit/entity_types.json', 'w') as outfile:
+    with open('{}/preprocessed/entity_types.json'.format(path), 'w') as outfile:
         json.dump(entity_types, outfile)
 
 
@@ -175,4 +182,5 @@ def wit_get_normalized_data(expressions):
 
 
 atis_preprocess()
-wit_preprocess()
+wit_preprocess('wit_en')
+wit_preprocess('wit_it')

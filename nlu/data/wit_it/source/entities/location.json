@@ -1,0 +1,13 @@
+{
+  "data" : {
+    "lookups" : [
+      "free-text"
+    ],
+    "name" : "location",
+    "lang" : "it",
+    "exotic" : false,
+    "id" : "location",
+    "doc" : "Location, place, address.",
+    "builtin" : true
+  }
+}
