@@ -1,5 +1,6 @@
 models/
 other/
+glove_wiki_it/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
