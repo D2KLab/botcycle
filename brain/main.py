@@ -15,6 +15,8 @@ load_dotenv(find_dotenv())
 
 from botcycle import botcycle, persistence
 
+LANGUAGE = os.environ.get('BOT_LANGUAGE', 'EN')
+
 outgoing_messages = Queue()
 
 
@@ -88,7 +90,7 @@ async def main():
         time.sleep(2)
 
 
-websocket_path = os.environ.get('WEBSOCKET_PATH', 'main')
+websocket_path = LANGUAGE + '/' + os.environ.get('WEBSOCKET_PATH', 'main')
 websocket_token = os.environ.get(
     'WEBSOCKET_TOKEN', None)
 # the websocket token is compulsory
@@ -102,6 +104,7 @@ ws_proto = os.environ.get('WS_PROTO', 'wss')
 
 websocket_location = '{}://{}/{}?token={}'.format(
     ws_proto, botkit_location, websocket_path, websocket_token)
+#print(websocket_location)
 
 """
 The job_thread will execute this function, that every 5 seconds checks

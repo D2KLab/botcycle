@@ -23,8 +23,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=0
       - MONGODB_URI=mongodb://mongodb/botcycle_it
-      - BOT_LANGUAGE=IT  
-      - BOTKIT_LOCATION=botcycle-it.herokuapp.com
+      - BOT_LANGUAGE=IT
 
 #
 #  slack_brain:
@@ -49,5 +48,9 @@ services:
       - "27017:27017"
     volumes:
       - mongo_storage_volume:/data/db
+      # this shared folder will contain exported database in json
+      - ./nlu/data/exported:/exported
+      # provide to the container the script for exporting the database
+      - ./nlu/data/export_mongo.sh:/export_mongo.sh
 volumes:
   mongo_storage_volume:
