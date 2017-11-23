@@ -25,7 +25,7 @@ def accuracy_score(true_data, pred_data, true_length=None):
 
 
 def get_data_from_sequence_batch(true_batch, pred_batch, padding_token):
-    """从序列的batch中提取数据：
+    """Extract data from a batch of sequences：
     [[3,1,2,0,0,0],[5,2,1,4,0,0]] -> [3,1,2,5,2,1,4]"""
     true_ma = ma.masked_equal(true_batch, padding_token)
     pred_ma = ma.masked_array(pred_batch, true_ma.mask)

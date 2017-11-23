@@ -47,7 +47,7 @@ def train(is_debug=False):
         mean_loss = 0.0
         train_loss = 0.0
         for i, batch in enumerate(getBatch(batch_size, index_train)):
-            # 执行一个batch的训练
+            # perform a batch of training
             _, loss, decoder_prediction, intent, mask, slot_W = model.step(sess, "train", batch)
             # if i == 0:
             #     index = 0
@@ -75,7 +75,7 @@ def train(is_debug=False):
         train_loss /= (i + 1)
         print("[Epoch {}] Average train loss: {}".format(epoch, train_loss))
 
-        # 每训一个epoch，测试一次
+        # test each epoch once
         pred_slots = []
         for j, batch in enumerate(getBatch(batch_size, index_test)):
             decoder_prediction, intent = model.step(sess, "test", batch)

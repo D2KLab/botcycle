@@ -21,7 +21,7 @@ class Model:
         self.epoch_num = epoch_num
         self.encoder_inputs = tf.placeholder(tf.int32, [input_steps, batch_size],
                                              name='encoder_inputs')
-        # 每句输入的实际长度，除了padding
+        # Enter the actual length of each sentence, in addition to padding
         self.encoder_inputs_actual_length = tf.placeholder(tf.int32, [batch_size],
                                                            name='encoder_inputs_actual_length')
         self.decoder_targets = tf.placeholder(tf.int32, [batch_size, input_steps],
@@ -38,11 +38,11 @@ class Model:
 
         # Encoder
 
-        # 使用单个LSTM cell
+        # Use a single LSTM cell
         encoder_f_cell = LSTMCell(self.hidden_size)
         encoder_b_cell = LSTMCell(self.hidden_size)
         # encoder_inputs_time_major = tf.transpose(self.encoder_inputs_embedded, perm=[1, 0, 2])
-        # 下面四个变量的尺寸：T*B*D，T*B*D，B*D，B*D
+        # The size of the following four variables：T*B*D，T*B*D，B*D，B*D
         (encoder_fw_outputs, encoder_bw_outputs), (encoder_fw_final_state, encoder_bw_final_state) = \
             tf.nn.bidirectional_dynamic_rnn(cell_fw=encoder_f_cell,
                                             cell_bw=encoder_b_cell,
@@ -74,7 +74,7 @@ class Model:
                                dtype=tf.float32, name="intent_W")
         intent_b = tf.Variable(tf.zeros([self.intent_size]), dtype=tf.float32, name="intent_b")
 
-        # 求intent
+        # Seek intent
         intent_logits = tf.add(tf.matmul(encoder_final_state_h, intent_W), intent_b)
         # intent_prob = tf.nn.softmax(intent_logits)
         self.intent = tf.argmax(intent_logits, axis=1)
@@ -92,7 +92,7 @@ class Model:
             return initial_elements_finished, initial_input
 
         def sample_fn(time, outputs, state):
-            # 选择logit最大的下标作为sample
+            # Logit argmax as a sample
             print("outputs", outputs)
             # output_logits = tf.add(tf.matmul(outputs, self.slot_W), self.slot_b)
             # print("slot output_logits: ", output_logits)
@@ -101,9 +101,9 @@ class Model:
             return prediction_id
 
         def next_inputs_fn(time, outputs, state, sample_ids):
-            # 上一个时间节点上的输出类别，获取embedding再作为下一个时间节点的输入
+            # The output category on the last time node, get embedding and then enter as the next time node
             pred_embedding = tf.nn.embedding_lookup(self.embeddings, sample_ids)
-            # 输入是h_i+o_{i-1}+c_i
+            # The input is h_i+o_{i-1}+c_i
             next_input = tf.concat((pred_embedding, encoder_outputs[time]), 1)
             elements_finished = (time >= decoder_lengths)  # this operation produces boolean tensor of [batch_size]
             all_finished = tf.reduce_all(elements_finished)  # -> boolean scalar
@@ -146,12 +146,12 @@ class Model:
         self.decoder_targets_time_majored = tf.transpose(self.decoder_targets, [1, 0])
         self.decoder_targets_true_length = self.decoder_targets_time_majored[:decoder_max_steps]
         print("decoder_targets_true_length: ", self.decoder_targets_true_length)
-        # 定义mask，使padding不计入loss计算
+        # Define mask so padding does not count towards loss calculation
         self.mask = tf.to_float(tf.not_equal(self.decoder_targets_true_length, 0))
-        # 定义slot标注的损失
+        # Define slot marked loss
         loss_slot = tf.contrib.seq2seq.sequence_loss(
             outputs.rnn_output, self.decoder_targets_true_length, weights=self.mask)
-        # 定义intent分类的损失
+        # Define intent category loss
         cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
             labels=tf.one_hot(self.intent_targets, depth=self.intent_size, dtype=tf.float32),
             logits=intent_logits)
