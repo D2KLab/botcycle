@@ -1,17 +1,17 @@
 # coding=utf-8
 # @author: cer
+import sys
 import tensorflow as tf
 from tensorflow.contrib import layers
 import numpy as np
 from tensorflow.contrib.rnn import LSTMCell, LSTMStateTuple
-import sys
 from .embeddings import EmbeddingsFromScratch, FixedEmbeddings
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 class Model:
     def __init__(self, input_steps, embedding_size, hidden_size, vocab_size, slot_size,
-                 intent_size, epoch_num, train_data_ed, batch_size=16, n_layers=1):
+                 intent_size, epoch_num, vocabs, batch_size=16, n_layers=1):
         self.input_steps = input_steps
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
@@ -31,30 +31,21 @@ class Model:
         self.intent_targets = tf.placeholder(tf.string, [batch_size],
                                              name='intent_targets')
 
-        self.train_data_ed = train_data_ed
+        self.vocabs = vocabs
 
     def build(self):
 
-        # collect the input vocabulary, the intent vocabulary and the slot vocabulary
-        seq_in, _, seq_out, intent = list(zip(*self.train_data_ed))
-        vocab = set(flatten(seq_in))
-        print('vocab length', len(vocab))
-        # removing duplicated but keeping the order
-        v = ['<PAD>','<SOS>', '<EOS>'] + list(vocab)
-        vocab = sorted(set(v), key=lambda x: v.index(x))
-        s = ['<PAD>', '<EOS>'] + flatten(seq_out)
-        slot_tag = sorted(set(s), key=lambda x: s.index(x))
-        intent_tag = set(intent)
+        input_vocab, slot_vocab, intent_vocab = self.vocabs
         # then create the embeddings and mapper for each one of them
 
         self.input_embedding_size = 300
+        # choose if input words are trained as part of the model from scratch, or come precomputed
         self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size)
-        #self.wordsEmbedder = EmbeddingsFromScratch(v, self.embedding_size)
-        self.slotEmbedder = EmbeddingsFromScratch(slot_tag, self.embedding_size)
-        self.intentEmbedder = EmbeddingsFromScratch(intent_tag, self.embedding_size)
+        #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
+        self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, self.embedding_size)
+        self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, self.embedding_size)
 
-        #self.embeddings = tf.Variable(tf.random_uniform([self.vocab_size, self.embedding_size],
-        #                                                -0.1, 0.1), dtype=tf.float32, name="embedding")
+        # the embedded inputs
         self.encoder_inputs_embedded = self.wordsEmbedder.get_word_embeddings(self.words_inputs)
 
         # Encoder

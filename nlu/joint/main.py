@@ -1,11 +1,13 @@
 # coding=utf-8
 # @author: cer
+import random
 import tensorflow as tf
-from .data import *
-# from model import Model
-from .model import Model
-from .my_metrics import *
 from tensorflow.python import debug as tf_debug
+import numpy as np
+
+from . import data
+from .model import Model
+from . import metrics
 
 input_steps = 50
 embedding_size = 64
@@ -18,9 +20,9 @@ intent_size = 22
 epoch_num = 20
 
 
-def get_model(train_data_ed):
+def get_model(vocabs):
     model = Model(input_steps, embedding_size, hidden_size, vocab_size, slot_size,
-                 intent_size, epoch_num, train_data_ed, batch_size, n_layers)
+                 intent_size, epoch_num, vocabs, batch_size, n_layers)
     model.build()
     return model
 
@@ -28,15 +30,12 @@ def get_model(train_data_ed):
 def train(is_debug=False):
     train_data = open("data/atis/source/atis-2.train.w-intent.iob", "r").readlines()
     test_data = open("data/atis/source/atis-2.dev.w-intent.iob", "r").readlines()
-    train_data_ed = data_pipeline(train_data)
-    test_data_ed = data_pipeline(test_data)
-    #word2index, index2word, slot2index, index2slot, intent2index, index2intent = \
-    #    get_info_from_training_data(train_data_ed)
-
-    #index_train = to_index(train_data_ed, word2index, slot2index, intent2index)
-    #index_test = to_index(test_data_ed, word2index, slot2index, intent2index)
-
-    model = get_model(train_data_ed)
+    train_data_ed = data.data_pipeline(train_data)
+    test_data_ed = data.data_pipeline(test_data)
+    # get the vocabularies for input, slot and intent
+    vocabs = data.get_vocabularies(train_data_ed)
+    # and get a model for them
+    model = get_model(vocabs)
     sess = tf.Session()
     if is_debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)
@@ -52,7 +51,7 @@ def train(is_debug=False):
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
-        for i, batch in enumerate(getBatch(batch_size, train_data_ed)):
+        for i, batch in enumerate(data.getBatch(batch_size, train_data_ed)):
             # perform a batch of training
             _, loss, decoder_prediction, intent, mask, slot_W = model.step(sess, "train", batch)
             # if i == 0:
@@ -85,7 +84,7 @@ def train(is_debug=False):
         pred_slots = []
         pred_intents = []
         true_intents = []
-        for j, batch in enumerate(getBatch(batch_size, test_data_ed)):
+        for j, batch in enumerate(data.getBatch(batch_size, test_data_ed)):
             decoder_prediction, intent = model.step(sess, "test", batch)
             decoder_prediction = np.transpose(decoder_prediction, [1, 0])
             if j == 0:
@@ -110,45 +109,22 @@ def train(is_debug=False):
             true_slot = true_slot[:, :slot_pred_length]
             # print(np.shape(true_slot), np.shape(decoder_prediction))
             # print(true_slot, decoder_prediction)
-            slot_acc = accuracy_score(true_slot, decoder_prediction, true_length)
-            intent_acc = accuracy_score(list(zip(*batch))[3], intent)
+            slot_acc = metrics.accuracy_score(true_slot, decoder_prediction, true_length)
+            intent_acc = metrics.accuracy_score(list(zip(*batch))[3], intent)
             print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
         true_slots_a = np.array(list(zip(*test_data_ed))[2])[:pred_slots_a.shape[0]]
-        f1_intents = f1_for_intents(pred_intents, true_intents)
-        f1_slots = f1_for_sequence_batch(true_slots_a, pred_slots_a)
+        f1_intents = metrics.f1_for_intents(pred_intents, true_intents)
+        f1_slots = metrics.f1_for_sequence_batch(true_slots_a, pred_slots_a)
         # print("true_slots_a: ", true_slots_a.shape)
         print("F1 score SEQUENCE for epoch {}: {}".format(epoch, f1_slots))
         print("F1 score INTENTS for epoch {}: {}".format(epoch, f1_intents))
         history['intent'][epoch] = f1_intents
         history['slot'][epoch] = f1_slots
 
-    plot_f1_history('f1.png', history)
-
-
-def test_data():
-    train_data = open("dataset/atis-2.train.w-intent.iob", "r").readlines()
-    test_data = open("dataset/atis-2.dev.w-intent.iob", "r").readlines()
-    train_data_ed = data_pipeline(train_data)
-    test_data_ed = data_pipeline(test_data)
-    word2index, index2word, slot2index, index2slot, intent2index, index2intent = \
-        get_info_from_training_data(train_data_ed)
-    # print("slot2index: ", slot2index)
-    # print("index2slot: ", index2slot)
-    index_train = to_index(train_data_ed, word2index, slot2index, intent2index)
-    index_test = to_index(test_data_ed, word2index, slot2index, intent2index)
-    batch = next(getBatch(batch_size, index_test))
-    unziped = list(zip(*batch))
-    print("word num: ", len(word2index.keys()), "slot num: ", len(slot2index.keys()), "intent num: ",
-          len(intent2index.keys()))
-    print(np.shape(unziped[0]), np.shape(unziped[1]), np.shape(unziped[2]), np.shape(unziped[3]))
-    print(np.transpose(unziped[0], [1, 0]))
-    print(unziped[1])
-    print(np.shape(list(zip(*index_test))[2]))
+    metrics.plot_f1_history('f1.png', history)
 
 
 if __name__ == '__main__':
-    # train(is_debug=True)
-    # test_data()
     train()

@@ -48,39 +48,22 @@ def data_pipeline(data, length=50):
         data = list(zip(sin, lengths, sout, intent))
     return data
 
-
-def get_info_from_training_data(data):
-    seq_in, seq_out, intent = list(zip(*data))
+def get_vocabularies(train_data):
+    """
+    collect the input vocabulary, the slot vocabulary and the intent vocabulary
+    """
+    # from a list of training examples, get three lists (columns)
+    seq_in, _, seq_out, intent = list(zip(*train_data))
     vocab = set(flatten(seq_in))
-    slot_tag = set(flatten(seq_out))
+    print('vocab length', len(vocab))
+    # removing duplicated but keeping the order
+    v = ['<PAD>','<SOS>', '<EOS>'] + list(vocab)
+    vocab = sorted(set(v), key=lambda x: v.index(x))
+    s = ['<PAD>', '<EOS>'] + flatten(seq_out)
+    slot_tag = sorted(set(s), key=lambda x: s.index(x))
     intent_tag = set(intent)
-    # generate word2index
-    word2index = {'<PAD>': 0, '<UNK>': 1, '<SOS>': 2, '<EOS>': 3}
-    for token in vocab:
-        if token not in word2index.keys():
-            word2index[token] = len(word2index)
 
-    # generate index2word
-    index2word = {v: k for k, v in word2index.items()}
-
-    # generate tag2index
-    tag2index = {'<PAD>': 0, '<UNK>': 1, "O": 2}
-    for tag in slot_tag:
-        if tag not in tag2index.keys():
-            tag2index[tag] = len(tag2index)
-
-    # generate index2tag
-    index2tag = {v: k for k, v in tag2index.items()}
-
-    # generate intent2index
-    intent2index = {'<UNK>': 0}
-    for ii in intent_tag:
-        if ii not in intent2index.keys():
-            intent2index[ii] = len(intent2index)
-
-    # generate index2intent
-    index2intent = {v: k for k, v in intent2index.items()}
-    return word2index, index2word, tag2index, index2tag, intent2index, index2intent
+    return vocab, slot_tag, intent_tag
 
 
 def getBatch(batch_size, train_data):
@@ -93,16 +76,3 @@ def getBatch(batch_size, train_data):
         eindex = eindex + batch_size
         sindex = temp
         yield batch
-
-
-def to_index(train, word2index, slot2index, intent2index):
-    new_train = []
-    for sin, sout, intent in train:
-        sin_ix = list(map(lambda i: word2index[i] if i in word2index else word2index["<UNK>"],
-                          sin))
-        true_length = sin.index("<EOS>")
-        sout_ix = list(map(lambda i: slot2index[i] if i in slot2index else slot2index["<UNK>"],
-                           sout))
-        intent_ix = intent2index[intent] if intent in intent2index else intent2index["<UNK>"]
-        new_train.append([sin_ix, true_length, sout_ix, intent_ix])
-    return new_train
