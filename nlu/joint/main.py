@@ -43,6 +43,10 @@ def train(is_debug=False):
     # print("index2slot: ", index2slot)
     index_train = to_index(train_data_ed, word2index, slot2index, intent2index)
     index_test = to_index(test_data_ed, word2index, slot2index, intent2index)
+    history = {
+        'intent': np.zeros((epoch_num)),
+        'slot': np.zeros((epoch_num))
+    }
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
@@ -77,6 +81,8 @@ def train(is_debug=False):
 
         # test each epoch once
         pred_slots = []
+        pred_intents = []
+        true_intents = []
         for j, batch in enumerate(getBatch(batch_size, index_test)):
             decoder_prediction, intent = model.step(sess, "test", batch)
             decoder_prediction = np.transpose(decoder_prediction, [1, 0])
@@ -92,6 +98,10 @@ def train(is_debug=False):
             pred_padded = np.lib.pad(decoder_prediction, ((0, 0), (0, input_steps-slot_pred_length)),
                                      mode="constant", constant_values=0)
             pred_slots.append(pred_padded)
+            #print("pred_intents", pred_intents, "intent", intent)
+            pred_intents.extend(intent)
+            true_intents.extend(list(zip(*batch))[3])
+            #print("true_intents", true_intents)
             # print("slot_pred_length: ", slot_pred_length)
             true_slot = np.array((list(zip(*batch))[2]))
             true_length = np.array((list(zip(*batch))[1]))
@@ -104,8 +114,15 @@ def train(is_debug=False):
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
         true_slots_a = np.array(list(zip(*index_test))[2])[:pred_slots_a.shape[0]]
+        f1_intents = f1_for_intents(pred_intents, true_intents)
+        f1_slots = f1_for_sequence_batch(true_slots_a, pred_slots_a)
         # print("true_slots_a: ", true_slots_a.shape)
-        print("F1 score for epoch {}: {}".format(epoch, f1_for_sequence_batch(true_slots_a, pred_slots_a)))
+        print("F1 score SEQUENCE for epoch {}: {}".format(epoch, f1_slots))
+        print("F1 score INTENTS for epoch {}: {}".format(epoch, f1_intents))
+        history['intent'][epoch] = f1_intents
+        history['slot'][epoch] = f1_slots
+
+    plot_f1_history('f1.png', history)
 
 
 def test_data():

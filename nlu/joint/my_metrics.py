@@ -4,6 +4,7 @@ import numpy as np
 import numpy.ma as ma
 from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
 
 
 def accuracy_score(true_data, pred_data, true_length=None):
@@ -45,3 +46,18 @@ def f1_for_sequence_batch(true_batch, pred_batch, average="micro", padding_token
 def accuracy_for_sequence_batch(true_batch, pred_batch, padding_token=0):
     true, pred = get_data_from_sequence_batch(true_batch, pred_batch, padding_token)
     return accuracy_score(true, pred)
+
+def f1_for_intents(true, pred, average="micro"):
+    return f1_score(true, pred, average=average)
+
+def plot_f1_history(file_name, history):
+    plt.clf()
+    for scores in history.values():
+        plt.plot(scores)
+    
+    plt.legend(list(history.keys()), loc='lower right')
+    plt.title('model f1')
+    plt.ylabel('f1')
+    plt.xlabel('epochs')
+    print(file_name)
+    plt.savefig(file_name)
