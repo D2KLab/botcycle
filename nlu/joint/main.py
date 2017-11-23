@@ -15,34 +15,36 @@ batch_size = 16
 vocab_size = 871
 slot_size = 122
 intent_size = 22
-epoch_num = 50
+epoch_num = 20
 
 
-def get_model():
+def get_model(train_data_ed):
     model = Model(input_steps, embedding_size, hidden_size, vocab_size, slot_size,
-                 intent_size, epoch_num, batch_size, n_layers)
+                 intent_size, epoch_num, train_data_ed, batch_size, n_layers)
     model.build()
     return model
 
 
 def train(is_debug=False):
-    model = get_model()
+    train_data = open("data/atis/source/atis-2.train.w-intent.iob", "r").readlines()
+    test_data = open("data/atis/source/atis-2.dev.w-intent.iob", "r").readlines()
+    train_data_ed = data_pipeline(train_data)
+    test_data_ed = data_pipeline(test_data)
+    #word2index, index2word, slot2index, index2slot, intent2index, index2intent = \
+    #    get_info_from_training_data(train_data_ed)
+
+    #index_train = to_index(train_data_ed, word2index, slot2index, intent2index)
+    #index_test = to_index(test_data_ed, word2index, slot2index, intent2index)
+
+    model = get_model(train_data_ed)
     sess = tf.Session()
     if is_debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)
         sess.add_tensor_filter("has_inf_or_nan", tf_debug.has_inf_or_nan)
     sess.run(tf.global_variables_initializer())
+    sess.run(tf.tables_initializer())
     # print(tf.trainable_variables())
-    train_data = open("data/atis/source/atis-2.train.w-intent.iob", "r").readlines()
-    test_data = open("data/atis/source/atis-2.dev.w-intent.iob", "r").readlines()
-    train_data_ed = data_pipeline(train_data)
-    test_data_ed = data_pipeline(test_data)
-    word2index, index2word, slot2index, index2slot, intent2index, index2intent = \
-        get_info_from_training_data(train_data_ed)
-    # print("slot2index: ", slot2index)
-    # print("index2slot: ", index2slot)
-    index_train = to_index(train_data_ed, word2index, slot2index, intent2index)
-    index_test = to_index(test_data_ed, word2index, slot2index, intent2index)
+
     history = {
         'intent': np.zeros((epoch_num)),
         'slot': np.zeros((epoch_num))
@@ -50,7 +52,7 @@ def train(is_debug=False):
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
-        for i, batch in enumerate(getBatch(batch_size, index_train)):
+        for i, batch in enumerate(getBatch(batch_size, train_data_ed)):
             # perform a batch of training
             _, loss, decoder_prediction, intent, mask, slot_W = model.step(sess, "train", batch)
             # if i == 0:
@@ -83,17 +85,17 @@ def train(is_debug=False):
         pred_slots = []
         pred_intents = []
         true_intents = []
-        for j, batch in enumerate(getBatch(batch_size, index_test)):
+        for j, batch in enumerate(getBatch(batch_size, test_data_ed)):
             decoder_prediction, intent = model.step(sess, "test", batch)
             decoder_prediction = np.transpose(decoder_prediction, [1, 0])
             if j == 0:
                 index = random.choice(range(len(batch)))
                 # index = 0
-                print("Input Sentence        : ", index_seq2word(batch[index][0], index2word))
-                print("Slot Truth            : ", index_seq2slot(batch[index][2], index2slot))
-                print("Slot Prediction       : ", index_seq2slot(decoder_prediction[index], index2slot))
-                print("Intent Truth          : ", index2intent[batch[index][3]])
-                print("Intent Prediction     : ", index2intent[intent[index]])
+                print("Input Sentence        : ", batch[index][0])
+                print("Slot Truth            : ", batch[index][2])
+                print("Slot Prediction       : ", decoder_prediction[index])
+                print("Intent Truth          : ", batch[index][3])
+                print("Intent Prediction     : ", intent[index])
             slot_pred_length = list(np.shape(decoder_prediction))[1]
             pred_padded = np.lib.pad(decoder_prediction, ((0, 0), (0, input_steps-slot_pred_length)),
                                      mode="constant", constant_values=0)
@@ -113,7 +115,7 @@ def train(is_debug=False):
             print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
-        true_slots_a = np.array(list(zip(*index_test))[2])[:pred_slots_a.shape[0]]
+        true_slots_a = np.array(list(zip(*test_data_ed))[2])[:pred_slots_a.shape[0]]
         f1_intents = f1_for_intents(pred_intents, true_intents)
         f1_slots = f1_for_sequence_batch(true_slots_a, pred_slots_a)
         # print("true_slots_a: ", true_slots_a.shape)

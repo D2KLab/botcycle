@@ -20,6 +20,7 @@ def data_pipeline(data, length=50):
     data = [[t[0][1:-1], t[1][1:], t[2]] for t in data]  # remove BOS and EOS, and remove the corresponding annotation sequence corresponding label
     seq_in, seq_out, intent = list(zip(*data))
     sin = []
+    lengths = []
     sout = []
     # padding，end of original sequence and label sequence +<EOS>+n×<PAD>
     for i in range(len(seq_in)):
@@ -32,16 +33,19 @@ def data_pipeline(data, length=50):
             temp = temp[:length]
             temp[-1] = '<EOS>'
         sin.append(temp)
+        true_length = temp.index("<EOS>")
+        lengths.append(true_length)
 
         temp = seq_out[i]
         if len(temp) < length:
+            temp.append('<EOS>')
             while len(temp) < length:
                 temp.append('<PAD>')
         else:
             temp = temp[:length]
             temp[-1] = '<EOS>'
         sout.append(temp)
-        data = list(zip(sin, sout, intent))
+        data = list(zip(sin, lengths, sout, intent))
     return data
 
 

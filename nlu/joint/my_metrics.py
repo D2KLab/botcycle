@@ -28,16 +28,19 @@ def accuracy_score(true_data, pred_data, true_length=None):
 def get_data_from_sequence_batch(true_batch, pred_batch, padding_token):
     """Extract data from a batch of sequences：
     [[3,1,2,0,0,0],[5,2,1,4,0,0]] -> [3,1,2,5,2,1,4]"""
-    true_ma = ma.masked_equal(true_batch, padding_token)
-    pred_ma = ma.masked_array(pred_batch, true_ma.mask)
-    true_ma = true_ma.flatten()
-    pred_ma = pred_ma.flatten()
-    true_ma = true_ma[~true_ma.mask]
-    pred_ma = pred_ma[~pred_ma.mask]
+    true_ma = []
+    pred_ma = []
+    for idx, true in enumerate(true_batch):
+        where = true.tolist()
+        lentgth = where.index(padding_token)
+        true = true[:lentgth]
+        pred = pred_batch[idx][:lentgth]
+        true_ma.extend(true.tolist())
+        pred_ma.extend(pred.tolist())
     return true_ma, pred_ma
 
 
-def f1_for_sequence_batch(true_batch, pred_batch, average="micro", padding_token=0):
+def f1_for_sequence_batch(true_batch, pred_batch, average="micro", padding_token='<PAD>'):
     true, pred = get_data_from_sequence_batch(true_batch, pred_batch, padding_token)
     labels = list(set(true))
     return f1_score(true, pred, labels=labels, average=average)
