@@ -35,6 +35,7 @@ import random
 import spacy
 from spacy.gold import GoldParse
 from spacy.tagger import Tagger
+# from spacy.language import EntityRecognizer
 
 # my modules
 from data import loader
@@ -60,7 +61,12 @@ def train_and_evaluate(train, test, entities_lookup, save=False):
     # collect in the history all the measures while training
     history = {'train': [], 'test': []}
 
-    nlp = spacy.load(SPACY_MODEL_NAME)
+    # TODO don't load spacy native entities
+    nlp = utils.get_nlp(SPACY_MODEL_NAME)
+    #nlp = spacy.load(SPACY_MODEL_NAME, entity=False)
+    #ner = EntityRecognizer(nlp.vocab)
+    #nlp.entity = ner --> doesn't work
+    #nlp.entity = nlp.Defaults.create_entity(nlp) --> doesn't work
 
     train_data = json2spacy_ent(train)
     test_data = json2spacy_ent(test)

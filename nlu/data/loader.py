@@ -10,7 +10,7 @@ def load_data(dataset_name):
     """Returns the data_splitted, entity_types, intent_types.
     
     data_splitted can be [fold1, fold2, fold3, fold4, fold5] or [test, train], look at the size"""
-    path = DATA_PATH + '/' + dataset_name
+    path = DATA_PATH + '/' + dataset_name + '/preprocessed'
     with open(path + '/entity_types.json') as json_file:
         entity_types = json.load(json_file)
 

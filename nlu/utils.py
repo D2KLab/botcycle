@@ -1,9 +1,12 @@
 import math
 import os
+import spacy
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from data import loader
+
+MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
 def f1_score(y_true, y_pred):
     from keras import backend as K
@@ -40,6 +43,18 @@ def get_reverse_lookup(values):
     for index, value in enumerate(values):
         reverse_lookup[value] = index
     return reverse_lookup
+
+def get_nlp(language, model_path=None, embedding_loc=None):
+    """Loads the Spacy NLP. The only required parameter is language.
+    model_path specifies the directory from where to load the model.
+    embedding_loc if specified overrides the word embeddings"""
+    nlp = spacy.load(language, path=model_path)
+    if language == 'it' and not embedding_loc:
+        # load the pretrained custom word vectors
+        embedding_loc = MY_PATH + '/data/embeddings/glove_wiki_it/pretrained.bin'
+    if embedding_loc:
+        nlp.vocab.load_vectors_from_bin_loc(embedding_loc)
+    return nlp
 
 def encode_sentence(nlp, sentence, embedding_dim=300):
     """convert from sentences to glove matrix"""

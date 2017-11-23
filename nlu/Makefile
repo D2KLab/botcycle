@@ -19,7 +19,7 @@ train_atis_intents:
 	DATASET=atis MODEL_NAME=bidirectional_gru MAX_ITERATIONS=50 python -m intent_classifier.model_rnn
 
 train_wit_intents:
-	DATASET=wit_en MODEL_NAME=bidirectional_gru MAX_ITERATIONS=100 python -m intent_classifier.model_rnn
+	DATASET=wit_en SPACY_MODEL_NAME=en MODEL_NAME=bidirectional_gru MAX_ITERATIONS=100 python -m intent_classifier.model_rnn
 
 test_wit:
 	INTENT_MODEL_PATH=`exec ls -d1 intent_classifier/models/wit_en/** | sort -n | tail -1` DATASET=wit LANG_MODEL_PATH=spacy_entities/models/wit python -m intent_classifier.test_intent

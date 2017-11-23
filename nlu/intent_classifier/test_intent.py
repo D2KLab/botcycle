@@ -16,12 +16,12 @@ MAX_SEQUENCE_LENGTH = 100
 EMBEDDING_DIM = 300
 
 DATASET = os.environ['DATASET']
+LANGUAGE = os.environ.get('LANGUAGE', 'en')
 LANG_MODEL_PATH = os.environ.get('LANG_MODEL_PATH', None)
 INTENT_MODEL_PATH = os.environ.get('INTENT_MODEL_PATH') + '/model.h5'
 
 model = load_model(INTENT_MODEL_PATH, custom_objects={'f1_score': utils.f1_score})
-nlp = spacy.load('en', path=LANG_MODEL_PATH)
-#nlp.vocab.load_vectors_from_bin_loc(TODO if necessary)
+nlp = utils.get_nlp(LANGUAGE, LANG_MODEL_PATH)
 
 print('Test your sentences.')
 print('> ', end='', flush=True)

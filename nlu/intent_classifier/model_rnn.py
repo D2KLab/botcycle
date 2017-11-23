@@ -1,6 +1,5 @@
 import json
 import os
-import spacy
 import time
 import numpy as np
 
@@ -24,6 +23,7 @@ import utils
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.environ['DATASET']
+SPACY_MODEL_NAME = os.environ.get('SPACY_MODEL_NAME', 'en')
 MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', 40))
 MODEL_OUTPUT_FOLDER = os.environ.get('MODEL_OUTPUT_FOLDER', '{}/models/{}/{}'.format(MY_PATH, DATASET, str(time.time())))
 
@@ -83,6 +83,8 @@ def bidirectional_gru(len_output):
     sequence_input = Input(
         shape=(MAX_SEQUENCE_LENGTH, EMBEDDING_DIM,), dtype='float32')
     l_lstm = Bidirectional(GRU(100))(sequence_input)
+    # TODO look call(input_at_t, states_at_t) method, returning (output_at_t, states_at_t_plus_1)
+    # also look at switch(condition, then_expression, else_expression) for deciding when to feed previous state
     preds = Dense(len_output, activation='softmax')(l_lstm)
     model = Model(sequence_input, preds)
     model.compile(loss='categorical_crossentropy',
@@ -181,5 +183,5 @@ def train_and_evaluate(train, test, intents_lookup, save=False):
     return history, f1_test, f1_train
 
 np.random.seed(0)
-nlp = spacy.load('en')
+nlp = utils.get_nlp(SPACY_MODEL_NAME)
 utils.main_flow_intents(DATASET, train_and_evaluate, MODEL_OUTPUT_FOLDER)
