@@ -55,7 +55,6 @@ def get_vocabularies(train_data):
     # from a list of training examples, get three lists (columns)
     seq_in, _, seq_out, intent = list(zip(*train_data))
     vocab = set(flatten(seq_in))
-    print('vocab length', len(vocab))
     # removing duplicated but keeping the order
     v = ['<PAD>','<SOS>', '<EOS>'] + list(vocab)
     vocab = sorted(set(v), key=lambda x: v.index(x))

@@ -8,7 +8,7 @@ class EmbeddingsFromScratch(object):
         vocab is a list of words
         """
         vocab = list(vocab) + ['<UNK>']
-        self.vocab_size = tf.size(vocab, out_type=tf.int64)
+        self.vocab_size = len(vocab)
         vocab_tensor = tf.constant(vocab)
         self.word2index = tf.contrib.lookup.index_table_from_tensor(vocab_tensor, default_value=self.vocab_size - 1)
         self.index2word = tf.contrib.lookup.index_to_string_table_from_tensor(vocab_tensor, default_value='<UNK>')
@@ -85,24 +85,20 @@ class FixedEmbeddings(object):
         self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
 
     def get_word_embeddings(self, words):
-        print('words', words)
 
         def spacy_wrapper(words_numpy):
-            #print('spacy_wrapper called')
             embeddings_values = np.zeros([words_numpy.shape[0], words_numpy.shape[1], self.embedding_size], dtype=np.float32)
             for j, column in enumerate(words_numpy.T):
                 # build the sentence
-                #print(column)
                 sentence = ' '.join([w.decode('utf-8') for w in column])
                 sentence = sentence.replace('<','')
                 sentence = sentence.replace('>','')
                 # apostrophe problem -> custom tokenizer
                 doc = self.nlp(sentence)
                 #assert len(doc) is column.size
+                # TODO problems when PAD or EOS are actual words!!
                 for i, w in enumerate(doc):
-                    #print('i',i,'j',j,'w',w)
                     embeddings_values[i,j,:] = w.vector
-            #print(embeddings_values.shape)
             return embeddings_values
 
         result = tf.py_func(spacy_wrapper, [words], tf.float32, stateful=False)

@@ -1,5 +1,3 @@
-# coding=utf-8
-# @author: cer
 import sys
 import tensorflow as tf
 from tensorflow.contrib import layers
@@ -10,35 +8,36 @@ from .embeddings import EmbeddingsFromScratch, FixedEmbeddings
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 class Model:
-    def __init__(self, input_steps, embedding_size, hidden_size, vocab_size, slot_size,
-                 intent_size, epoch_num, vocabs, batch_size=16, n_layers=1):
+    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, batch_size=16):
+        # save the parameters
         self.input_steps = input_steps
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
-        self.n_layers = n_layers
         self.batch_size = batch_size
-        self.vocab_size = vocab_size
-        self.slot_size = slot_size
-        self.intent_size = intent_size
-        self.epoch_num = epoch_num
-        self.words_inputs = tf.placeholder(tf.string, [input_steps, batch_size], name="word_inputs")
-        #self.encoder_inputs = tf.placeholder(tf.int32, [input_steps, batch_size], name='encoder_inputs')
-        # Enter the actual length of each sentence, in addition to padding
-        self.encoder_inputs_actual_length = tf.placeholder(tf.int32, [batch_size],
-                                                           name='encoder_inputs_actual_length')
-        self.decoder_targets = tf.placeholder(tf.string, [batch_size, input_steps],
-                                              name='decoder_targets')
-        self.intent_targets = tf.placeholder(tf.string, [batch_size],
-                                             name='intent_targets')
-
+        # also save the vocabularies, used by embedders
         self.vocabs = vocabs
+        self.input_embedding_size = 300
+
+        # define the placeholders for inputs to the graph
+        # the input words are a tensor of type string.
+        # In this way the one_hot encoding stuff and embeddings are managed by the embedding classes.
+        # This makes the input always to be strings, both when the embeddings are part of the model
+        # both when are precomputed
+        self.words_inputs = tf.placeholder(tf.string, [input_steps, batch_size], name="word_inputs")
+        # This placeholder is for the actual length of each sentence, used in decoding
+        self.encoder_inputs_actual_length = tf.placeholder(tf.int32, [batch_size], name='encoder_inputs_actual_length')
+        # Placeholder for the output sequence, used in train mode as truth value
+        self.decoder_targets = tf.placeholder(tf.string, [batch_size, input_steps], name='decoder_targets')
+        # Placeholder for the output intent, used in train mode as truth value
+        self.intent_targets = tf.placeholder(tf.string, [batch_size], name='intent_targets')
+        
 
     def build(self):
-
+        # unpack the vocabularies
         input_vocab, slot_vocab, intent_vocab = self.vocabs
-        # then create the embeddings and mapper for each one of them
 
-        self.input_embedding_size = 300
+        # then create the embeddings and mapper (one-hot index to words and viceversa) for each one of them
+        # For input words embedder, can choose between EmbeddingsFromScratch, FixedEmbeddings:
         # choose if input words are trained as part of the model from scratch, or come precomputed
         self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size)
         #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
@@ -50,10 +49,10 @@ class Model:
 
         # Encoder
 
-        # Use a single LSTM cell
+        # Definition of cells used for bidirectional RNN encoder
         encoder_f_cell = LSTMCell(self.hidden_size)
         encoder_b_cell = LSTMCell(self.hidden_size)
-        # encoder_inputs_time_major = tf.transpose(self.encoder_inputs_embedded, perm=[1, 0, 2])
+        # Bidirectional RNN
         # The size of the following four variables：T*B*D，T*B*D，B*D，B*D
         (encoder_fw_outputs, encoder_bw_outputs), (encoder_fw_final_state, encoder_bw_final_state) = \
             tf.nn.bidirectional_dynamic_rnn(cell_fw=encoder_f_cell,
@@ -61,92 +60,109 @@ class Model:
                                             inputs=self.encoder_inputs_embedded,
                                             sequence_length=self.encoder_inputs_actual_length,
                                             dtype=tf.float32, time_major=True)
-        encoder_outputs = tf.concat((encoder_fw_outputs, encoder_bw_outputs), 2)
 
+        # Encoder outputs
+
+        # The encoder outputs are the concatenation of the outputs of each direction.
+        # The concatenation is done on the third dimension. Dimensions: (time, batch, hidden_size)
+        encoder_outputs = tf.concat((encoder_fw_outputs, encoder_bw_outputs), 2)
+        # Also concatenate things for the final state. Dimensions: (batch, hidden_size)
         encoder_final_state_c = tf.concat(
             (encoder_fw_final_state.c, encoder_bw_final_state.c), 1)
-
         encoder_final_state_h = tf.concat(
             (encoder_fw_final_state.h, encoder_bw_final_state.h), 1)
+        self.encoder_final_state = LSTMStateTuple(c=encoder_final_state_c, h=encoder_final_state_h)
 
-        self.encoder_final_state = LSTMStateTuple(
-            c=encoder_final_state_c,
-            h=encoder_final_state_h
-        )
-        print("encoder_outputs: ", encoder_outputs)
-        print("encoder_outputs[0]: ", encoder_outputs[0])
-        print("encoder_final_state_c: ", encoder_final_state_c)
 
-        # Decoder
-        decoder_lengths = self.encoder_inputs_actual_length
-        self.slot_W = tf.Variable(tf.random_uniform([self.hidden_size * 2, self.slot_size], -1, 1),
-                             dtype=tf.float32, name="slot_W")
-        self.slot_b = tf.Variable(tf.zeros([self.slot_size]), dtype=tf.float32, name="slot_b")
-        intent_W = tf.Variable(tf.random_uniform([self.hidden_size * 2, self.intent_size], -0.1, 0.1),
+        # Intent output
+        
+        # Define the weights and biases to perform the output projection on the intent output
+        intent_W = tf.Variable(tf.random_uniform([self.hidden_size * 2, self.intentEmbedder.vocab_size], -0.1, 0.1),
                                dtype=tf.float32, name="intent_W")
-        intent_b = tf.Variable(tf.zeros([self.intent_size]), dtype=tf.float32, name="intent_b")
+        intent_b = tf.Variable(tf.zeros([self.intentEmbedder.vocab_size]), dtype=tf.float32, name="intent_b")
 
-        # Seek intent
+        # perform the feed-forward layer
         intent_logits = tf.add(tf.matmul(encoder_final_state_h, intent_W), intent_b)
-        # intent_prob = tf.nn.softmax(intent_logits)
+        # take the argmax
         intent_id = tf.argmax(intent_logits, axis=1)
+        # and translate to the corresponding string
         self.intent = self.intentEmbedder.get_words_from_indexes(intent_id)
 
-        # generate a tensor of batch_size * 'O' for start of sentence
-        sos_time_slice = tf.constant(np.tile('O', self.batch_size))
-        sos_step_embedded = self.slotEmbedder.get_word_embeddings(sos_time_slice)
-        # pad_time_slice = tf.zeros([self.batch_size], dtype=tf.int32, name='PAD')
-        # pad_step_embedded = tf.nn.embedding_lookup(self.embeddings, pad_time_slice)
-        pad_time_slice = tf.constant(np.tile('<PAD>', self.batch_size))
-        pad_step_embedded = self.slotEmbedder.get_word_embeddings(pad_time_slice)
-        print("pad_step_embedded", pad_step_embedded)
 
+        # Slot label decoder
+
+        decoder_lengths = self.encoder_inputs_actual_length
+
+        # Initial values to provide to the decoding stage
+        # generate a tensor of batch_size * 'O' for start of sentence.
+        # This value will be passed to first iteration of decoding in place of the previous slot label
+        sos_time_slice = tf.constant(np.tile('O', self.batch_size))
+
+        # the following functions are used by the CustomHelper
         def initial_fn():
+            """
+            defines how to provide the input to the decoder RNN cell at time 0
+            """
             initial_elements_finished = (0 >= decoder_lengths)  # all False at the initial step
+            # get the embedded representation of the initial fake previous-output-label
+            sos_step_embedded = self.slotEmbedder.get_word_embeddings(sos_time_slice)
+            # then concatenate it with the encoder output at time 0
             initial_input = tf.concat((sos_step_embedded, encoder_outputs[0]), 1)
             return initial_elements_finished, initial_input
 
         def sample_fn(time, outputs, state):
-            # Logit argmax as a sample
-            print("outputs", outputs)
-            # output_logits = tf.add(tf.matmul(outputs, self.slot_W), self.slot_b)
-            # print("slot output_logits: ", output_logits)
-            # prediction_id = tf.argmax(output_logits, axis=1)
+            """
+            defines how to sample from the output of the RNN cell
+            """
+            # take the argmax from the logits
             prediction_id = tf.to_int32(tf.argmax(outputs, axis=1))
             return prediction_id
 
         def next_inputs_fn(time, outputs, state, sample_ids):
-            # The output category on the last time node, get embedding and then enter as the next time node
+            """
+            defines how to provide the input to the RNN cell at timesteps>0
+            """
+            # From the last output, represented by sample_ids, get its embedded value
             pred_embedding = self.slotEmbedder.get_word_embeddings_from_ids(sample_ids)
-            # The input is h_i+o_{i-1}+c_i
-            next_input = tf.concat((pred_embedding, encoder_outputs[time]), 1)
+            # Now concatenate it with the output of the decoder at the current timestep.
+            # This is the new input to the RNN cell
+            next_inputs = tf.concat((pred_embedding, encoder_outputs[time]), 1)
+            # Establish which samples in the batch have already finished the decoding
             elements_finished = (time >= decoder_lengths)  # this operation produces boolean tensor of [batch_size]
-            all_finished = tf.reduce_all(elements_finished)  # -> boolean scalar
-            next_inputs = tf.cond(all_finished, lambda: pad_step_embedded, lambda: next_input)
-            #next_inputs.set_shape(next_input.shape)
-            next_inputs = next_input
+            # don't modify the state
             next_state = state
             return elements_finished, next_inputs, next_state
 
+        # Build the helper with the declared functions
         my_helper = tf.contrib.seq2seq.CustomHelper(initial_fn, sample_fn, next_inputs_fn)
 
+        # Decoding function
         def decode(helper, scope, reuse=None):
+            # define an isolated scope
             with tf.variable_scope(scope, reuse=reuse):
+                # Get the memory representation (for the attention) by making the
+                # encoder outputs dimensions from (time, batch, hidden_size) to (batch, time, hidden_size)
                 memory = tf.transpose(encoder_outputs, [1, 0, 2])
+                # Use the BahdanauAttention on the memory
                 attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
                     num_units=self.hidden_size, memory=memory,
                     memory_sequence_length=self.encoder_inputs_actual_length)
+                # The decoding LSTM cell
                 cell = tf.contrib.rnn.LSTMCell(num_units=self.hidden_size * 2)
+                # that gets wrapped inside the attention mechanism
                 attn_cell = tf.contrib.seq2seq.AttentionWrapper(
                     cell, attention_mechanism, attention_layer_size=self.hidden_size)
+                # and gets wrapped inside a output projection wrapper (weights+biases),
+                # to have an output with logits on the slot labels dimension
                 out_cell = tf.contrib.rnn.OutputProjectionWrapper(
-                    attn_cell, self.slot_size, reuse=reuse
+                    attn_cell, self.slotEmbedder.vocab_size, reuse=reuse
                 )
+                # Define the decoder by combining the helper with the RNN cell
                 decoder = tf.contrib.seq2seq.BasicDecoder(
                     cell=out_cell, helper=helper,
                     initial_state=out_cell.zero_state(
                         dtype=tf.float32, batch_size=self.batch_size))
-                # initial_state=encoder_final_state)
+                # And finally perform the decode
                 final_outputs, final_state, final_sequence_lengths = tf.contrib.seq2seq.dynamic_decode(
                     decoder=decoder, output_time_major=True,
                     impute_finished=True, maximum_iterations=self.input_steps
@@ -154,53 +170,57 @@ class Model:
                 return final_outputs
 
         outputs = decode(my_helper, 'decode')
-        print("outputs: ", outputs)
-        print("outputs.rnn_output: ", outputs.rnn_output)
-        print("outputs.sample_id: ", outputs.sample_id)
-        # weights = tf.to_float(tf.not_equal(outputs[:, :-1], 0))
+        
+        # Now from the slot decoder outputs, get the corresponding output word (slot label, from ids to words)
         self.decoder_prediction = self.slotEmbedder.get_words_from_indexes(tf.to_int64(outputs.sample_id))
-        decoder_max_steps, decoder_batch_size, decoder_dim = tf.unstack(tf.shape(outputs.rnn_output))
+        # Get some informations on the performed decoding: the maximum number of steps done in the batch
+        decoder_max_steps, _, _ = tf.unstack(tf.shape(outputs.rnn_output))
+
+
+        # Losses requirements: get comparable tensors from graph and from target values
+
+        # For slot filling
+        # Now on the decoder targets (used in training only), get their ids (from words to ids)
         decoder_targets_ids = self.slotEmbedder.get_indexes_from_words_tensor(self.decoder_targets)
+        # Swap the dimensions: from (batch, time) to (time, batch)
         self.decoder_targets_time_majored = tf.transpose(decoder_targets_ids, [1, 0])
+        # Truncate them on the actual decoding maximum number of steps (to have same length as decoder outputs)
         self.decoder_targets_true_length = self.decoder_targets_time_majored[:decoder_max_steps]
-        print("decoder_targets_true_length: ", self.decoder_targets_true_length)
         # Define mask so padding does not count towards loss calculation
         self.mask = tf.to_float(tf.not_equal(self.decoder_targets_true_length, 0))
-        # Define slot marked loss
+
+        # For the intent
+        intent_ids_targets = self.intentEmbedder.get_indexes_from_words_tensor(self.intent_targets)
+
+
+        # Losses definitions
+        # for the slots, using builtin sequence_loss
         loss_slot = tf.contrib.seq2seq.sequence_loss(
             outputs.rnn_output, self.decoder_targets_true_length, weights=self.mask)
-        # Define intent category loss
-        intent_ids_targets = self.intentEmbedder.get_indexes_from_words_tensor(self.intent_targets)
+        # For the intent, using cross entropy
         cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
-            labels=tf.one_hot(intent_ids_targets, depth=self.intent_size, dtype=tf.float32),
+            labels=tf.one_hot(intent_ids_targets, depth=self.intentEmbedder.vocab_size, dtype=tf.float32),
             logits=intent_logits)
         loss_intent = tf.reduce_mean(cross_entropy)
-
+        # Combine the losses
         self.loss = loss_slot + loss_intent
         optimizer = tf.train.AdamOptimizer(name="a_optimizer")
         self.grads, self.vars = zip(*optimizer.compute_gradients(self.loss))
-        print("vars for loss function: ", self.vars)
+        #print("vars for loss function: ", self.vars)
+        # Clip gradients to prevent exploding ones
         gradients, _ = tf.clip_by_global_norm(self.grads, 5)  # clip gradients
         self.train_op = optimizer.apply_gradients(zip(self.grads, self.vars))
-        # self.train_op = optimizer.minimize(self.loss)
-        # train_op = layers.optimize_loss(
-        #     loss, tf.train.get_global_step(),
-        #     optimizer=optimizer,
-        #     learning_rate=0.001,
-        #     summaries=['loss', 'learning_rate'])
 
-    def step(self, sess, mode, trarin_batch):
-        """ perform each batch"""
+
+    def step(self, sess, mode, train_batch):
+        """do a step on the current batch"""
         if mode not in ['train', 'test']:
-            print >> sys.stderr, 'mode is not supported'
+            print('mode is not supported', file=sys.stderr)
             sys.exit(1)
-        unziped = list(zip(*trarin_batch))
-        # print(np.shape(unziped[0]), np.shape(unziped[1]),
-        #       np.shape(unziped[2]), np.shape(unziped[3]))
-        # print(np.transpose(unziped[0], [1, 0]))
+        unziped = list(zip(*train_batch))
         if mode == 'train':
             output_feeds = [self.train_op, self.loss, self.decoder_prediction,
-                            self.intent, self.mask, self.slot_W]
+                            self.intent, self.mask]
             feed_dict = {self.words_inputs: np.transpose(unziped[0], [1, 0]),
                          self.encoder_inputs_actual_length: unziped[1],
                          self.decoder_targets: unziped[2],

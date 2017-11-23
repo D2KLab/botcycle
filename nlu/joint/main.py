@@ -1,5 +1,3 @@
-# coding=utf-8
-# @author: cer
 import random
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
@@ -9,41 +7,50 @@ from . import data
 from .model import Model
 from . import metrics
 
+# maximum length of sentences
 input_steps = 50
+# embedding size for labels
 embedding_size = 64
+# size of LSTM cells
 hidden_size = 100
-n_layers = 2
+# size of batch
 batch_size = 16
-vocab_size = 871
-slot_size = 122
-intent_size = 22
+# number of training epochs
 epoch_num = 20
 
 
 def get_model(vocabs):
-    model = Model(input_steps, embedding_size, hidden_size, vocab_size, slot_size,
-                 intent_size, epoch_num, vocabs, batch_size, n_layers)
+    model = Model(input_steps, embedding_size, hidden_size, vocabs, batch_size)
     model.build()
     return model
 
 
 def train(is_debug=False):
+    # load the train and dev datasets
     train_data = open("data/atis/source/atis-2.train.w-intent.iob", "r").readlines()
     test_data = open("data/atis/source/atis-2.dev.w-intent.iob", "r").readlines()
-    train_data_ed = data.data_pipeline(train_data)
-    test_data_ed = data.data_pipeline(test_data)
+    # preprocess them to list of training/test samples
+    # a sample is made up of a tuple that contains
+    # - an input sentence (list of words --> strings, padded)
+    # - the real length of the sentence (int) to be able to recognize padding
+    # - an output sequence (list of IOB annotations --> strings, padded)
+    # - an output intent (string)
+    training_samples = data.data_pipeline(train_data)
+    test_samples = data.data_pipeline(test_data)
     # get the vocabularies for input, slot and intent
-    vocabs = data.get_vocabularies(train_data_ed)
-    # and get a model for them
+    vocabs = data.get_vocabularies(training_samples)
+    # and get the model
     model = get_model(vocabs)
     sess = tf.Session()
     if is_debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)
         sess.add_tensor_filter("has_inf_or_nan", tf_debug.has_inf_or_nan)
+    
+    # initialize the required parameters
     sess.run(tf.global_variables_initializer())
     sess.run(tf.tables_initializer())
-    # print(tf.trainable_variables())
 
+    # initialize the history that will collect some measures
     history = {
         'intent': np.zeros((epoch_num)),
         'slot': np.zeros((epoch_num))
@@ -51,25 +58,9 @@ def train(is_debug=False):
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
-        for i, batch in enumerate(data.getBatch(batch_size, train_data_ed)):
+        for i, batch in enumerate(data.getBatch(batch_size, training_samples)):
             # perform a batch of training
-            _, loss, decoder_prediction, intent, mask, slot_W = model.step(sess, "train", batch)
-            # if i == 0:
-            #     index = 0
-            #     print("training debug:")
-            #     print("input:", list(zip(*batch))[0][index])
-            #     print("length:", list(zip(*batch))[1][index])
-            #     print("mask:", mask[index])
-            #     print("target:", list(zip(*batch))[2][index])
-            #     # print("decoder_targets_one_hot:")
-            #     # for one in decoder_targets_one_hot[index]:
-            #     #     print(" ".join(map(str, one)))
-            #     print("decoder_logits: ")
-            #     for one in decoder_logits[index]:
-            #         print(" ".join(map(str, one)))
-            #     print("slot_W:", slot_W)
-            #     print("decoder_prediction:", decoder_prediction[index])
-            #     print("intent:", list(zip(*batch))[3][index])
+            _, loss, decoder_prediction, intent, mask = model.step(sess, "train", batch)
             mean_loss += loss
             train_loss += loss
             if i % 10 == 0:
@@ -84,8 +75,9 @@ def train(is_debug=False):
         pred_slots = []
         pred_intents = []
         true_intents = []
-        for j, batch in enumerate(data.getBatch(batch_size, test_data_ed)):
+        for j, batch in enumerate(data.getBatch(batch_size, test_samples)):
             decoder_prediction, intent = model.step(sess, "test", batch)
+            # from time-major matrix to sample-major
             decoder_prediction = np.transpose(decoder_prediction, [1, 0])
             if j == 0:
                 index = random.choice(range(len(batch)))
@@ -114,7 +106,7 @@ def train(is_debug=False):
             print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
-        true_slots_a = np.array(list(zip(*test_data_ed))[2])[:pred_slots_a.shape[0]]
+        true_slots_a = np.array(list(zip(*test_samples))[2])[:pred_slots_a.shape[0]]
         f1_intents = metrics.f1_for_intents(pred_intents, true_intents)
         f1_slots = metrics.f1_for_sequence_batch(true_slots_a, pred_slots_a)
         # print("true_slots_a: ", true_slots_a.shape)
