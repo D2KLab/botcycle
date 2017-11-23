@@ -23,3 +23,6 @@ train_wit_intents:
 
 test_wit:
 	INTENT_MODEL_PATH=`exec ls -d1 intent_classifier/models/wit_en/** | sort -n | tail -1` DATASET=wit LANG_MODEL_PATH=spacy_entities/models/wit python -m intent_classifier.test_intent
+
+train_joint:
+	python -m joint.main

@@ -1,10 +1,10 @@
 # coding=utf-8
 # @author: cer
 import tensorflow as tf
-from data import *
+from .data import *
 # from model import Model
-from model import Model
-from my_metrics import *
+from .model import Model
+from .my_metrics import *
 from tensorflow.python import debug as tf_debug
 
 input_steps = 50
@@ -33,8 +33,8 @@ def train(is_debug=False):
         sess.add_tensor_filter("has_inf_or_nan", tf_debug.has_inf_or_nan)
     sess.run(tf.global_variables_initializer())
     # print(tf.trainable_variables())
-    train_data = open("dataset/atis-2.train.w-intent.iob", "r").readlines()
-    test_data = open("dataset/atis-2.dev.w-intent.iob", "r").readlines()
+    train_data = open("data/atis/source/atis-2.train.w-intent.iob", "r").readlines()
+    test_data = open("data/atis/source/atis-2.dev.w-intent.iob", "r").readlines()
     train_data_ed = data_pipeline(train_data)
     test_data_ed = data_pipeline(test_data)
     word2index, index2word, slot2index, index2slot, intent2index, index2intent = \
