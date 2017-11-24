@@ -105,3 +105,21 @@ class FixedEmbeddings(object):
         shape = words.get_shape().as_list() + [self.embedding_size]
         result.set_shape(shape)
         return result
+
+class FineTuneEmbeddings(FixedEmbeddings):
+    def __init__(self, vocab=None, embedding_size=300, lang='en'):
+        super().__init__(vocab, embedding_size, lang)
+
+        self.fine_tune_embeddings = tf.Variable(initial_value=np.identity(self.embedding_size), dtype=tf.float32)
+
+    def get_word_embeddings(self, words):
+
+        fixed_emb = super().get_word_embeddings(words)
+        # linear transformation of embeddings
+        # from a (time,batch,emb) 3d matrix reshape to (time*batch,emb) 2d
+        fixed_emb = tf.reshape(fixed_emb, [-1, self.embedding_size])
+        # multiply the matrix (time*batch, emb)x(emb,emb) = (time*batch,emb)
+        result = tf.matmul(fixed_emb, self.fine_tune_embeddings)
+        # and put again the result in 3d (time,batch,emb)
+        result = tf.reshape(result, [words.shape.as_list()[0], -1, self.embedding_size])
+        return result
