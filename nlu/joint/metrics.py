@@ -1,5 +1,3 @@
-# coding=utf-8
-# @author: cer
 import numpy as np
 import numpy.ma as ma
 from sklearn.metrics import f1_score
@@ -62,5 +60,6 @@ def plot_f1_history(file_name, history):
     plt.title('model f1')
     plt.ylabel('f1')
     plt.xlabel('epochs')
+    plt.grid()
     print(file_name)
     plt.savefig(file_name)

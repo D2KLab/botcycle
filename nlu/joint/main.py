@@ -16,7 +16,7 @@ hidden_size = 100
 # size of batch
 batch_size = 16
 # number of training epochs
-epoch_num = 20
+epoch_num = 50
 
 
 def get_model(vocabs):
