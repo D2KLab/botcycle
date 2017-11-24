@@ -77,12 +77,20 @@ class Model:
         # Intent output
         
         # Define the weights and biases to perform the output projection on the intent output
-        intent_W = tf.Variable(tf.random_uniform([self.hidden_size * 2, self.intentEmbedder.vocab_size], -0.1, 0.1),
+        intent_W = tf.Variable(tf.random_uniform([self.hidden_size, self.intentEmbedder.vocab_size], -0.1, 0.1),
                                dtype=tf.float32, name="intent_W")
         intent_b = tf.Variable(tf.zeros([self.intentEmbedder.vocab_size]), dtype=tf.float32, name="intent_b")
 
+        # Intent RNN
+        decoder_intent_cell = LSTMCell(self.hidden_size)
+
+        decoder_intent_outputs, decoder_intent_final_state = tf.nn.dynamic_rnn(decoder_intent_cell,
+                                            inputs=encoder_outputs,
+                                            sequence_length=self.encoder_inputs_actual_length,
+                                            dtype=tf.float32, time_major=True)
+
         # perform the feed-forward layer
-        intent_logits = tf.add(tf.matmul(encoder_final_state_h, intent_W), intent_b)
+        intent_logits = tf.add(tf.matmul(decoder_intent_final_state.h, intent_W), intent_b)
         # take the argmax
         intent_id = tf.argmax(intent_logits, axis=1)
         # and translate to the corresponding string
