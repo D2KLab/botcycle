@@ -1,6 +1,8 @@
 # Nlu
 Experiments with Natural Language Understanding
 
+To run the examples, the requirements need to be installed and the available tasks are defined in the makefile.
+
 ## Data
 
 This folder contains the datasets:
@@ -16,4 +18,8 @@ Contains code that trains the NER of spacy on the wit_data. Run the `train.py` s
 
 Contains some models for classifying the intent of the sentences. As above, the training data comes from the wit.ai export.
 
-The models are under development
+## Joint slot-filling and intent classification
+
+The folder `joint` contains a tensorflow implementation of a neural network where the two tasks are done together.
+
+Use `make train_joint` to run it.
