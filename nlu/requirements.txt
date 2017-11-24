@@ -3,3 +3,8 @@ keras
 tensorflow
 pandas
 # TODO find all
+# for joint:
+tensorflow
+numpy
+sklearn
+matplotlib

@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.contrib import layers
 import numpy as np
 from tensorflow.contrib.rnn import LSTMCell, LSTMStateTuple
-from .embeddings import EmbeddingsFromScratch, FixedEmbeddings
+from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddings
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
@@ -37,9 +37,10 @@ class Model:
         input_vocab, slot_vocab, intent_vocab = self.vocabs
 
         # then create the embeddings and mapper (one-hot index to words and viceversa) for each one of them
-        # For input words embedder, can choose between EmbeddingsFromScratch, FixedEmbeddings:
-        # choose if input words are trained as part of the model from scratch, or come precomputed
-        self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size)
+        # For input words embedder, can choose between EmbeddingsFromScratch, FixedEmbeddings, FineTueEmbeddings:
+        # choose if input words are trained as part of the model from scratch, or come precomputed, or precomputed+linear transformation
+        self.wordsEmbedder = FineTuneEmbeddings(self.input_embedding_size)
+        #self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size)
         #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
         self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, self.embedding_size)
         self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, self.embedding_size)
