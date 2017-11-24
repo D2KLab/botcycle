@@ -83,14 +83,20 @@ class Model:
 
         # Intent RNN
         decoder_intent_cell = LSTMCell(self.hidden_size)
+        memory = tf.transpose(encoder_outputs, [1, 0, 2])
+        attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+            num_units=self.hidden_size, memory=memory,
+            memory_sequence_length=self.encoder_inputs_actual_length)
+        attn_cell_intent = tf.contrib.seq2seq.AttentionWrapper(
+            decoder_intent_cell, attention_mechanism, attention_layer_size=self.hidden_size, output_attention=False)
 
-        decoder_intent_outputs, decoder_intent_final_state = tf.nn.dynamic_rnn(decoder_intent_cell,
+        decoder_intent_outputs, decoder_intent_final_state = tf.nn.dynamic_rnn(attn_cell_intent,
                                             inputs=encoder_outputs,
                                             sequence_length=self.encoder_inputs_actual_length,
                                             dtype=tf.float32, time_major=True)
 
         # perform the feed-forward layer
-        intent_logits = tf.add(tf.matmul(decoder_intent_final_state.h, intent_W), intent_b)
+        intent_logits = tf.add(tf.matmul(decoder_intent_final_state.cell_state.h, intent_W), intent_b)
         # take the argmax
         intent_id = tf.argmax(intent_logits, axis=1)
         # and translate to the corresponding string
