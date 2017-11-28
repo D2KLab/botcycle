@@ -84,7 +84,7 @@ def main_flow(dataset, callback, model_output_folder, reverse_lookup_type):
     if not os.path.isdir(model_output_folder):
         os.makedirs(model_output_folder)
     print('loading the data')
-    data, entity_types, intent_types = loader.load_data(dataset)
+    data, entity_types, intent_types = loader.load_data_old(dataset)
     if reverse_lookup_type is 'entities':
         reverse_lookup = get_reverse_lookup(entity_types)
     else:

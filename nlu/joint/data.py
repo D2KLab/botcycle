@@ -1,6 +1,5 @@
-# coding=utf-8
-# @author: cer
-
+import json
+import os
 import random
 import numpy as np
 
@@ -9,43 +8,52 @@ flatten = lambda l: [item for sublist in l for item in sublist]  # flatten from 
 index_seq2slot = lambda s, index2slot: [index2slot[i] for i in s]
 index_seq2word = lambda s, index2word: [index2word[i] for i in s]
 
+def load_data(dataset_name):
+    """Returns data_splitted.
+
+    data_splitted can be [fold1, fold2, fold3, fold4, fold5] or [test, train], look at the size"""
+    path = 'data/' + dataset_name + '/preprocessed'
+
+    fold_files = os.listdir(path)
+    fold_files = sorted([f for f in fold_files if f.startswith('fold_')])
+
+    data_splitted = []
+    for file_name in fold_files:
+        with open(path + '/' + file_name) as json_file:
+            data_splitted.append(json.load(json_file))
+
+    return data_splitted
 
 def data_pipeline(data, length=50):
-    data = [t[:-1] for t in data]  # Removed'\n'
-    # One line of data like this：'BOS i want to fly from baltimore to dallas round trip EOS
-    # \tO O O O O O B-fromloc.city_name O B-toloc.city_name B-round_trip I-round_trip atis_flight'
-    # divide into [the words of the original sentence， annotated sequence，intent]
-    data = [[t.split("\t")[0].split(" "), t.split("\t")[1].split(" ")[:-1], t.split("\t")[1].split(" ")[-1]] for t in
-            data]
-    data = [[t[0][1:-1], t[1][1:], t[2]] for t in data]  # remove BOS and EOS, and remove the corresponding annotation sequence corresponding label
-    seq_in, seq_out, intent = list(zip(*data))
+    # TODO use data in structured form instead of other arrays
     sin = []
     lengths = []
     sout = []
-    # padding，end of original sequence and label sequence +<EOS>+n×<PAD>
-    for i in range(len(seq_in)):
-        temp = seq_in[i]
-        if len(temp) < length:
-            temp.append('<EOS>')
-            while len(temp) < length:
-                temp.append('<PAD>')
+    intent = []
+    for sample in data['data']:
+        if len(sample['words']) < length:
+            sample['words'].append('<EOS>')
+            while len(sample['words']) < length:
+                sample['words'].append('<PAD>')
         else:
-            temp = temp[:length]
-            temp[-1] = '<EOS>'
-        sin.append(temp)
-        true_length = temp.index("<EOS>")
+            sample['words'] = sample['words'][:length]
+            sample['words'][-1] = '<EOS>'
+
+        sin.append(sample['words'])
+        true_length = sample['length']
         lengths.append(true_length)
 
-        temp = seq_out[i]
-        if len(temp) < length:
-            temp.append('<EOS>')
-            while len(temp) < length:
-                temp.append('<PAD>')
+        if len(sample['slots']) < length:
+            sample['slots'].append('<EOS>')
+            while len(sample['slots']) < length:
+                sample['slots'].append('<PAD>')
         else:
-            temp = temp[:length]
-            temp[-1] = '<EOS>'
-        sout.append(temp)
-        data = list(zip(sin, lengths, sout, intent))
+            sample['slots'] = sample['slots'][:length]
+            sample['slots'][-1] = '<EOS>'
+        sout.append(sample['slots'])
+        intent.append(sample['intent'])
+    
+    data = list(zip(sin, lengths, sout, intent))
     return data
 
 def get_vocabularies(train_data):

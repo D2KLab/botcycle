@@ -6,7 +6,7 @@ import os
 import numpy as np
 
 
-def atis_preprocess():
+def atis_preprocess_old():
     """
     preprocesses the atis dataset, taking as source the files atis.test.w-intent.iob and
     atis.train.w-intent.iob
@@ -27,19 +27,19 @@ def atis_preprocess():
     entity_types = list(sorted(entity_types))
     intent_types = list(sorted(intent_types))
 
-    if not os.path.exists('atis/preprocessed'):
-        os.makedirs('atis/preprocessed')
+    if not os.path.exists('atis/preprocessed_old'):
+        os.makedirs('atis/preprocessed_old')
 
-    with open('atis/preprocessed/intent_types.json', 'w') as outfile:
+    with open('atis/preprocessed_old/intent_types.json', 'w') as outfile:
         json.dump(intent_types, outfile)
 
-    with open('atis/preprocessed/entity_types.json', 'w') as outfile:
+    with open('atis/preprocessed_old/entity_types.json', 'w') as outfile:
         json.dump(entity_types, outfile)
 
-    with open('atis/preprocessed/fold_train.json', 'w') as outfile:
+    with open('atis/preprocessed_old/fold_train.json', 'w') as outfile:
         json.dump(train_tagged, outfile)
 
-    with open('atis/preprocessed/fold_test.json', 'w') as outfile:
+    with open('atis/preprocessed_old/fold_test.json', 'w') as outfile:
         json.dump(test_tagged, outfile)
 
 
@@ -114,7 +114,7 @@ def atis_lines_to_json(content):
     return result, entity_types, intent_types
 
 
-def wit_preprocess(path):
+def wit_preprocess_old(path):
     """Preprocesses the wit.ai dataset from the folder path passed as parameter.
     To download the updated dataset, use the download.sh script.
     Saves the tagged dataset, the enitity_types and the intent_types"""
@@ -141,17 +141,17 @@ def wit_preprocess(path):
     folds = [dataset[:fold_size], dataset[fold_size:2 * fold_size],
              dataset[2 * fold_size:3 * fold_size], dataset[3 * fold_size:4 * fold_size], dataset[4 * fold_size:]]
 
-    if not os.path.exists('{}/preprocessed'.format(path)):
-        os.makedirs('{}/preprocessed'.format(path))
+    if not os.path.exists('{}/preprocessed_old'.format(path)):
+        os.makedirs('{}/preprocessed_old'.format(path))
 
     for idx, fold in enumerate(folds):
-        with open('{}/preprocessed/fold_{}.json'.format(path, idx + 1), 'w') as outfile:
+        with open('{}/preprocessed_old/fold_{}.json'.format(path, idx + 1), 'w') as outfile:
             json.dump(fold.tolist(), outfile)
 
-    with open('{}/preprocessed/intent_types.json'.format(path), 'w') as outfile:
+    with open('{}/preprocessed_old/intent_types.json'.format(path), 'w') as outfile:
         json.dump(intent_types, outfile)
 
-    with open('{}/preprocessed/entity_types.json'.format(path), 'w') as outfile:
+    with open('{}/preprocessed_old/entity_types.json'.format(path), 'w') as outfile:
         json.dump(entity_types, outfile)
 
 
@@ -180,7 +180,94 @@ def wit_get_normalized_data(expressions):
 
     return results, list(sorted(entity_types))
 
+def atis_preprocess():
+    # train and test on dev split, not touching real test set
+    with open('atis/source/atis-2.train.w-intent.iob') as txt_file:
+        train_set_raw = txt_file.readlines()
+    with open('atis/source/atis-2.dev.w-intent.iob') as txt_file:
+        test_set_raw = txt_file.readlines()
+
+    train_set = iob_lines_to_structured_iob(train_set_raw)
+    test_set = iob_lines_to_structured_iob(test_set_raw)
+
+    if not os.path.exists('atis/preprocessed'):
+        os.makedirs('atis/preprocessed')
+
+    with open('atis/preprocessed/fold_train.json', 'w') as outfile:
+        json.dump(train_set, outfile)
+
+    with open('atis/preprocessed/fold_test.json', 'w') as outfile:
+        json.dump(test_set, outfile)
+
+def iob_lines_to_structured_iob(iob_lines):
+    """
+    Transforms an .iob file, whose lines are passed as parameters, to a structured representation.
+    Example:
+    BOS cheapest airfare from tacoma to orlando EOS	O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name atis_airfare
+    becomes
+    {
+        'tokenized': ['cheapest', 'airfare', 'from', 'tacoma', 'to', 'orlando'],
+        'slots': ['B-cost_relative', 'O', 'O', 'B-fromloc.city_name', 'O', 'B-toloc.city_name'],
+        'length': 6
+        'intent': 'atis_airfare'
+    }
+
+    Each sample is put into a result object, together with an information about which tokenizer is used (on ATIS always space tokenizer):
+    {
+        'data': [LIST_OF_SAMPLES],
+        'meta':{
+            'tokenizer': 'spaces',
+            'slot_types': [LIST_OF_FOUND_SLOT_VALUES]
+            'intent_types': [LIST_OF FOUND_INTENT_VALUES]
+        }
+    }
+    """
+
+    slot_types = set()
+    intent_types = set()
+    data = []
+    for line in iob_lines:
+        # input is separated from outputs by a tab
+        text, annotations = line.split('\t')
+        # tokenization by space, removing BOS and EOS
+        words = text.split()[1:-1]
+        # also for the annotations, space-separated
+        words_annotations = annotations.split()
+        # slots annotations, removing the ones corresponding to BOS and EOS
+        slots = words_annotations[1:-1]
+        # the intent is the annotation corresponding to EOS
+        intent = words_annotations[-1]
+
+        assert len(words) == len(slots)
+        length = len(words)
+
+        # aggregated metadata
+        slot_types.update(slots)
+        intent_types.add(intent)
+        
+        data.append({
+            'words': words,
+            'slots': slots,
+            'length': length,
+            'intent': intent
+        })
+
+    slot_types = list(sorted(slot_types))
+    intent_types = list(sorted(intent_types))
+
+    return {
+        'data': data,
+        'meta': {
+            'tokenizer': 'space',
+            'slot_types': slot_types,
+            'intent_types': intent_types
+        }
+    }
+
+
+
+#atis_preprocess_old()
+#wit_preprocess_old('wit_en')
+#wit_preprocess_old('wit_it')
 
 atis_preprocess()
-wit_preprocess('wit_en')
-wit_preprocess('wit_it')

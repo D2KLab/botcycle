@@ -27,8 +27,7 @@ def get_model(vocabs):
 
 def train(is_debug=False):
     # load the train and dev datasets
-    train_data = open("data/atis/source/atis-2.train.w-intent.iob", "r").readlines()
-    test_data = open("data/atis/source/atis-2.dev.w-intent.iob", "r").readlines()
+    test_data, train_data = data.load_data('atis')
     # preprocess them to list of training/test samples
     # a sample is made up of a tuple that contains
     # - an input sentence (list of words --> strings, padded)

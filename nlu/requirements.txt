@@ -8,3 +8,5 @@ tensorflow
 numpy
 sklearn
 matplotlib
+spacy #+models
+scipy

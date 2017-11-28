@@ -26,7 +26,7 @@ nlp = utils.get_nlp(LANGUAGE, LANG_MODEL_PATH)
 print('Test your sentences.')
 print('> ', end='', flush=True)
 
-_, _, intents = loader.load_data(DATASET)
+_, _, intents = loader.load_data_old(DATASET)
 
 for line in sys.stdin:
     doc = nlp(line)
