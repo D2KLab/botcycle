@@ -15,20 +15,21 @@ embedding_size = 64
 # size of LSTM cells
 hidden_size = 100
 # size of batch
+# TODO fix problem of last batch (not full --> pad?)
 batch_size = 16
 # number of training epochs
 epoch_num = 50
 
 
-def get_model(vocabs, tokenizer):
+def get_model(vocabs, tokenizer, language):
     model = Model(input_steps, embedding_size, hidden_size, vocabs, batch_size)
-    model.build(tokenizer)
+    model.build(tokenizer, language)
     return model
 
 
 def train(is_debug=False):
     # load the train and dev datasets
-    test_data, train_data = data.load_data('nlu-benchmark')
+    test_data, train_data = data.load_data('wit_en')
     # fix the random seeds
     random_seed_init(len(test_data['data']))
     # preprocess them to list of training/test samples
@@ -39,10 +40,12 @@ def train(is_debug=False):
     # - an output intent (string)
     training_samples = data.data_pipeline(train_data)
     test_samples = data.data_pipeline(test_data)
+    print('train samples', len(training_samples['data']))
+    print('test samples', len(test_samples['data']))
     # get the vocabularies for input, slot and intent
     vocabs = data.get_vocabularies(training_samples)
     # and get the model
-    model = get_model(vocabs, training_samples['meta']['tokenizer'])
+    model = get_model(vocabs, training_samples['meta']['tokenizer'], training_samples['meta']['language'])
     sess = tf.Session()
     if is_debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)

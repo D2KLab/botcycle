@@ -74,6 +74,7 @@ def get_vocabularies(train_data):
     return vocab, slot_tag, intent_tag
 
 
+# TODO fix batch generation, the last one is skipped now
 def getBatch(batch_size, train_data):
     random.shuffle(train_data)
     sindex = 0
@@ -83,4 +84,5 @@ def getBatch(batch_size, train_data):
         temp = eindex
         eindex = eindex + batch_size
         sindex = temp
+        #print('returning',len(batch), 'samples')
         yield batch

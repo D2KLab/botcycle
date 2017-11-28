@@ -75,14 +75,17 @@ class WhitespaceTokenizer(object):
 
 
 class FixedEmbeddings(object):
-    def __init__(self, embedding_size=300, tokenizer='space', lang='en_core_web_md'):
-        self.embedding_size = embedding_size
-        if embedding_size != 300:
-            raise ValueError('embedding size mismatch with precomputed embeddings!')
+    def __init__(self, tokenizer='space', language='en'):
+        self.language = language
+        if language == 'en':
+            language = 'en_core_web_md'
+            self.embedding_size = 300
+        else:
+            self.embedding_size = 384
 
         import spacy
-        self.nlp = spacy.load(lang)
-        print('tokenizer: ' + tokenizer)
+        self.nlp = spacy.load(language)
+        print('tokenizer:', tokenizer, 'language:', language)
         if tokenizer == 'space':
             self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
 
@@ -96,7 +99,12 @@ class FixedEmbeddings(object):
                 sentence = sentence.replace('<','')
                 sentence = sentence.replace('>','')
                 # apostrophe problem -> custom tokenizer
-                doc = self.nlp.make_doc(sentence)
+                if self.language == 'en':
+                    doc = self.nlp.make_doc(sentence)
+                else:
+                    # other languages don't have pretrained word embeddings but use context vectors
+                    # TODO add italian embeddings
+                    doc = self.nlp(sentence)
                 #assert len(doc) is column.size
                 # TODO problems when PAD or EOS are actual words!!
                 for i, w in enumerate(doc):
@@ -113,8 +121,8 @@ class FixedEmbeddings(object):
         return result
 
 class FineTuneEmbeddings(FixedEmbeddings):
-    def __init__(self, embedding_size, tokenizer='space', lang='en'):
-        super().__init__(embedding_size, tokenizer, lang)
+    def __init__(self, tokenizer='space', language='en'):
+        super().__init__(tokenizer, language)
 
         self.fine_tune_embeddings = tf.Variable(initial_value=np.identity(self.embedding_size), dtype=tf.float32)
 

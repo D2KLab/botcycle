@@ -202,7 +202,7 @@ def atis_preprocess():
     with open('atis/preprocessed/fold_test.json', 'w') as outfile:
         json.dump(test_set, outfile)
 
-def nlu_benchmark_preprocess():
+def nlu_benchmark_preprocess(nlp):
     path = 'nlu-benchmark/2017-06-custom-intent-engines/'
     intent_folders = os.listdir(path)
     train_samples = []
@@ -210,7 +210,6 @@ def nlu_benchmark_preprocess():
     train_slot_types = set()
     test_slot_types = set()
     intents = set()
-    nlp = load_nlp()
     for intent_type in intent_folders:
         intent_path = path + intent_type
         if os.path.isdir(intent_path):
@@ -236,6 +235,7 @@ def nlu_benchmark_preprocess():
         'data': train_samples,
         'meta': {
             'tokenizer': 'spacy',
+            'language': 'en',
             'slot_types': train_slot_types,
             'intent_types': intents
         }
@@ -244,6 +244,7 @@ def nlu_benchmark_preprocess():
         'data': test_samples,
         'meta': {
             'tokenizer': 'spacy',
+            'language': 'en',
             'slot_types': test_slot_types,
             'intent_types': intents
         }
@@ -257,6 +258,83 @@ def nlu_benchmark_preprocess():
 
     with open('nlu-benchmark/preprocessed/fold_test.json', 'w') as outfile:
         json.dump(test_set, outfile)
+
+def wit_preprocess(path, nlp):
+    path_source = path + '/source'
+
+    with open('{}/expressions.json'.format(path_source)) as json_file:
+        expressions = json.load(json_file)
+
+    samples, intent_types, slot_types = wit_to_structured_iob(expressions, nlp)
+
+    # TODO perform the split on 5 folds
+    dataset = np.array(samples)
+    # initialize the random generator seed to the size of the dataset, just to
+    # make it split always the same
+    np.random.seed(dataset.size)
+    np.random.shuffle(dataset)
+    fold_size = len(dataset) // 5
+    # TODO save also final_test set
+    # TODO save also all together
+    train, dev, final_test = (dataset[:3*fold_size], dataset[3*fold_size:4*fold_size],dataset[4*fold_size:])
+
+    slot_types = list(sorted(slot_types))
+    intent_types = list(sorted(intent_types))
+
+    meta = {
+        'tokenizer': 'spacy',
+        'language': path[4:],
+        'intent_types': intent_types,
+        'slot_types': slot_types
+    }
+
+    if not os.path.exists('{}/preprocessed'.format(path)):
+        os.makedirs('{}/preprocessed'.format(path))
+
+    with open('{}/preprocessed/fold_train.json'.format(path), 'w') as outfile:
+        json.dump({
+            'data': train.tolist(),
+            'meta': meta
+        }, outfile)
+    
+    with open('{}/preprocessed/fold_test.json'.format(path), 'w') as outfile:
+        json.dump({
+            'data': dev.tolist(),
+            'meta': meta
+        }, outfile)
+
+def wit_to_structured_iob(expressions, nlp):
+    #samples, entity_types = wit_to_structured_iob(expressions)
+    slot_types = set()
+    intent_types = set()
+    items = expressions['data']
+    samples = []
+    for item in items:
+        sentence = item['text']
+        intent_type = None
+        annots = []
+        for e_or_i in item['entities']:
+            if e_or_i['entity'] == 'intent':
+                intent_type = e_or_i['value'].strip('"')
+            else:
+                entity_type = e_or_i['entity']
+                if 'role' in e_or_i:
+                    entity_type = e_or_i['role'] + '.' + entity_type
+                annots.append((e_or_i['start'], e_or_i['end'], entity_type))
+
+        words, slots = displacement_annotations_to_iob(sentence, annots, nlp)
+
+        intent_types.add(intent_type)
+        slot_types.update(slots)
+
+        samples.append({
+            'words': words,
+            'length': len(words),
+            'slots': slots,
+            'intent': intent_type
+        })
+
+    return samples, intent_types, slot_types
 
 def nlu_benchmark_to_structured_iob(data, intent_type, nlp):
     #train_iob, slot_types = nlu_benchmark_to_structured_iob(train_json, intent_type)
@@ -276,18 +354,8 @@ def nlu_benchmark_to_structured_iob(data, intent_type, nlp):
             sentence += span['text']
             start_idx += len(span['text'])
 
-        doc = nlp.make_doc(sentence)
-        tags = biluo_tags_from_offsets(doc, annots)
-        for word,tag in zip(doc,tags):
-            tag = re.sub(r'^U', "B", tag)
-            tag = re.sub(r'^L', "I", tag)
-            #this occurs when multiple spaces exist
-            word = word.text.strip()
-            # tokenization makes some word  like " ", removing them
-            if word:
-                words.append(word)
-                slots.append(tag)
-                slot_types.add(tag)
+        words, slots = displacement_annotations_to_iob(sentence, annots, nlp)
+        slot_types.update(slots)
 
         iob_result.append({
             'words': words,
@@ -358,6 +426,7 @@ def iob_lines_to_structured_iob(iob_lines):
         'data': data,
         'meta': {
             'tokenizer': 'space',
+            'language': 'en',
             'slot_types': slot_types,
             'intent_types': intent_types
         }
@@ -367,9 +436,32 @@ def load_nlp(lang_name='en'):
     nlp = spacy.load(lang_name)
     return nlp
 
+def displacement_annotations_to_iob(sentence, annotations, nlp):
+    doc = nlp.make_doc(sentence)
+    tags = biluo_tags_from_offsets(doc, annotations)
+
+    words = []
+    slots = []
+    for word,tag in zip(doc,tags):
+        tag = re.sub(r'^U', "B", tag)
+        tag = re.sub(r'^L', "I", tag)
+        #this occurs when multiple spaces exist
+        word = word.text.strip()
+        # tokenization makes some word  like " ", removing them
+        if word:
+            words.append(word)
+            slots.append(tag)
+    
+    return words, slots
+
 #atis_preprocess_old()
 #wit_preprocess_old('wit_en')
 #wit_preprocess_old('wit_it')
 
+nlp_en = load_nlp()
+nlp_it = load_nlp('it')
+
 atis_preprocess()
-nlu_benchmark_preprocess()
+nlu_benchmark_preprocess(nlp_en)
+wit_preprocess('wit_en', nlp_en)
+wit_preprocess('wit_it', nlp_it)
