@@ -75,30 +75,36 @@ class WhitespaceTokenizer(object):
 
 
 class FixedEmbeddings(object):
-    def __init__(self, vocab=None, embedding_size=300, lang='en_core_web_md'):
+    def __init__(self, embedding_size=300, tokenizer='space', lang='en_core_web_md'):
         self.embedding_size = embedding_size
         if embedding_size != 300:
             raise ValueError('embedding size mismatch with precomputed embeddings!')
 
         import spacy
         self.nlp = spacy.load(lang)
-        self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
+        print('tokenizer: ' + tokenizer)
+        if tokenizer == 'space':
+            self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
 
     def get_word_embeddings(self, words):
 
         def spacy_wrapper(words_numpy):
             embeddings_values = np.zeros([words_numpy.shape[0], words_numpy.shape[1], self.embedding_size], dtype=np.float32)
             for j, column in enumerate(words_numpy.T):
-                # build the sentence
-                sentence = ' '.join([w.decode('utf-8') for w in column])
+                # build the sentence, discarding EOS
+                sentence = ' '.join([w.decode('utf-8') for w in column][:-1])
                 sentence = sentence.replace('<','')
                 sentence = sentence.replace('>','')
                 # apostrophe problem -> custom tokenizer
-                doc = self.nlp(sentence)
+                doc = self.nlp.make_doc(sentence)
                 #assert len(doc) is column.size
                 # TODO problems when PAD or EOS are actual words!!
                 for i, w in enumerate(doc):
-                    embeddings_values[i,j,:] = w.vector
+                    if i >= words_numpy.shape[0]:
+                        print('out of length', w)
+                        print(sentence)
+                    else:
+                        embeddings_values[i,j,:] = w.vector
             return embeddings_values
 
         result = tf.py_func(spacy_wrapper, [words], tf.float32, stateful=False)
@@ -107,8 +113,8 @@ class FixedEmbeddings(object):
         return result
 
 class FineTuneEmbeddings(FixedEmbeddings):
-    def __init__(self, embedding_size, vocab=None, lang='en'):
-        super().__init__(vocab, embedding_size, lang)
+    def __init__(self, embedding_size, tokenizer='space', lang='en'):
+        super().__init__(embedding_size, tokenizer, lang)
 
         self.fine_tune_embeddings = tf.Variable(initial_value=np.identity(self.embedding_size), dtype=tf.float32)
 

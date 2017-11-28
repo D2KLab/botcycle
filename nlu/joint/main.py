@@ -19,15 +19,15 @@ batch_size = 16
 epoch_num = 50
 
 
-def get_model(vocabs):
+def get_model(vocabs, tokenizer):
     model = Model(input_steps, embedding_size, hidden_size, vocabs, batch_size)
-    model.build()
+    model.build(tokenizer)
     return model
 
 
 def train(is_debug=False):
     # load the train and dev datasets
-    test_data, train_data = data.load_data('atis')
+    test_data, train_data = data.load_data('nlu-benchmark')
     # fix the random seeds
     random_seed_init(len(test_data['data']))
     # preprocess them to list of training/test samples
@@ -41,7 +41,7 @@ def train(is_debug=False):
     # get the vocabularies for input, slot and intent
     vocabs = data.get_vocabularies(training_samples)
     # and get the model
-    model = get_model(vocabs)
+    model = get_model(vocabs, training_samples['meta']['tokenizer'])
     sess = tf.Session()
     if is_debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)
@@ -67,7 +67,8 @@ def train(is_debug=False):
             if i % 10 == 0:
                 if i > 0:
                     mean_loss = mean_loss / 10.0
-                print('Average train loss at epoch %d, step %d: %f' % (epoch, i, mean_loss))
+                #print('Average train loss at epoch %d, step %d: %f' % (epoch, i, mean_loss))
+                print('.', end=' ')
                 mean_loss = 0
         train_loss /= (i + 1)
         print("[Epoch {}] Average train loss: {}".format(epoch, train_loss))
@@ -105,7 +106,7 @@ def train(is_debug=False):
             # print(true_slot, decoder_prediction)
             slot_acc = metrics.accuracy_score(true_slot, decoder_prediction, true_length)
             intent_acc = metrics.accuracy_score(true_intent, intent)
-            print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
+            #print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
         true_slots_a = np.array([sample['slots'] for sample in test_samples['data']])[:pred_slots_a.shape[0]]
@@ -118,6 +119,7 @@ def train(is_debug=False):
         history['slot'][epoch] = f1_slots
 
     metrics.plot_f1_history('f1.png', history)
+    print(history)
 
 def random_seed_init(seed):
     random.seed(seed)

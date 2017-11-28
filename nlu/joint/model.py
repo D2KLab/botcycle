@@ -32,7 +32,7 @@ class Model:
         self.intent_targets = tf.placeholder(tf.string, [batch_size], name='intent_targets')
         
 
-    def build(self):
+    def build(self, tokenizer='space'):
         # unpack the vocabularies
         input_vocab, slot_vocab, intent_vocab = self.vocabs
 
@@ -40,8 +40,8 @@ class Model:
         # For input words embedder, can choose between EmbeddingsFromScratch, FixedEmbeddings, FineTueEmbeddings:
         # choose if input words are trained as part of the model from scratch, or come precomputed, or precomputed+linear transformation
         #self.wordsEmbedder = FineTuneEmbeddings(self.input_embedding_size)
-        #self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size)
-        self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
+        self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size, tokenizer)
+        #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
         self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, self.embedding_size)
         self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, self.embedding_size)
 
