@@ -28,6 +28,8 @@ def get_model(vocabs):
 def train(is_debug=False):
     # load the train and dev datasets
     test_data, train_data = data.load_data('atis')
+    # fix the random seeds
+    random_seed_init(len(test_data['data']))
     # preprocess them to list of training/test samples
     # a sample is made up of a tuple that contains
     # - an input sentence (list of words --> strings, padded)
@@ -57,7 +59,7 @@ def train(is_debug=False):
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
-        for i, batch in enumerate(data.getBatch(batch_size, training_samples)):
+        for i, batch in enumerate(data.getBatch(batch_size, training_samples['data'])):
             # perform a batch of training
             _, loss, decoder_prediction, intent, mask = model.step(sess, "train", batch)
             mean_loss += loss
@@ -74,17 +76,17 @@ def train(is_debug=False):
         pred_slots = []
         pred_intents = []
         true_intents = []
-        for j, batch in enumerate(data.getBatch(batch_size, test_samples)):
+        for j, batch in enumerate(data.getBatch(batch_size, test_samples['data'])):
             decoder_prediction, intent = model.step(sess, "test", batch)
             # from time-major matrix to sample-major
             decoder_prediction = np.transpose(decoder_prediction, [1, 0])
             if j == 0:
                 index = random.choice(range(len(batch)))
                 # index = 0
-                print("Input Sentence        : ", batch[index][0])
-                print("Slot Truth            : ", batch[index][2])
+                print("Input Sentence        : ", batch[index]['words'])
+                print("Slot Truth            : ", batch[index]['slots'])
                 print("Slot Prediction       : ", decoder_prediction[index])
-                print("Intent Truth          : ", batch[index][3])
+                print("Intent Truth          : ", batch[index]['intent'])
                 print("Intent Prediction     : ", intent[index])
             slot_pred_length = list(np.shape(decoder_prediction))[1]
             pred_padded = np.lib.pad(decoder_prediction, ((0, 0), (0, input_steps-slot_pred_length)),
@@ -92,20 +94,21 @@ def train(is_debug=False):
             pred_slots.append(pred_padded)
             #print("pred_intents", pred_intents, "intent", intent)
             pred_intents.extend(intent)
-            true_intents.extend(list(zip(*batch))[3])
+            true_intent = [sample['intent'] for sample in batch]
+            true_intents.extend(true_intent)
             #print("true_intents", true_intents)
             # print("slot_pred_length: ", slot_pred_length)
-            true_slot = np.array((list(zip(*batch))[2]))
-            true_length = np.array((list(zip(*batch))[1]))
+            true_slot = np.array([sample['slots'] for sample in batch])
+            true_length = np.array([sample['length'] for sample in batch])
             true_slot = true_slot[:, :slot_pred_length]
             # print(np.shape(true_slot), np.shape(decoder_prediction))
             # print(true_slot, decoder_prediction)
             slot_acc = metrics.accuracy_score(true_slot, decoder_prediction, true_length)
-            intent_acc = metrics.accuracy_score(list(zip(*batch))[3], intent)
+            intent_acc = metrics.accuracy_score(true_intent, intent)
             print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
-        true_slots_a = np.array(list(zip(*test_samples))[2])[:pred_slots_a.shape[0]]
+        true_slots_a = np.array([sample['slots'] for sample in test_samples['data']])[:pred_slots_a.shape[0]]
         f1_intents = metrics.f1_for_intents(pred_intents, true_intents)
         f1_slots = metrics.f1_for_sequence_batch(true_slots_a, pred_slots_a)
         # print("true_slots_a: ", true_slots_a.shape)
@@ -116,6 +119,9 @@ def train(is_debug=False):
 
     metrics.plot_f1_history('f1.png', history)
 
+def random_seed_init(seed):
+    random.seed(seed)
+    tf.set_random_seed(seed)
 
 if __name__ == '__main__':
     train()

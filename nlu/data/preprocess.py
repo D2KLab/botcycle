@@ -3,7 +3,10 @@ This module preprocesses the datasets in equivalent formats
 """
 import json
 import os
+import re
 import numpy as np
+import spacy
+from spacy.gold import biluo_tags_from_offsets
 
 
 def atis_preprocess_old():
@@ -199,6 +202,102 @@ def atis_preprocess():
     with open('atis/preprocessed/fold_test.json', 'w') as outfile:
         json.dump(test_set, outfile)
 
+def nlu_benchmark_preprocess():
+    path = 'nlu-benchmark/2017-06-custom-intent-engines/'
+    intent_folders = os.listdir(path)
+    train_samples = []
+    test_samples = []
+    train_slot_types = set()
+    test_slot_types = set()
+    intents = set()
+    nlp = load_nlp()
+    for intent_type in intent_folders:
+        intent_path = path + intent_type
+        if os.path.isdir(intent_path):
+            print('train ' + intent_type)
+            with open(intent_path + '/train_' + intent_type + '_full.json') as json_file:
+                train_json = json.load(json_file)
+                train_iob, slot_types = nlu_benchmark_to_structured_iob(train_json, intent_type, nlp)
+                train_slot_types.update(slot_types)
+            print('test ' + intent_type)
+            with open(intent_path + '/validate_' + intent_type + '.json') as json_file:
+                test_json = json.load(json_file)
+                test_iob, slot_types = nlu_benchmark_to_structured_iob(train_json, intent_type, nlp)
+                test_slot_types.update(slot_types)
+            train_samples += train_iob
+            test_samples += test_iob
+            intents.add(intent_type)
+
+    train_slot_types = list(sorted(train_slot_types))
+    test_slot_types = list(sorted(test_slot_types))
+    intents = list(sorted(intents))
+
+    train_set = {
+        'data': train_samples,
+        'meta': {
+            'tokenizer': 'spacy',
+            'slot_types': train_slot_types,
+            'intent_types': intents
+        }
+    }
+    test_set = {
+        'data': test_samples,
+        'meta': {
+            'tokenizer': 'spacy',
+            'slot_types': test_slot_types,
+            'intent_types': intents
+        }
+    }
+
+    if not os.path.exists('nlu-benchmark/preprocessed'):
+        os.makedirs('nlu-benchmark/preprocessed')
+
+    with open('nlu-benchmark/preprocessed/fold_train.json', 'w') as outfile:
+        json.dump(train_set, outfile)
+
+    with open('nlu-benchmark/preprocessed/fold_test.json', 'w') as outfile:
+        json.dump(test_set, outfile)
+
+def nlu_benchmark_to_structured_iob(data, intent_type, nlp):
+    #train_iob, slot_types = nlu_benchmark_to_structured_iob(train_json, intent_type)
+    iob_result = []
+    slot_types = set()
+    for sample in data[intent_type]:
+        # build the annotations (start, end, slot_type)
+        annots = []
+        start_idx = 0
+        sentence = ''
+        words = []
+        slots = []
+        for span in sample['data']:
+            slot = span.get('entity', None)
+            if slot:
+                annots.append((start_idx, start_idx + len(span['text']), slot))
+            sentence += span['text']
+            start_idx += len(span['text'])
+
+        doc = nlp.make_doc(sentence)
+        tags = biluo_tags_from_offsets(doc, annots)
+        for word,tag in zip(doc,tags):
+            tag = re.sub(r'^U', "B", tag)
+            tag = re.sub(r'^L', "I", tag)
+            #this occurs when multiple spaces exist
+            word = word.text.strip()
+            # tokenization makes some word  like " ", removing them
+            if word:
+                words.append(word)
+                slots.append(tag)
+                slot_types.add(tag)
+
+        iob_result.append({
+            'words': words,
+            'length': len(words),
+            'slots': slots,
+            'intent': intent_type
+        })
+
+    return iob_result, slot_types
+
 def iob_lines_to_structured_iob(iob_lines):
     """
     Transforms an .iob file, whose lines are passed as parameters, to a structured representation.
@@ -264,10 +363,13 @@ def iob_lines_to_structured_iob(iob_lines):
         }
     }
 
-
+def load_nlp(lang_name='en'):
+    nlp = spacy.load(lang_name)
+    return nlp
 
 #atis_preprocess_old()
 #wit_preprocess_old('wit_en')
 #wit_preprocess_old('wit_it')
 
 atis_preprocess()
+nlu_benchmark_preprocess()

@@ -23,14 +23,14 @@ def accuracy_score(true_data, pred_data, true_length=None):
     return res
 
 
-def get_data_from_sequence_batch(true_batch, pred_batch, padding_token):
+def get_data_from_sequence_batch(true_batch, pred_batch, eos_token):
     """Extract data from a batch of sequences：
     [[3,1,2,0,0,0],[5,2,1,4,0,0]] -> [3,1,2,5,2,1,4]"""
     true_ma = []
     pred_ma = []
     for idx, true in enumerate(true_batch):
         where = true.tolist()
-        lentgth = where.index(padding_token)
+        lentgth = where.index(eos_token)
         true = true[:lentgth]
         pred = pred_batch[idx][:lentgth]
         true_ma.extend(true.tolist())
@@ -38,14 +38,14 @@ def get_data_from_sequence_batch(true_batch, pred_batch, padding_token):
     return true_ma, pred_ma
 
 
-def f1_for_sequence_batch(true_batch, pred_batch, average="micro", padding_token='<PAD>'):
-    true, pred = get_data_from_sequence_batch(true_batch, pred_batch, padding_token)
+def f1_for_sequence_batch(true_batch, pred_batch, average="micro", eos_token='<EOS>'):
+    true, pred = get_data_from_sequence_batch(true_batch, pred_batch, eos_token)
     labels = list(set(true))
     return f1_score(true, pred, labels=labels, average=average)
 
 
-def accuracy_for_sequence_batch(true_batch, pred_batch, padding_token=0):
-    true, pred = get_data_from_sequence_batch(true_batch, pred_batch, padding_token)
+def accuracy_for_sequence_batch(true_batch, pred_batch, eos_token='<EOS>'):
+    true, pred = get_data_from_sequence_batch(true_batch, pred_batch, eos_token)
     return accuracy_score(true, pred)
 
 def f1_for_intents(true, pred, average="micro"):

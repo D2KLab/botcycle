@@ -75,7 +75,7 @@ class WhitespaceTokenizer(object):
 
 
 class FixedEmbeddings(object):
-    def __init__(self, vocab=None, embedding_size=300, lang='en'):
+    def __init__(self, vocab=None, embedding_size=300, lang='en_core_web_md'):
         self.embedding_size = embedding_size
         if embedding_size != 300:
             raise ValueError('embedding size mismatch with precomputed embeddings!')
@@ -107,7 +107,7 @@ class FixedEmbeddings(object):
         return result
 
 class FineTuneEmbeddings(FixedEmbeddings):
-    def __init__(self, vocab=None, embedding_size=300, lang='en'):
+    def __init__(self, embedding_size, vocab=None, lang='en'):
         super().__init__(vocab, embedding_size, lang)
 
         self.fine_tune_embeddings = tf.Variable(initial_value=np.identity(self.embedding_size), dtype=tf.float32)

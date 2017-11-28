@@ -39,9 +39,9 @@ class Model:
         # then create the embeddings and mapper (one-hot index to words and viceversa) for each one of them
         # For input words embedder, can choose between EmbeddingsFromScratch, FixedEmbeddings, FineTueEmbeddings:
         # choose if input words are trained as part of the model from scratch, or come precomputed, or precomputed+linear transformation
-        self.wordsEmbedder = FineTuneEmbeddings(self.input_embedding_size)
+        #self.wordsEmbedder = FineTuneEmbeddings(self.input_embedding_size)
         #self.wordsEmbedder = FixedEmbeddings(self.input_embedding_size)
-        #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
+        self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
         self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, self.embedding_size)
         self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, self.embedding_size)
 
@@ -188,7 +188,8 @@ class Model:
         # Truncate them on the actual decoding maximum number of steps (to have same length as decoder outputs)
         self.decoder_targets_true_length = self.decoder_targets_time_majored[:decoder_max_steps]
         # Define mask so padding does not count towards loss calculation
-        self.mask = tf.to_float(tf.not_equal(self.decoder_targets_true_length, 0))
+        # TODO 0 depends on the id associated to '<PAD>'. Change it to slotEmbedder.get_id('<PAD>')
+        self.mask = tf.to_float(tf.not_equal(self.decoder_targets_true_length, self.slotEmbedder.get_indexes_from_words_list(['<PAD>'])[0]))
 
         # For the intent
         intent_ids_targets = self.intentEmbedder.get_indexes_from_words_tensor(self.intent_targets)
@@ -218,18 +219,18 @@ class Model:
         if mode not in ['train', 'test']:
             print('mode is not supported', file=sys.stderr)
             sys.exit(1)
-        unziped = list(zip(*train_batch))
+        seq_in, length, seq_out, intent = list(zip(*[(sample['words'], sample['length'], sample['slots'], sample['intent']) for sample in train_batch]))
         if mode == 'train':
             output_feeds = [self.train_op, self.loss, self.decoder_prediction,
                             self.intent, self.mask]
-            feed_dict = {self.words_inputs: np.transpose(unziped[0], [1, 0]),
-                         self.encoder_inputs_actual_length: unziped[1],
-                         self.decoder_targets: unziped[2],
-                         self.intent_targets: unziped[3]}
+            feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
+                         self.encoder_inputs_actual_length: length,
+                         self.decoder_targets: seq_out,
+                         self.intent_targets: intent}
         if mode in ['test']:
             output_feeds = [self.decoder_prediction, self.intent]
-            feed_dict = {self.words_inputs: np.transpose(unziped[0], [1, 0]),
-                         self.encoder_inputs_actual_length: unziped[1]}
+            feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
+                         self.encoder_inputs_actual_length: length}
 
         results = sess.run(output_feeds, feed_dict=feed_dict)
         if mode in ['test']:

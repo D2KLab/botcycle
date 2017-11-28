@@ -53,7 +53,7 @@ def data_pipeline(data, length=50):
         sout.append(sample['slots'])
         intent.append(sample['intent'])
     
-    data = list(zip(sin, lengths, sout, intent))
+    #data = list(zip(sin, lengths, sout, intent))
     return data
 
 def get_vocabularies(train_data):
@@ -61,14 +61,15 @@ def get_vocabularies(train_data):
     collect the input vocabulary, the slot vocabulary and the intent vocabulary
     """
     # from a list of training examples, get three lists (columns)
-    seq_in, _, seq_out, intent = list(zip(*train_data))
+    data = train_data['data']
+    seq_in = [sample['words'] for sample in data]
     vocab = set(flatten(seq_in))
     # removing duplicated but keeping the order
     v = ['<PAD>','<SOS>', '<EOS>'] + list(vocab)
     vocab = sorted(set(v), key=lambda x: v.index(x))
-    s = ['<PAD>', '<EOS>'] + flatten(seq_out)
+    s = ['<PAD>', '<EOS>'] + train_data['meta']['slot_types']
     slot_tag = sorted(set(s), key=lambda x: s.index(x))
-    intent_tag = set(intent)
+    intent_tag = set(train_data['meta']['intent_types'])
 
     return vocab, slot_tag, intent_tag
 
