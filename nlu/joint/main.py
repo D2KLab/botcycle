@@ -1,4 +1,5 @@
 import random
+import sys
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
 import numpy as np
@@ -68,7 +69,8 @@ def train(is_debug=False):
                 if i > 0:
                     mean_loss = mean_loss / 10.0
                 #print('Average train loss at epoch %d, step %d: %f' % (epoch, i, mean_loss))
-                print('.', end=' ')
+                print('.', end='')
+                sys.stdout.flush()
                 mean_loss = 0
         train_loss /= (i + 1)
         print("[Epoch {}] Average train loss: {}".format(epoch, train_loss))
@@ -106,6 +108,8 @@ def train(is_debug=False):
             # print(true_slot, decoder_prediction)
             slot_acc = metrics.accuracy_score(true_slot, decoder_prediction, true_length)
             intent_acc = metrics.accuracy_score(true_intent, intent)
+            print('.', end='')
+            sys.stdout.flush()
             #print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
         pred_slots_a = np.vstack(pred_slots)
         # print("pred_slots_a: ", pred_slots_a.shape)
@@ -113,6 +117,7 @@ def train(is_debug=False):
         f1_intents = metrics.f1_for_intents(pred_intents, true_intents)
         f1_slots = metrics.f1_for_sequence_batch(true_slots_a, pred_slots_a)
         # print("true_slots_a: ", true_slots_a.shape)
+        print('epoch {} ended'.format(epoch))
         print("F1 score SEQUENCE for epoch {}: {}".format(epoch, f1_slots))
         print("F1 score INTENTS for epoch {}: {}".format(epoch, f1_intents))
         history['intent'][epoch] = f1_intents

@@ -222,7 +222,7 @@ def nlu_benchmark_preprocess():
             print('test ' + intent_type)
             with open(intent_path + '/validate_' + intent_type + '.json') as json_file:
                 test_json = json.load(json_file)
-                test_iob, slot_types = nlu_benchmark_to_structured_iob(train_json, intent_type, nlp)
+                test_iob, slot_types = nlu_benchmark_to_structured_iob(test_json, intent_type, nlp)
                 test_slot_types.update(slot_types)
             train_samples += train_iob
             test_samples += test_iob
