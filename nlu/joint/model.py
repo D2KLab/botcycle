@@ -8,7 +8,7 @@ from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddin
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 class Model:
-    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, batch_size=16):
+    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, batch_size=None):
         # save the parameters
         self.input_steps = input_steps
         self.embedding_size = embedding_size
@@ -33,6 +33,9 @@ class Model:
         
 
     def build(self, tokenizer='space', language='en'):
+        # get the tensor for batch size
+        batch_size_tensor = tf.shape(self.words_inputs)[1]
+
         # unpack the vocabularies
         input_vocab, slot_vocab, intent_vocab = self.vocabs
 
@@ -98,7 +101,8 @@ class Model:
         # Initial values to provide to the decoding stage
         # generate a tensor of batch_size * 'O' for start of sentence.
         # This value will be passed to first iteration of decoding in place of the previous slot label
-        sos_time_slice = tf.constant(np.tile('O', self.batch_size))
+        sos_time_slice = tf.fill((batch_size_tensor,), 'O')
+
 
         # the following functions are used by the CustomHelper
         def initial_fn():
@@ -163,7 +167,7 @@ class Model:
                 decoder = tf.contrib.seq2seq.BasicDecoder(
                     cell=out_cell, helper=helper,
                     initial_state=out_cell.zero_state(
-                        dtype=tf.float32, batch_size=self.batch_size))
+                        dtype=tf.float32, batch_size=batch_size_tensor))
                 # And finally perform the decode
                 final_outputs, final_state, final_sequence_lengths = tf.contrib.seq2seq.dynamic_decode(
                     decoder=decoder, output_time_major=True,

@@ -15,21 +15,20 @@ embedding_size = 64
 # size of LSTM cells
 hidden_size = 100
 # size of batch
-# TODO fix problem of last batch (not full --> pad?)
 batch_size = 16
 # number of training epochs
 epoch_num = 50
 
 
 def get_model(vocabs, tokenizer, language):
-    model = Model(input_steps, embedding_size, hidden_size, vocabs, batch_size)
+    model = Model(input_steps, embedding_size, hidden_size, vocabs, None)
     model.build(tokenizer, language)
     return model
 
 
 def train(is_debug=False):
     # load the train and dev datasets
-    test_data, train_data = data.load_data('wit_en')
+    test_data, train_data = data.load_data('atis')
     # fix the random seeds
     random_seed_init(len(test_data['data']))
     # preprocess them to list of training/test samples
