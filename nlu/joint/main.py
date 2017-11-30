@@ -1,6 +1,7 @@
 import random
 import sys
 import os
+import json
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
 import numpy as np
@@ -22,6 +23,9 @@ epoch_num = 50
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
+DATASET = os.environ.get('DATASET', 'atis')
+OUTPUT_FOLDER = os.environ.get('OUTPUT_FOLDER', 'last')
+
 def get_model(vocabs, tokenizer, language):
     model = Model(input_steps, embedding_size, hidden_size, vocabs, None)
     model.build(tokenizer, language)
@@ -30,7 +34,7 @@ def get_model(vocabs, tokenizer, language):
 
 def train(is_debug=False):
     # load the train and dev datasets
-    test_data, train_data = data.load_data('atis')
+    test_data, train_data = data.load_data(DATASET)
     # fix the random seeds
     random_seed_init(len(test_data['data']))
     # preprocess them to list of training/test samples
@@ -130,13 +134,21 @@ def train(is_debug=False):
         history['intent'][epoch] = f1_intents
         history['slot'][epoch] = f1_slots
 
-    metrics.plot_f1_history('f1.png', history)
-    print(history)
-    saver.save(sess, MY_PATH + '/saved/model.ckpt')
+    real_folder = MY_PATH + '/results/' + OUTPUT_FOLDER + '/' + DATASET + '/'
+    if not os.path.exists(real_folder):
+        os.makedirs(real_folder)
+    metrics.plot_f1_history(real_folder + 'f1.png', history)
+    save_history(history, real_folder + 'history.json')
+    saver.save(sess, real_folder + 'model.ckpt')
 
 def random_seed_init(seed):
     random.seed(seed)
     tf.set_random_seed(seed)
+
+def save_history(history, file_path):
+    history_serializable = {k:v.tolist() for k,v in history.items()}
+    with open(file_path, 'w') as out_file:
+        json.dump(history_serializable, out_file)
 
 if __name__ == '__main__':
     train()
