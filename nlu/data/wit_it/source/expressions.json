@@ -40,6 +40,59 @@
       ]
     },
     {
+      "text" : "Come posso raggiungere Pozzo Strada da Piazza Castello?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Pozzo Strada\"",
+          "role" : "to",
+          "start" : 23,
+          "end" : 35
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piazza Castello\"",
+          "role" : "from",
+          "start" : 39,
+          "end" : 54
+        }
+      ]
+    },
+    {
+      "text" : "Dammi una bici a piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "start" : 17,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "Dammi una bici al poli",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"poli\"",
+          "start" : 18,
+          "end" : 22
+        }
+      ]
+    },
+    {
       "text" : "Dove posso parcheggiare la bici vicino a Torino Porta Nuova?",
       "entities" : [
         {
@@ -84,6 +137,15 @@
         {
           "entity" : "intent",
           "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Mi serve una bici",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
         }
       ]
     },
@@ -133,6 +195,21 @@
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Una bicicletta a Piazza Castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piazza Castello\"",
+          "start" : 17,
+          "end" : 32
         }
       ]
     },
@@ -525,6 +602,15 @@
       ]
     },
     {
+      "text" : "voglio andare",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        }
+      ]
+    },
+    {
       "text" : "voglio andare a casa",
       "entities" : [
         {
@@ -591,6 +677,22 @@
           "role" : "to",
           "start" : 34,
           "end" : 49
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare da torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "role" : "from",
+          "start" : 17,
+          "end" : 23
         }
       ]
     },

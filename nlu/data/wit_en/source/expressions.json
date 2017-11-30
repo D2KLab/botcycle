@@ -616,6 +616,15 @@
       ]
     },
     {
+      "text" : "do you know where can I find a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
       "text" : "do you know where i can leave a bike near reggia di venaria?",
       "entities" : [
         {
@@ -1556,6 +1565,21 @@
       ]
     },
     {
+      "text" : "i am in politecnico di torino sede centrale",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico di torino sede centrale\"",
+          "start" : 8,
+          "end" : 43
+        }
+      ]
+    },
+    {
       "text" : "i am in torino",
       "entities" : [
         {
@@ -1567,6 +1591,21 @@
           "value" : "\"torino\"",
           "start" : 8,
           "end" : 14
+        }
+      ]
+    },
+    {
+      "text" : "i am in via delle rosine 3 torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via delle rosine 3 torino\"",
+          "start" : 8,
+          "end" : 33
         }
       ]
     },
@@ -2366,6 +2405,22 @@
           "role" : "to",
           "start" : 16,
           "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to nice",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"nice\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 20
         }
       ]
     },
