@@ -79,12 +79,20 @@ class FixedEmbeddings(object):
         self.language = language
         if language == 'en':
             language = 'en_core_web_md'
-            self.embedding_size = 300
-        else:
-            self.embedding_size = 384
 
         import spacy
         self.nlp = spacy.load(language)
+        if language == 'it':
+            # load the pretrained glove italian vectors
+            self.nlp.vocab.vectors.from_disk('data/embeddings/glove_wiki_it/spacy_vectors_it')
+            if self.nlp.vocab.vectors.shape[0] == 0:
+                raise FileNotFoundError('impossible to find the embeddings file, run make create_it_embeddings')
+
+        self.embedding_size = self.nlp.vocab.vectors.shape[1]
+        if self.embedding_size == 0:
+            # context vectors only
+            self.embedding_size = 384
+
         print('tokenizer:', tokenizer, 'language:', language)
         if tokenizer == 'space':
             self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
@@ -94,25 +102,43 @@ class FixedEmbeddings(object):
         def spacy_wrapper(words_numpy):
             embeddings_values = np.zeros([words_numpy.shape[0], words_numpy.shape[1], self.embedding_size], dtype=np.float32)
             for j, column in enumerate(words_numpy.T):
-                # build the sentence, discarding EOS
-                sentence = ' '.join([w.decode('utf-8') for w in column][:-1])
-                sentence = sentence.replace('<','')
-                sentence = sentence.replace('>','')
-                # apostrophe problem -> custom tokenizer
-                if self.language == 'en':
+                # rebuild the sentence
+                words = [w.decode('utf-8') for w in column]
+                real_length = words.index('<EOS>')
+                # special value for EOS
+                embeddings_values[real_length,j,:] = np.ones((self.embedding_size))
+                # remove padding words, embedding values have already been initialized to zero
+                words = words[:real_length]
+                if self.language == 'it':
+                    # TODO generate better embeddings, as now italian embeddings are only for lowercase
+                    words = [w.lower() for w in words]
+                # put back together the sentence in order to get the word embeddings with context (only for languages without vectors)
+                # TODO skip this if always word vectors, since if word vectors are part of the model, they are fixed and can get them simply by doing lookup
+                # unless contextual vectors can be built also when vectors are there
+                sentence = ' '.join(words)
+                if self.language == 'en' or self.language == 'it':
+                    # only make_doc instead of calling nlp, much faster
                     doc = self.nlp.make_doc(sentence)
                 else:
-                    # other languages don't have pretrained word embeddings but use context vectors
-                    # TODO add italian embeddings
+                    # other languages don't have pretrained word embeddings but use context vectors, really slower
                     doc = self.nlp(sentence)
-                #assert len(doc) is column.size
-                # TODO problems when PAD or EOS are actual words!!
+                # now get the vectors for each token
                 for i, w in enumerate(doc):
-                    if i >= words_numpy.shape[0]:
-                        print('out of length', w)
-                        print(sentence)
-                    else:
-                        embeddings_values[i,j,:] = w.vector
+                    if i < real_length:
+                        if i >= words_numpy.shape[0]:
+                            print('out of length', w)
+                            print(sentence)
+                        else:
+                            if not w.has_vector:
+                                #print('word', w, 'does not have a vector')
+                                punctuations = '.?!,;:-_()[]{}\''
+                                # TODO handle OOV punctuation marks without special case
+                                if self.language == 'it' and w.text in punctuations:
+                                    punct_idx = punctuations.index(w.text)
+                                    embeddings_values[i,j,:] = np.ones((self.embedding_size))*punct_idx+2
+                            else:
+                                embeddings_values[i,j,:] = w.vector
+                        
             return embeddings_values
 
         result = tf.py_func(spacy_wrapper, [words], tf.float32, stateful=False)

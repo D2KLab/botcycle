@@ -6,6 +6,9 @@ default:
 download:
 	pushd data && bash download.sh && popd
 
+create_it_embeddings:
+	pushd data/embeddings && bash get_glove_wiki_it.sh && popd
+
 preprocess:
 	pushd data && python preprocess.py && popd
 
