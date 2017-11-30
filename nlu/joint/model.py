@@ -2,7 +2,7 @@ import sys
 import tensorflow as tf
 from tensorflow.contrib import layers
 import numpy as np
-from tensorflow.contrib.rnn import LSTMCell, LSTMStateTuple
+from tensorflow.contrib.rnn import BasicLSTMCell, LSTMStateTuple
 from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddings
 
 flatten = lambda l: [item for sublist in l for item in sublist]
@@ -46,8 +46,8 @@ class Model:
         self.wordsEmbedder = FixedEmbeddings(tokenizer, language)
         self.input_embedding_size = self.wordsEmbedder.embedding_size
         #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
-        self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, self.embedding_size)
-        self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, self.embedding_size)
+        self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, 'slot', self.embedding_size)
+        self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, 'intent', self.embedding_size)
 
         # the embedded inputs
         self.encoder_inputs_embedded = self.wordsEmbedder.get_word_embeddings(self.words_inputs)
@@ -55,8 +55,8 @@ class Model:
         # Encoder
 
         # Definition of cells used for bidirectional RNN encoder
-        encoder_f_cell = LSTMCell(self.hidden_size)
-        encoder_b_cell = LSTMCell(self.hidden_size)
+        encoder_f_cell = BasicLSTMCell(self.hidden_size)
+        encoder_b_cell = BasicLSTMCell(self.hidden_size)
         # Bidirectional RNN
         # The size of the following four variables：T*B*D，T*B*D，B*D，B*D
         (encoder_fw_outputs, encoder_bw_outputs), (encoder_fw_final_state, encoder_bw_final_state) = \
@@ -82,9 +82,9 @@ class Model:
         # Intent output
         
         # Define the weights and biases to perform the output projection on the intent output
-        intent_W = tf.Variable(tf.random_uniform([self.hidden_size * 2, self.intentEmbedder.vocab_size], -0.1, 0.1),
-                               dtype=tf.float32, name="intent_W")
-        intent_b = tf.Variable(tf.zeros([self.intentEmbedder.vocab_size]), dtype=tf.float32, name="intent_b")
+        intent_W = tf.get_variable('intent_W', initializer=tf.random_uniform([self.hidden_size * 2, self.intentEmbedder.vocab_size], -0.1, 0.1),
+                               dtype=tf.float32)
+        intent_b = tf.get_variable("intent_b", initializer=tf.zeros([self.intentEmbedder.vocab_size]), dtype=tf.float32)
 
         # perform the feed-forward layer
         intent_logits = tf.add(tf.matmul(encoder_final_state_h, intent_W), intent_b)
@@ -143,39 +143,37 @@ class Model:
         my_helper = tf.contrib.seq2seq.CustomHelper(initial_fn, sample_fn, next_inputs_fn)
 
         # Decoding function
-        def decode(helper, scope, reuse=None):
-            # define an isolated scope
-            with tf.variable_scope(scope, reuse=reuse):
-                # Get the memory representation (for the attention) by making the
-                # encoder outputs dimensions from (time, batch, hidden_size) to (batch, time, hidden_size)
-                memory = tf.transpose(encoder_outputs, [1, 0, 2])
-                # Use the BahdanauAttention on the memory
-                attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
-                    num_units=self.hidden_size, memory=memory,
-                    memory_sequence_length=self.encoder_inputs_actual_length)
-                # The decoding LSTM cell
-                cell = tf.contrib.rnn.LSTMCell(num_units=self.hidden_size * 2)
-                # that gets wrapped inside the attention mechanism
-                attn_cell = tf.contrib.seq2seq.AttentionWrapper(
-                    cell, attention_mechanism, attention_layer_size=self.hidden_size)
-                # and gets wrapped inside a output projection wrapper (weights+biases),
-                # to have an output with logits on the slot labels dimension
-                out_cell = tf.contrib.rnn.OutputProjectionWrapper(
-                    attn_cell, self.slotEmbedder.vocab_size, reuse=reuse
-                )
-                # Define the decoder by combining the helper with the RNN cell
-                decoder = tf.contrib.seq2seq.BasicDecoder(
-                    cell=out_cell, helper=helper,
-                    initial_state=out_cell.zero_state(
-                        dtype=tf.float32, batch_size=batch_size_tensor))
-                # And finally perform the decode
-                final_outputs, final_state, final_sequence_lengths = tf.contrib.seq2seq.dynamic_decode(
-                    decoder=decoder, output_time_major=True,
-                    impute_finished=True, maximum_iterations=self.input_steps
-                )
-                return final_outputs
+        def decode(helper):
+            # Get the memory representation (for the attention) by making the
+            # encoder outputs dimensions from (time, batch, hidden_size) to (batch, time, hidden_size)
+            memory = tf.transpose(encoder_outputs, [1, 0, 2])
+            # Use the BahdanauAttention on the memory
+            attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+                num_units=self.hidden_size, memory=memory,
+                memory_sequence_length=self.encoder_inputs_actual_length)
+            # The decoding LSTM cell
+            cell = BasicLSTMCell(num_units=self.hidden_size * 2)
+            # that gets wrapped inside the attention mechanism
+            attn_cell = tf.contrib.seq2seq.AttentionWrapper(
+                cell, attention_mechanism, attention_layer_size=self.hidden_size)
+            # and gets wrapped inside a output projection wrapper (weights+biases),
+            # to have an output with logits on the slot labels dimension
+            out_cell = tf.contrib.rnn.OutputProjectionWrapper(
+                attn_cell, self.slotEmbedder.vocab_size
+            )
+            # Define the decoder by combining the helper with the RNN cell
+            decoder = tf.contrib.seq2seq.BasicDecoder(
+                cell=out_cell, helper=helper,
+                initial_state=out_cell.zero_state(
+                    dtype=tf.float32, batch_size=batch_size_tensor))
+            # And finally perform the decode
+            final_outputs, final_state, final_sequence_lengths = tf.contrib.seq2seq.dynamic_decode(
+                decoder=decoder, output_time_major=True,
+                impute_finished=True, maximum_iterations=self.input_steps
+            )
+            return final_outputs
 
-        outputs = decode(my_helper, 'decode')
+        outputs = decode(my_helper)
         
         # Now from the slot decoder outputs, get the corresponding output word (slot label, from ids to words)
         self.decoder_prediction = self.slotEmbedder.get_words_from_indexes(tf.to_int64(outputs.sample_id))

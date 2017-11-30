@@ -63,13 +63,14 @@ def get_vocabularies(train_data):
     # from a list of training examples, get three lists (columns)
     data = train_data['data']
     seq_in = [sample['words'] for sample in data]
-    vocab = set(flatten(seq_in))
+    vocab = flatten(seq_in)
     # removing duplicated but keeping the order
-    v = ['<PAD>','<SOS>', '<EOS>'] + list(vocab)
+    v = ['<PAD>','<SOS>', '<EOS>'] + vocab
     vocab = sorted(set(v), key=lambda x: v.index(x))
     s = ['<PAD>', '<EOS>'] + train_data['meta']['slot_types']
     slot_tag = sorted(set(s), key=lambda x: s.index(x))
-    intent_tag = set(train_data['meta']['intent_types'])
+    i = train_data['meta']['intent_types']
+    intent_tag = sorted(set(i), key=lambda x: i.index(x))
 
     return vocab, slot_tag, intent_tag
 

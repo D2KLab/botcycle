@@ -1,5 +1,6 @@
 import random
 import sys
+import os
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
 import numpy as np
@@ -19,6 +20,7 @@ batch_size = 16
 # number of training epochs
 epoch_num = 50
 
+MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
 def get_model(vocabs, tokenizer, language):
     model = Model(input_steps, embedding_size, hidden_size, vocabs, None)
@@ -45,14 +47,17 @@ def train(is_debug=False):
     vocabs = data.get_vocabularies(training_samples)
     # and get the model
     model = get_model(vocabs, training_samples['meta']['tokenizer'], training_samples['meta']['language'])
+    global_init_op = tf.global_variables_initializer()
+    table_init_op = tf.tables_initializer()
+    saver = tf.train.Saver()
     sess = tf.Session()
     if is_debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)
         sess.add_tensor_filter("has_inf_or_nan", tf_debug.has_inf_or_nan)
     
     # initialize the required parameters
-    sess.run(tf.global_variables_initializer())
-    sess.run(tf.tables_initializer())
+    sess.run(global_init_op)
+    sess.run(table_init_op)
 
     # initialize the history that will collect some measures
     history = {
@@ -127,6 +132,7 @@ def train(is_debug=False):
 
     metrics.plot_f1_history('f1.png', history)
     print(history)
+    saver.save(sess, MY_PATH + '/saved/model.ckpt')
 
 def random_seed_init(seed):
     random.seed(seed)

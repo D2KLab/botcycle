@@ -3,7 +3,7 @@ import numpy as np
 
 class EmbeddingsFromScratch(object):
   
-    def __init__(self, vocab, embedding_size):
+    def __init__(self, vocab, name, embedding_size):
         """
         vocab is a list of words
         """
@@ -24,7 +24,7 @@ class EmbeddingsFromScratch(object):
 
         self.embedding_size = embedding_size
 
-        self.embeddings = tf.Variable(tf.random_uniform([self.vocab_size, self.embedding_size], -0.1, 0.1), dtype=tf.float32)
+        self.embeddings = tf.get_variable(name + '_embeddings', initializer=tf.random_uniform([self.vocab_size, self.embedding_size], -0.1, 0.1), dtype=tf.float32)
 
     def get_embeddings(self):
         """
@@ -147,10 +147,10 @@ class FixedEmbeddings(object):
         return result
 
 class FineTuneEmbeddings(FixedEmbeddings):
-    def __init__(self, tokenizer='space', language='en'):
+    def __init__(self, name, tokenizer='space', language='en'):
         super().__init__(tokenizer, language)
 
-        self.fine_tune_embeddings = tf.Variable(initial_value=np.identity(self.embedding_size), dtype=tf.float32)
+        self.fine_tune_embeddings = tf.get_variable(name + '_fine_tune', initializer=tf.constant(np.identity(self.embedding_size)), dtype=tf.float32)
 
     def get_word_embeddings(self, words):
 
