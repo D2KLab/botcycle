@@ -2,6 +2,7 @@ models/
 other/
 results/
 glove_wiki_it/
+glove_wiki_it_whitespace/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

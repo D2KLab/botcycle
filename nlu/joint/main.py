@@ -139,6 +139,7 @@ def train(is_debug=False):
         os.makedirs(real_folder)
     metrics.plot_f1_history(real_folder + 'f1.png', history)
     save_history(history, real_folder + 'history.json')
+    saver = tf.train.Saver()
     saver.save(sess, real_folder + 'model.ckpt')
 
 def random_seed_init(seed):

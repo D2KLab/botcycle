@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.contrib import layers
 import numpy as np
 from tensorflow.contrib.rnn import BasicLSTMCell, LSTMStateTuple
-from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddings
+from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddings, spacy_wrapper
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
@@ -23,7 +23,7 @@ class Model:
         # In this way the one_hot encoding stuff and embeddings are managed by the embedding classes.
         # This makes the input always to be strings, both when the embeddings are part of the model
         # both when are precomputed
-        self.words_inputs = tf.placeholder(tf.string, [input_steps, batch_size], name="word_inputs")
+        self.words_inputs = tf.placeholder(tf.string, [input_steps, batch_size], name="words_inputs")
         # This placeholder is for the actual length of each sentence, used in decoding
         self.encoder_inputs_actual_length = tf.placeholder(tf.int32, [batch_size], name='encoder_inputs_actual_length')
         # Placeholder for the output sequence, used in train mode as truth value
@@ -92,6 +92,8 @@ class Model:
         intent_id = tf.argmax(intent_logits, axis=1)
         # and translate to the corresponding string
         self.intent = self.intentEmbedder.get_words_from_indexes(intent_id)
+        # make this tensor retrievable by name at test time
+        self.intent = tf.identity(self.intent, name="intent")
 
 
         # Slot label decoder
@@ -177,6 +179,8 @@ class Model:
         
         # Now from the slot decoder outputs, get the corresponding output word (slot label, from ids to words)
         self.decoder_prediction = self.slotEmbedder.get_words_from_indexes(tf.to_int64(outputs.sample_id))
+        # make this tensor retrievable by name at test time
+        self.decoder_prediction = tf.identity(self.decoder_prediction, name="decoder_prediction")
         # Get some informations on the performed decoding: the maximum number of steps done in the batch
         decoder_max_steps, _, _ = tf.unstack(tf.shape(outputs.rnn_output))
 
@@ -243,4 +247,52 @@ class Model:
             for idx, intent in enumerate(intent_batch):
                 intent_batch[idx] = intent.decode('utf-8')
             results = slots_batch, intent_batch
+        return results
+
+class RestoredModel(object):
+    """
+    Restores a model from a checkpoint
+    """
+
+    def __init__(self, model_path, embedding_size, language, nlp):
+
+        # Step 1: restore the meta graph
+
+        with tf.Graph().as_default() as graph:
+            saver = tf.train.import_meta_graph(model_path + "model.ckpt.meta")
+        
+            self.graph = graph
+
+            # get tensors for inputs and outputs by name
+            self.decoder_prediction = graph.get_tensor_by_name('decoder_prediction:0')
+            self.intent = graph.get_tensor_by_name('intent:0')
+            self.words_inputs = graph.get_tensor_by_name('words_inputs:0')
+            self.encoder_inputs_actual_length = graph.get_tensor_by_name('encoder_inputs_actual_length:0')
+            # redefine the py_func that is not serializable
+            def static_wrapper(words):
+                return spacy_wrapper(embedding_size, language, nlp, words)
+
+            after_py_func = tf.py_func(static_wrapper, [self.words_inputs], tf.float32, stateful=False)
+
+            # Step 2: restore weights
+            self.sess = tf.Session()
+            self.sess.run(tf.tables_initializer())
+            saver.restore(self.sess, model_path + "model.ckpt")
+
+
+    def test(self, inputs):
+
+        seq_in, length = list(zip(*[(sample['words'], sample['length']) for sample in inputs]))
+        
+        output_feeds = [self.decoder_prediction, self.intent]
+        feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]), self.encoder_inputs_actual_length: length}
+
+        results = self.sess.run(output_feeds, feed_dict=feed_dict)
+
+        slots_batch, intent_batch = results
+        for idx, slots in enumerate(slots_batch):
+            slots_batch[idx] = np.array([slot.decode('utf-8') for slot in slots])
+        for idx, intent in enumerate(intent_batch):
+            intent_batch[idx] = intent.decode('utf-8')
+        results = slots_batch, intent_batch
         return results

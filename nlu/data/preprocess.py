@@ -276,6 +276,7 @@ def wit_preprocess(path, nlp):
     fold_size = len(dataset) // 5
     # TODO save also final_test set
     # TODO save also all together
+    # TODO do stratified split, in a way that each fold contains intents in right proportions
     train, dev, final_test = (dataset[:3*fold_size], dataset[3*fold_size:4*fold_size],dataset[4*fold_size:])
 
     slot_types = list(sorted(slot_types))
