@@ -5,23 +5,16 @@ import os
 import spacy
 from spacy.gold import iob_to_biluo, offsets_from_biluo_tags
 
-from . import data
 from .model import RestoredModel
-from .embeddings import get_language_model_name
+from .data import get_language_model_name
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.environ.get('DATASET', 'wit_it')
 
-real_folder = MY_PATH + '/results/last/' + DATASET + '/'
+real_folder = MY_PATH + '/results/' + DATASET + '/'
 
 def init():
-    test_data, train_data = data.load_data(DATASET, 'runtime')
-    # fix the random seeds
-    #random_seed_init(len(test_data['data']))
-    training_samples = data.adjust_sequences(train_data)
-
-    # only tokenizer needed
-    language = training_samples['meta']['language']
+    language = DATASET.split('_')[1]
     language_model_name = get_language_model_name(language)
     nlp = spacy.load(language_model_name)
     model = RestoredModel(real_folder, 300, language, nlp)

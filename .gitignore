@@ -1,3 +1,6 @@
+# the model results
+results/
+
 # the tokens file
 .env
 # the users_data folder

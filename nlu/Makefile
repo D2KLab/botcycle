@@ -31,4 +31,8 @@ train_joint:
 	python -m joint.main
 
 test_joint:
-	python -m joint.inference
+	pushd ../brain/botcycle/nlu/ && python -m joint.inference && popd
+
+build_models:
+	DATASET=wit_en $(MAKE) train_joint && DATASET=wit_it $(MAKE) train_joint &&\
+	 mkdir -p ../brain/botcycle/nlu/joint/results/ && cp -r joint/results/last/wit_* ../brain/botcycle/nlu/joint/results/
