@@ -4,45 +4,55 @@ import random
 import numpy as np
 
 
-flatten = lambda l: [item for sublist in l for item in sublist]  # flatten from two-dimensional to one-dimensional
-index_seq2slot = lambda s, index2slot: [index2slot[i] for i in s]
-index_seq2word = lambda s, index2word: [index2word[i] for i in s]
+def flatten(list_of_lists):
+    """Flattens from two-dimensional list to one-dimensional list"""
+    return [item for sublist in list_of_lists for item in sublist]
 
-def load_data(dataset_name):
-    """Returns data_splitted.
 
-    data_splitted can be [fold1, fold2, fold3, fold4, fold5] or [test, train], look at the size"""
+def load_data(dataset_name, mode='measures'):
+    """Loads the dataset and returns it.
+    
+    if mode='measures' (default), returns [test_data, train_data]
+    
+    if mode='runtime', returns [None, all the data together], to do a full training to be used at runtime"""
     path = 'data/' + dataset_name + '/preprocessed'
 
     fold_files = os.listdir(path)
     fold_files = sorted([f for f in fold_files if f.startswith('fold_')])
+    final_test = 'final_test.json'
 
     data_splitted = []
     for file_name in fold_files:
         with open(path + '/' + file_name) as json_file:
             data_splitted.append(json.load(json_file))
 
-    return data_splitted
+    if mode == 'measures':
+        return data_splitted
+    elif mode == 'runtime':
+        with open(path + '/' + final_test) as json_file:
+            result = json.load(json_file)
+        for split in data_splitted:
+            result['data'].extend(split['data'])
+        return None, result
+    else:
+        raise ValueError('mode unsupported:' + mode)
 
-def data_pipeline(data, length=50):
-    # TODO use data in structured form instead of other arrays
-    sin = []
-    lengths = []
-    sout = []
-    intent = []
+
+def adjust_sequences(data, length=50):
+    """Fixes the input and output sequences in length, adding padding or truncating if necessary"""
     for sample in data['data']:
+        # adjust the sequence of input words
         if len(sample['words']) < length:
+            # add <EOS> and <PAD> if sentence is shorter than maximum length
             sample['words'].append('<EOS>')
             while len(sample['words']) < length:
                 sample['words'].append('<PAD>')
         else:
+            # otherwise truncate and add <EOS> at last position
             sample['words'] = sample['words'][:length]
             sample['words'][-1] = '<EOS>'
 
-        sin.append(sample['words'])
-        true_length = sample['length']
-        lengths.append(true_length)
-
+        # adjust in the same way the sequence of output slots
         if len(sample['slots']) < length:
             sample['slots'].append('<EOS>')
             while len(sample['slots']) < length:
@@ -50,22 +60,18 @@ def data_pipeline(data, length=50):
         else:
             sample['slots'] = sample['slots'][:length]
             sample['slots'][-1] = '<EOS>'
-        sout.append(sample['slots'])
-        intent.append(sample['intent'])
-    
-    #data = list(zip(sin, lengths, sout, intent))
+
     return data
 
+
 def get_vocabularies(train_data):
-    """
-    collect the input vocabulary, the slot vocabulary and the intent vocabulary
-    """
+    """Collect the input vocabulary, the slot vocabulary and the intent vocabulary"""
     # from a list of training examples, get three lists (columns)
     data = train_data['data']
     seq_in = [sample['words'] for sample in data]
     vocab = flatten(seq_in)
     # removing duplicated but keeping the order
-    v = ['<PAD>','<SOS>', '<EOS>'] + vocab
+    v = ['<PAD>', '<SOS>', '<EOS>'] + vocab
     vocab = sorted(set(v), key=lambda x: v.index(x))
     s = ['<PAD>', '<EOS>'] + train_data['meta']['slot_types']
     slot_tag = sorted(set(s), key=lambda x: s.index(x))
@@ -75,8 +81,8 @@ def get_vocabularies(train_data):
     return vocab, slot_tag, intent_tag
 
 
-# TODO check batch generation
-def getBatch(batch_size, train_data):
+def get_batch(batch_size, train_data):
+    """Returns iteratively a batch of specified size on the data. The last batch can be smaller if the total size is not multiple of the batch"""
     random.shuffle(train_data)
     sindex = 0
     eindex = batch_size
@@ -85,5 +91,5 @@ def getBatch(batch_size, train_data):
         temp = eindex
         eindex = eindex + batch_size
         sindex = temp
-        #print('returning',len(batch), 'samples')
+        #print('returning', len(batch), 'samples')
         yield batch
