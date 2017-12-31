@@ -29,3 +29,6 @@ test_wit:
 
 train_joint:
 	python -m joint.main
+
+test_joint:
+	python -m joint.inference

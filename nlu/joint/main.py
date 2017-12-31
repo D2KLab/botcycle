@@ -146,6 +146,8 @@ def train(mode):
         saver = tf.train.Saver()
         saver.save(sess, real_folder + 'model.ckpt')
 
+
+
 def random_seed_init(seed):
     random.seed(seed)
     tf.set_random_seed(seed)
@@ -156,9 +158,9 @@ def save_history(history, file_path):
         json.dump(history_serializable, out_file)
 
 if __name__ == '__main__':
-    # for those two datasets, default to measure + train full
+    # for those two datasets, default to train full
     if (DATASET == 'wit_en' or DATASET == 'wit_it') and not MODE:
-        train('measures')
+        #train('measures') # not possible until reset py_func (2 declared)
         train('runtime')
     else:
         if not MODE:

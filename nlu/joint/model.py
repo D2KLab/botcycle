@@ -275,7 +275,7 @@ class RestoredModel(object):
             def static_wrapper(words):
                 return spacy_wrapper(embedding_size, language, nlp, words)
 
-            after_py_func = tf.py_func(static_wrapper, [self.words_inputs], tf.float32, stateful=False)
+            after_py_func = tf.py_func(static_wrapper, [self.words_inputs], tf.float32, stateful=False, name='spacy_wrapper')
 
             # Step 2: restore weights
             self.sess = tf.Session()

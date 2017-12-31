@@ -103,7 +103,7 @@ class FixedEmbeddings(object):
         def static_wrapper(words):
             return spacy_wrapper(self.embedding_size, self.language, self.nlp, words)
 
-        result = tf.py_func(static_wrapper, [words], tf.float32, stateful=False)
+        result = tf.py_func(static_wrapper, [words], tf.float32, stateful=False, name='spacy_wrapper')
         shape = words.get_shape().as_list() + [self.embedding_size]
         result.set_shape(shape)
         return result

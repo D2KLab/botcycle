@@ -302,8 +302,6 @@ def wit_preprocess(path, nlp):
     for train_idx, test_idx in sss.split(np.zeros(len(intent_values)), intent_values):
         #print('train idx', train_idx, 'test idx', test_idx)
         folds_indexes.append(test_idx.tolist())
-
-    print(folds_indexes)
     
     train, dev, final_test = (dataset[folds_indexes[0] + folds_indexes[1] + folds_indexes[2]], dataset[folds_indexes[3]],dataset[folds_indexes[4]])
 
