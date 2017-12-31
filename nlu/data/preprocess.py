@@ -7,6 +7,7 @@ import re
 import numpy as np
 import spacy
 from spacy.gold import biluo_tags_from_offsets
+from sklearn.model_selection import StratifiedShuffleSplit
 
 
 def atis_preprocess_old():
@@ -15,8 +16,9 @@ def atis_preprocess_old():
     atis.train.w-intent.iob
 
     Produces in output the files entity_types.json, fold_train.json, fold_test.json
+
+    For joint NLU use atis_preprocess()
     """
-    # TODO define flag to use entity.subentity or only entity
     with open('atis/source/atis.test.w-intent.iob') as txt_file:
         test_set = txt_file.readlines()
     with open('atis/source/atis.train.w-intent.iob') as txt_file:
@@ -49,7 +51,9 @@ def atis_preprocess_old():
 def atis_lines_to_json(content):
     """Transforms the content (list of lines) in json,
     detecting entity start and end indexes in sentences.
-    Returns the tagged dataset, the enitity_types and the intent_types"""
+    Returns the tagged dataset, the enitity_types and the intent_types
+    
+    Used in the old preprocessing"""
 
     result = []
 
@@ -68,11 +72,10 @@ def atis_lines_to_json(content):
         annotations = annotations.split()
         entities_tags = annotations[1:-1]
         intent = annotations[-1]
-        # TODO handle multi-intent
+        # multi-intent is not taken into consideration. Its value will be the concatenation of intents using '#'
         intent_types.add(intent)
         element['intent'] = intent
-        # chunks are defined by the space, IOB notations correspond to this
-        # split
+        # chunks are defined by the space, IOB notations correspond to this split
         chunks = text[:start_annotations_idx - 1].split()
         entities = []
         state = 'O'
@@ -120,7 +123,9 @@ def atis_lines_to_json(content):
 def wit_preprocess_old(path):
     """Preprocesses the wit.ai dataset from the folder path passed as parameter.
     To download the updated dataset, use the download.sh script.
-    Saves the tagged dataset, the enitity_types and the intent_types"""
+    Saves the tagged dataset, the enitity_types and the intent_types
+    
+    For joint NLU use wit_preprocess()"""
     path_source = path + '/source'
     enitites_path = '{}/entities'.format(path_source)
 
@@ -162,7 +167,9 @@ def wit_get_normalized_data(expressions):
     """Returns a list of objects like `{'text': SENTENCE, 'intent': ,
     'entities': [{'entity': (role.)?ENTITY_NAME, 'value': ENTITY_VALUE, 'start': INT, 'end', INT}]}`
     
-    followed by the entity types"""
+    followed by the entity types
+    
+    Is part of the old preprocessing"""
     entity_types = set()
     items = expressions['data']
     results = []
@@ -183,14 +190,23 @@ def wit_get_normalized_data(expressions):
 
     return results, list(sorted(entity_types))
 
+
+"""
+Methods below are for the preprocessing for joint task. Methods above are only for disjointed intent and entity tasks
+"""
+
 def atis_preprocess():
-    # train and test on dev split, not touching real test set
+    """"Preprocesses the ATIS dataset for joint NLU"""
+    # atis-2.train and atis-2.dev summed together make atis.train. atis.test is independent
     with open('atis/source/atis-2.train.w-intent.iob') as txt_file:
         train_set_raw = txt_file.readlines()
     with open('atis/source/atis-2.dev.w-intent.iob') as txt_file:
+        dev_set_raw = txt_file.readlines()
+    with open('atis/source/atis.test.w-intent.iob') as txt_file:
         test_set_raw = txt_file.readlines()
 
     train_set = iob_lines_to_structured_iob(train_set_raw)
+    dev_set = iob_lines_to_structured_iob(dev_set_raw)
     test_set = iob_lines_to_structured_iob(test_set_raw)
 
     if not os.path.exists('atis/preprocessed'):
@@ -200,10 +216,16 @@ def atis_preprocess():
         json.dump(train_set, outfile)
 
     with open('atis/preprocessed/fold_test.json', 'w') as outfile:
+        json.dump(dev_set, outfile)
+
+    with open('atis/preprocessed/final_test.json', 'w') as outfile:
         json.dump(test_set, outfile)
 
+
 def nlu_benchmark_preprocess(nlp):
+    """Preprocess the nlu-benchmark dataset for joint NLU"""
     path = 'nlu-benchmark/2017-06-custom-intent-engines/'
+    # the data is splitted by intent using different folders
     intent_folders = os.listdir(path)
     train_samples = []
     test_samples = []
@@ -259,7 +281,9 @@ def nlu_benchmark_preprocess(nlp):
     with open('nlu-benchmark/preprocessed/fold_test.json', 'w') as outfile:
         json.dump(test_set, outfile)
 
+
 def wit_preprocess(path, nlp):
+    """Preprocess the wit dataset"""
     path_source = path + '/source'
 
     with open('{}/expressions.json'.format(path_source)) as json_file:
@@ -267,20 +291,21 @@ def wit_preprocess(path, nlp):
 
     samples, intent_types, slot_types = wit_to_structured_iob(expressions, nlp)
 
-    # TODO perform the split on 5 folds
     dataset = np.array(samples)
-    # initialize the random generator seed to the size of the dataset, just to
-    # make it split always the same
-    np.random.seed(dataset.size)
-    np.random.shuffle(dataset)
-    fold_size = len(dataset) // 5
-    # TODO save also final_test set
-    # TODO save also all together
-    # TODO do stratified split, in a way that each fold contains intents in right proportions
-    train, dev, final_test = (dataset[:3*fold_size], dataset[3*fold_size:4*fold_size],dataset[4*fold_size:])
-
+    # do the stratified split on 5 folds, fixing the random seed
     slot_types = list(sorted(slot_types))
     intent_types = list(sorted(intent_types))
+    # the value of intent for each sample, necessary to perform the stratified split (keeping distribution of intents in splits)
+    intent_values = [s['intent'] for s in samples]
+    sss = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=dataset.size)
+    folds_indexes = []
+    for train_idx, test_idx in sss.split(np.zeros(len(intent_values)), intent_values):
+        #print('train idx', train_idx, 'test idx', test_idx)
+        folds_indexes.append(test_idx.tolist())
+
+    print(folds_indexes)
+    
+    train, dev, final_test = (dataset[folds_indexes[0] + folds_indexes[1] + folds_indexes[2]], dataset[folds_indexes[3]],dataset[folds_indexes[4]])
 
     meta = {
         'tokenizer': 'spacy',
@@ -301,6 +326,12 @@ def wit_preprocess(path, nlp):
     with open('{}/preprocessed/fold_test.json'.format(path), 'w') as outfile:
         json.dump({
             'data': dev.tolist(),
+            'meta': meta
+        }, outfile)
+    
+    with open('{}/preprocessed/final_test.json'.format(path), 'w') as outfile:
+        json.dump({
+            'data': final_test.tolist(),
             'meta': meta
         }, outfile)
 
@@ -459,10 +490,25 @@ def displacement_annotations_to_iob(sentence, annotations, nlp):
 #wit_preprocess_old('wit_en')
 #wit_preprocess_old('wit_it')
 
-nlp_en = load_nlp()
-nlp_it = load_nlp('it')
+def main():
+    nlp_en = load_nlp()
+    nlp_it = load_nlp('it')
+    which = os.environ.get('DATASET', None)
+    print(which)
+    if which is None:
+        atis_preprocess()
+        nlu_benchmark_preprocess(nlp_en)
+        wit_preprocess('wit_en', nlp_en)
+        wit_preprocess('wit_it', nlp_it)
+    elif which == 'atis':
+        atis_preprocess()
+    elif which == 'nlu-benchnark':
+        nlu_benchmark_preprocess(nlp_en)
+    elif which == 'wit_en':
+        wit_preprocess('wit_en', nlp_en)
+    elif which == 'wit_it':
+        wit_preprocess('wit_it', nlp_it)
 
-atis_preprocess()
-nlu_benchmark_preprocess(nlp_en)
-wit_preprocess('wit_en', nlp_en)
-wit_preprocess('wit_it', nlp_it)
+
+if __name__ == '__main__':
+    main()
