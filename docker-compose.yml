@@ -6,7 +6,7 @@ services:
       context: brain
     command: python main.py
     volumes:
-      - ./brain:/app
+      - ./brain:/brain
       - ./nlu:/nlu
     depends_on:
     - mongodb
@@ -18,7 +18,7 @@ services:
       context: brain
     command: python main.py
     volumes:
-      - ./brain:/app
+      - ./brain:/brain
       - ./nlu:/nlu
     depends_on:
       - mongodb

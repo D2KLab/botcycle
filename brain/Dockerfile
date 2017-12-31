@@ -1,5 +1,5 @@
 FROM python:3
-WORKDIR /app
+WORKDIR /brain
 ADD requirements.txt .
 ADD nlu_requirements.txt .
 RUN pip install -r requirements.txt
