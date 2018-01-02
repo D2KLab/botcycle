@@ -44,8 +44,8 @@ def update_data(which_to_update):
             result[value] = {
                 'city': bikeshare.meta['city'],
                 'stations': {x.name:x for x in bikeshare.stations},
-                'with_bikes': [station for station in bikeshare.stations if station.bikes>0],
-                'with_slots': [station for station in bikeshare.stations if station.free>0]
+                'with_bikes': [station for station in bikeshare.stations if station.bikes and station.bikes>0],
+                'with_slots': [station for station in bikeshare.stations if station.free and station.free>0]
             }
 
         except Exception as e:
