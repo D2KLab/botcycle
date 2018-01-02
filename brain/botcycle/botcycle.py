@@ -370,4 +370,4 @@ def askFeedback():
     return [{'type': 'text', 'value': '👍'}, {'type': 'text', 'value': '👎'}]
 
 wit_token = os.environ['WIT_TOKEN_' + LANGUAGE]
-extractor = Nlu(wit_token, LANGUAGE)
+extractor = Nlu(wit_token, LANGUAGE.lower())

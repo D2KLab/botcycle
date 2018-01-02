@@ -19,7 +19,7 @@ class NeuralNetWrapper(object):
         self.model = RestoredModel(real_folder, 300, language, self.nlp)
 
 
-    def process(self, sentence, intent_treshold_score=0.5):
+    def process(self, line, intent_treshold_score=0.5):
         doc = self.nlp.make_doc(line)
         words_true = [w.text for w in doc]
         length = len(words_true)
