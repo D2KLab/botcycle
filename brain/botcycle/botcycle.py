@@ -5,7 +5,7 @@ import requests
 from math import radians, cos, sin, asin, sqrt
 
 from . import bikes
-from .nlu import wit
+from .nlu import Nlu
 from . import persistence
 from . import personalization
 from . import output_sentences
@@ -370,4 +370,4 @@ def askFeedback():
     return [{'type': 'text', 'value': '👍'}, {'type': 'text', 'value': '👎'}]
 
 wit_token = os.environ['WIT_TOKEN_' + LANGUAGE]
-extractor = wit.Extractor(wit_token, LANGUAGE)
+extractor = Nlu(wit_token, LANGUAGE)
