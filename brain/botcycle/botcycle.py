@@ -44,7 +44,7 @@ def process(msg, sendMessage):
 
     #print(content_type, chat_type, chat_id)
     if content_type == 'text':
-        intent, entities = extractor.parse(msg['text'])
+        intent, entities = extractor.process(msg['text'])
 
         if msg['text'] == '/start':
             sendMessageFunction(
@@ -370,4 +370,4 @@ def askFeedback():
     return [{'type': 'text', 'value': '👍'}, {'type': 'text', 'value': '👎'}]
 
 wit_token = os.environ['WIT_TOKEN_' + LANGUAGE]
-extractor = wit.Extractor(wit_token)
+extractor = wit.Extractor(wit_token, LANGUAGE)
