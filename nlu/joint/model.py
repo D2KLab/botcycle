@@ -95,7 +95,7 @@ class Model:
         # make this tensor retrievable by name at test time
         self.intent = tf.identity(self.intent, name="intent")
         # also evaluate the classification score
-        intent_scores = tf.reduce_max(tf.nn.softmax(intent_logits), name="intent_score")
+        intent_scores = tf.reduce_max(tf.nn.softmax(intent_logits), axis=1, name="intent_score")
 
 
         # Slot label decoder
