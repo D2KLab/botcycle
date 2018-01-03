@@ -1,6 +1,4 @@
 import requests
-import datetime
-from .. import persistence
 
 class WitWrapper:
     def __init__(self, token):
@@ -11,9 +9,6 @@ class WitWrapper:
         # with verbose queries, also returns start and end indexes of entities
         params = {'q':sentence, 'verbose': True, 'v': '20170920'}
         response = requests.get("https://api.wit.ai/message", params = params, headers = self.headers).json()
-
-        response['time'] = datetime.datetime.utcnow()
-        persistence.log_nlu(response)
 
         all_entities = response.get('entities', None)
         if all_entities == None:
