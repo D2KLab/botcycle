@@ -28,6 +28,14 @@ sudo pip3 install virtualenv
   - `source venv/bin/activate`
   - `pip install -r requirements.txt`
 
+### Training the language models
+
+To use the language models for NLU at runtime, it is required to train them.
+
+The training is done on the preprocessed datasets `wit_en` and `wit_it` that can be found in the `nlu/data` folder.
+
+The training and saving can be done by running `cd nlu && make build_models`, that will place in the `brain/botcycle/nlu/joint/results/` folder the results that will be loaded later at runtime.
+
 ### Running the bot
 
 Launch the bot: `python main.py`
@@ -47,6 +55,20 @@ The instruction refer to ubuntu distribution. You can adapt them easily to other
   1. Create the docker group if not exist: `sudo groupadd docker`
   2. Add the desired user to the docker group: `sudo gpasswd -A $USER docker`
   3. Either do a `newgrp docker` or log out/in to activate the changes to groups
+
+### Training the language models
+
+When using the dockerized components, training the models can be a bit more complicated.
+
+If you have the dependencies installed on your host (directly or indirectly via `virtualenv`), you can follow the instructions relative to "without docker" choice, and thanks to volume mapping they will be available inside the containers.
+
+Instead if you want to train the models from the containers the steps are the following:
+
+- start one of the bot containers (`docker start CONTAINER_NAME` or using `docker-compose start`)
+- enter interactively in it: `docker exec -it CONTAINER_NAME`
+- go to the makefile location: `cd /nlu`
+- run the correct make target: `make build_models`
+- exit from the container
 
 ### Running the bot
 
