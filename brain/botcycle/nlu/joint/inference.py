@@ -50,7 +50,13 @@ class NeuralNetWrapper(object):
             else:
                 entity = {'role': None, 'type': e_parts[0]}
             value = line[ent[0]: ent[1]]
-            entities.append({'type': entity['type'], 'role': entity['role'], 'value': value})
+            entities.append({'_entity': entity['type'],
+                'role': entity['role'],
+                'value': value,
+                '_body': value,
+                '_start': ent[0],
+                '_end': ent[1]
+            })
 
         # now convert to the same format as wit.ai, applying the treshold
         if intent_score < intent_treshold_score:
@@ -60,11 +66,10 @@ class NeuralNetWrapper(object):
         
         entities_result = {}
         for ent in entities:
-            value = {'value': ent['value'], 'type': ent['type']}
             if ent['role']:
-                entities_result[ent['role']] = value
+                entities_result[ent['role']] = ent
             else:
-                entities_result[ent['type']] = value
+                entities_result[ent['type']] = ent
         
         return intent_result, entities_result
 

@@ -38,7 +38,7 @@ class Nlu(object):
 
     def process(self, sentence):
         """
-        Turns a sentence into intent+entities
+        Turns a sentence into intent,entities
         """
         if self.type == 'both':
             # issue both, in separate threads to wait only max(t1,t2) instead of t1+t2
@@ -50,6 +50,6 @@ class Nlu(object):
         else:
             result = self.real.process(sentence)
 
-        result['time'] = datetime.datetime.utcnow()
-        persistence.log_nlu(result)
+        intent, entities = result
+        persistence.log_nlu({'_text': sentence, 'intent': intent, 'entities': entities, 'time': datetime.datetime.utcnow()})
         return result

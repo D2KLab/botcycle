@@ -11,7 +11,7 @@ class WitWrapper:
         response = requests.get("https://api.wit.ai/message", params = params, headers = self.headers).json()
 
         all_entities = response.get('entities', None)
-        if all_entities == None:
+        if all_entities is None:
             raise Exception('error with wit.ai')
 
         intent_list = all_entities.get('intent', None)
