@@ -5,7 +5,7 @@ import requests
 from math import radians, cos, sin, asin, sqrt
 
 from . import bikes
-from .nlu import wit
+from .nlu import Nlu
 from . import persistence
 from . import personalization
 from . import output_sentences
@@ -44,7 +44,7 @@ def process(msg, sendMessage):
 
     #print(content_type, chat_type, chat_id)
     if content_type == 'text':
-        intent, entities = extractor.parse(msg['text'])
+        intent, entities = extractor.process(msg['text'])
 
         if msg['text'] == '/start':
             sendMessageFunction(
@@ -368,4 +368,4 @@ def askFeedback():
     return [{'type': 'text', 'value': '👍'}, {'type': 'text', 'value': '👎'}]
 
 wit_token = os.environ['WIT_TOKEN_' + LANGUAGE]
-extractor = wit.Extractor(wit_token)
+extractor = Nlu(wit_token, LANGUAGE.lower())
