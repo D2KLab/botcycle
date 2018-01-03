@@ -3,7 +3,6 @@ This module handles NLU requests.
 Contains a wrapper for wit.ai and a wrapper for the neural network jointSLU
 """
 import os
-import datetime
 from multiprocessing.pool import Pool
 
 from .wit import WitWrapper
@@ -51,5 +50,5 @@ class Nlu(object):
             result = self.real.process(sentence)
 
         intent, entities = result
-        persistence.log_nlu({'_text': sentence, 'intent': intent, 'entities': entities, 'time': datetime.datetime.utcnow()})
+        persistence.log_nlu({'_text': sentence, 'intent': intent, 'entities': entities})
         return result

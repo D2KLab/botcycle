@@ -62,7 +62,7 @@ class NeuralNetWrapper(object):
         if intent_score < intent_treshold_score:
             intent_result = None
         else:
-            intent_result = {'confidence': intent_score, 'value': intent}
+            intent_result = {'confidence': str(intent_score), 'value': intent}
         
         entities_result = {}
         for ent in entities:
