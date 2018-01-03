@@ -69,7 +69,7 @@ class NeuralNetWrapper(object):
             if ent['role']:
                 entities_result[ent['role']] = ent
             else:
-                entities_result[ent['type']] = ent
+                entities_result[ent['_entity']] = ent
         
         return intent_result, entities_result
 
