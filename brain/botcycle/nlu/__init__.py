@@ -50,5 +50,7 @@ class Nlu(object):
             result = self.real.process(sentence)
 
         intent, entities = result
-        persistence.log_nlu({'_text': sentence, 'intent': intent, 'entities': entities})
+        log_record = {'_text': sentence, 'intent': intent, 'entities': entities}
+        print(log_record)
+        persistence.log_nlu(log_record)
         return result
