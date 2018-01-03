@@ -203,14 +203,12 @@ def getEntity(entities, key):
 
 def getLocation(chat_id, entities):
     global sendMessageFunction
-    # TODO use getEntity
-    location_obj = entities.get('location', None)
+    location_name = getEntity(entities, 'location')
     user_position = None
 
     user_position = persistence.get_position(chat_id)
 
-    if location_obj:
-        location_name = location_obj.get('value', None)
+    if location_name:
         location = search_place(location_name)
         if not location:
             response = output_sentences.get(LANGUAGE, 'GEOCODING_ERROR').format(searched=location_name)
