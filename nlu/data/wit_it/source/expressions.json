@@ -485,6 +485,21 @@
       ]
     },
     {
+      "text" : "funzioni a pagno?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 11,
+          "end" : 16
+        }
+      ]
+    },
+    {
       "text" : "funzioni a saluzzo?",
       "entities" : [
         {
@@ -505,6 +520,15 @@
         {
           "entity" : "intent",
           "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "ho bisogno di una bicicletta",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
         }
       ]
     },
@@ -894,6 +918,38 @@
       ]
     },
     {
+      "text" : "voglio andare dal museo egizio di Torino a san salvario",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"museo egizio di Torino\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 40
+        },
+        {
+          "entity" : "location",
+          "value" : "\"san salvario\"",
+          "role" : "to",
+          "start" : 43,
+          "end" : 55
+        }
+      ]
+    },
+    {
+      "text" : "voglio parcheggiare",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
       "text" : "voglio raggiungere piazza carducci dal poli",
       "entities" : [
         {
@@ -922,6 +978,21 @@
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "voglio una bici a saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 18,
+          "end" : 25
         }
       ]
     },
@@ -975,6 +1046,21 @@
           "value" : "\"poli\"",
           "start" : 26,
           "end" : 30
+        }
+      ]
+    },
+    {
+      "text" : "voglio una bicicletta vicino a via delle rosine 3",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via delle rosine 3\"",
+          "start" : 31,
+          "end" : 49
         }
       ]
     },
