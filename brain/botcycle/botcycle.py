@@ -130,8 +130,8 @@ def set_position_str(chat_id, entities):
     # print(location)
     if location:
         set_position(chat_id, location, verbose=False)
-        markers = [{'type': 'location', 'latitude': location['latitude'],
-                    'longitude': location['longitude']}]
+        markers = [{'type': 'from', 'value': {'lat': location['latitude'],
+                    'lng': location['longitude']}}]
         sendMessageFunction(chat_id, output_sentences.get(LANGUAGE, 'ACK_POSITION'),
                             msg_type='map', markers=markers)
 
@@ -151,7 +151,7 @@ def askPosition(chat_id):
     sendMessageFunction(chat_id, response, msg_type='request_location')
 
 
-def provideResult(chat_id, station, search_type, buttons=None):
+def provideResult(chat_id, station, search_type, from_location, to_location=None, buttons=None):
     global sendMessageFunction
     if not station:
         response = output_sentences.get(LANGUAGE, 'ERROR_SEARCHING')
@@ -160,13 +160,31 @@ def provideResult(chat_id, station, search_type, buttons=None):
         response = output_sentences.get(LANGUAGE, 'FREE_BIKES').format(count=station.bikes, station_name=station.name)
 
     elif search_type == 'slots':
-        response = output_sentences.get(LANGUAGE, 'FREE_SLOTS').format(count=station.bikes, station_name=station.name)
+        response = output_sentences.get(LANGUAGE, 'FREE_SLOTS').format(count=station.free, station_name=station.name)
+
+    elif search_type == 'trip':
+        src_station, dst_station = station
+        # TODO maybe a single sentence?
+        if src_station and dst_station:
+            response = output_sentences.get(LANGUAGE, 'TRIP').format(src_count=src_station.bikes, src_station_name=src_station.name, dst_count=dst_station.free, dst_station_name=dst_station.name)
+        else:
+            response = output_sentences.get(LANGUAGE, 'ERROR_SEARCHING')
 
     if station:
-        markers = [{'type': 'location', 'latitude': station.latitude,
-                    'longitude': station.longitude}]
-        sendMessageFunction(chat_id, response, msg_type='map',
-                            markers=markers, buttons=buttons)
+        markers = [{'type': 'from', 'value': {'lat': from_location['latitude'], 'lng': from_location['longitude']}}]
+        if search_type == 'trip' and src_station and dst_station:
+            markers.append({'type': 'to', 'value': {'lat': to_location['latitude'], 'lng': to_location['longitude']}})
+            markers.append({'type': 'bike', 'value': {'lat': src_station.latitude, 'lng': src_station.longitude, 'name': src_station.name}})
+            markers.append({'type': 'slot', 'value': {'lat': dst_station.latitude, 'lng': dst_station.longitude, 'name': dst_station.name}})
+            sendMessageFunction(chat_id, response, msg_type='map', markers=markers, buttons=buttons)
+        elif search_type == 'bikes':
+            markers.append({'type': 'bike', 'value': {'lat': station.latitude, 'lng': station.longitude, 'name': station.name}})
+            sendMessageFunction(chat_id, response, msg_type='map', markers=markers, buttons=buttons)
+        elif search_type == 'slots':
+            markers.append({'type': 'slot', 'value': {'lat': station.latitude, 'lng': station.longitude, 'name': station.name}})
+            sendMessageFunction(chat_id, response, msg_type='map', markers=markers, buttons=buttons)
+        else:
+            sendMessageFunction(chat_id, response, buttons=buttons)
     else:
         sendMessageFunction(chat_id, response, buttons=buttons)
 
@@ -232,8 +250,7 @@ def recommend(chat_id, results):
     rec = recs[0]
     time.sleep(3)
 
-    markers = [{'type': 'location', 'latitude': rec['location']
-                ['lat'], 'longitude': rec['location']['lng']}]
+    markers = [{'type': 'from', 'value': {'lat': rec['location']['lat'], 'lng': rec['location']['lng']}}]
     # TODO on messenger and skype no more than three buttons per card
     buttons = askFeedback()
     buttons.append({'type': 'link', 'title': 'details', 'value': rec['url']})
@@ -248,7 +265,7 @@ def search_bike(chat_id, entities):
         return
 
     city, result = bikes.search_nearest(location, 'bikes')
-    provideResult(chat_id, result, 'bikes', buttons=askFeedback())
+    provideResult(chat_id, result, 'bikes', location, buttons=askFeedback())
 
     return
     recommend(chat_id, [result])
@@ -291,7 +308,7 @@ def search_slot(chat_id, entities):
         return
 
     city, result = bikes.search_nearest(location, 'slots')
-    provideResult(chat_id, result, 'slots', buttons=askFeedback())
+    provideResult(chat_id, result, 'slots', location, buttons=askFeedback())
 
     recommend(chat_id, [result])
 
@@ -343,8 +360,7 @@ def plan_trip(chat_id, entities):
         sendMessageFunction(chat_id, response)
         return
 
-    provideResult(chat_id, result_from, 'bikes')
-    provideResult(chat_id, result_to, 'slots', buttons=askFeedback())
+    provideResult(chat_id, (result_from, result_to), 'trip', loc_from, loc_to, buttons=askFeedback())
 
     recommend(chat_id, [result_from, result_to])
 
