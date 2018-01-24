@@ -25,7 +25,7 @@ DATASET = os.environ.get('DATASET', 'atis')
 OUTPUT_FOLDER = os.environ.get('OUTPUT_FOLDER', 'last')
 MODE = os.environ.get('MODE', None)
 
-def get_model(vocabs, tokenizer, language):
+def get_model(vocabs, tokenizer, language, input_steps):
     model = Model(input_steps, embedding_size, hidden_size, vocabs, None)
     model.build(tokenizer, language)
     return model
@@ -53,7 +53,7 @@ def train(mode):
     # get the vocabularies for input, slot and intent
     vocabs = data.get_vocabularies(training_samples)
     # and get the model
-    model = get_model(vocabs, training_samples['meta']['tokenizer'], training_samples['meta']['language'])
+    model = get_model(vocabs, training_samples['meta']['tokenizer'], training_samples['meta']['language'], input_steps)
     global_init_op = tf.global_variables_initializer()
     table_init_op = tf.tables_initializer()
     saver = tf.train.Saver()
