@@ -462,6 +462,81 @@ def iob_lines_to_structured_iob(iob_lines):
         }
     }
 
+def kvret_preprocess(nlp):
+    with open('kvret/source/kvret_entities.json') as file:
+        entities_raw = json.load(file)
+    with open('kvret/source/kvret_train_public.json') as file:
+        train_set_raw = json.load(file)
+    with open('kvret/source/kvret_dev_public.json') as file:
+        dev_set_raw = json.load(file)
+    with open('kvret/source/kvret_test_public.json') as file:
+        test_set_raw = json.load(file)
+
+    slot_types = list(entities_raw.keys())
+    slot_types = ['O'] + ['B-' + s for s in slot_types] + ['I-' + s for s in slot_types]
+
+    train_set = kvret_cleanup(nlp, train_set_raw, slot_types)
+    dev_set = kvret_cleanup(nlp, dev_set_raw, slot_types)
+    test_set = kvret_cleanup(nlp, test_set_raw, slot_types)
+
+    # dump json to files
+    with open('kvret/preprocessed/fold_train.json', 'w') as outfile:
+        json.dump(train_set, outfile)
+
+    with open('kvret/preprocessed/fold_test.json', 'w') as outfile:
+        json.dump(dev_set, outfile)
+
+    with open('kvret/preprocessed/final_test.json', 'w') as outfile:
+        json.dump(test_set, outfile)
+
+
+def kvret_cleanup(nlp, source_json, slot_types):
+    sessions = []
+    intent_types = set()
+    for source_session in source_json:
+        intent = source_session['scenario']['task']['intent']
+        intent_types.add(intent)
+        session = []
+        text_to_slot = {} # maps from text to slot name
+        # iterate backwards the dialogue to know what slots to search for
+        for message_raw in reversed(source_session['dialogue']):
+            # 'b' stands for bot, 'u' for user
+            turn = 'b' if message_raw['turn'] == 'assistant' else 'u'
+            sentence = message_raw['data']['utterance']
+            if message_raw['data'].get('slots'):
+                # add the slots that must be found backward
+                for k, v in message_raw['data']['slots'].items():
+                    # remember to strip spaces that randomly are there in data
+                    text_to_slot[v.strip()] = k
+            annots = []
+            # add annotation in style (start_idx, end_idx, type)
+            for k, v in text_to_slot.items():
+                match = re.search(re.escape(k), sentence, re.IGNORECASE)
+                if match:
+                    annots.append((match.start(), match.end(), v))
+            
+            # TODO remove overlapping entities (should keep the largest spans)
+
+            words, slots = displacement_annotations_to_iob(sentence, annots, nlp)
+            message = {'turn': turn, 'words': words, 'length': len(words), 'slots': slots, 'intent': intent}
+            session.insert(0, message)
+        sessions.append(session)
+
+    slot_types = list(sorted(slot_types))
+    intent_types = list(sorted(intent_types))
+
+    return {
+        'data': sessions,
+        'meta': {
+            'tokenizer': 'spacy',
+            'language': 'en',
+            'slot_types': slot_types,
+            'intent_types': intent_types,
+            'multi_turn': True
+        }
+    }
+
+
 def load_nlp(lang_name='en'):
     nlp = spacy.load(lang_name)
     return nlp
@@ -498,6 +573,7 @@ def main():
         nlu_benchmark_preprocess(nlp_en)
         wit_preprocess('wit_en', nlp_en)
         wit_preprocess('wit_it', nlp_it)
+        kvret_preprocess(nlp_en)
     elif which == 'atis':
         atis_preprocess()
     elif which == 'nlu-benchnark':
@@ -506,6 +582,8 @@ def main():
         wit_preprocess('wit_en', nlp_en)
     elif which == 'wit_it':
         wit_preprocess('wit_it', nlp_it)
+    elif which == 'kvret':
+        kvret_preprocess(nlp_en)
 
 
 if __name__ == '__main__':
