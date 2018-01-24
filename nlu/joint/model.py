@@ -219,8 +219,8 @@ class Model:
         self.grads, self.vars = zip(*optimizer.compute_gradients(self.loss))
         #print("vars for loss function: ", self.vars)
         # Clip gradients to prevent exploding ones
-        gradients, _ = tf.clip_by_global_norm(self.grads, 5)  # clip gradients
-        self.train_op = optimizer.apply_gradients(zip(self.grads, self.vars))
+        self.gradients, _ = tf.clip_by_global_norm(self.grads, 5)  # clip gradients
+        self.train_op = optimizer.apply_gradients(zip(self.gradients, self.vars))
 
 
     def step(self, sess, mode, train_batch):

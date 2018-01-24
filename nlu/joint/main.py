@@ -10,8 +10,6 @@ from . import data
 from .model import Model
 from . import metrics
 
-# maximum length of sentences
-input_steps = 50
 # embedding size for labels
 embedding_size = 64
 # size of LSTM cells
@@ -34,6 +32,8 @@ def get_model(vocabs, tokenizer, language):
 
 
 def train(mode):
+    # maximum length of sentences
+    input_steps = 50
     print(mode)
     # load the train and dev datasets
     test_data, train_data = data.load_data(DATASET, mode)
@@ -98,9 +98,9 @@ def train(mode):
                 if j == 0:
                     index = random.choice(range(len(batch)))
                     # index = 0
-                    print("Input Sentence        : ", batch[index]['words'])
-                    print("Slot Truth            : ", batch[index]['slots'])
-                    print("Slot Prediction       : ", decoder_prediction[index])
+                    print("Input Sentence        : ", batch[index]['words'][:batch[index]['length']])
+                    print("Slot Truth            : ", batch[index]['slots'][:batch[index]['length']])
+                    print("Slot Prediction       : ", decoder_prediction[index][:batch[index]['length']])
                     print("Intent Truth          : ", batch[index]['intent'])
                     print("Intent Prediction     : ", intent[index])
                 slot_pred_length = list(np.shape(decoder_prediction))[1]
