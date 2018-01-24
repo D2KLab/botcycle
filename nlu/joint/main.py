@@ -25,8 +25,8 @@ DATASET = os.environ.get('DATASET', 'atis')
 OUTPUT_FOLDER = os.environ.get('OUTPUT_FOLDER', 'last')
 MODE = os.environ.get('MODE', None)
 
-def get_model(vocabs, tokenizer, language):
-    model = Model(input_steps, embedding_size, hidden_size, vocabs, None)
+def get_model(vocabs, tokenizer, language, multi_turn, input_steps):
+    model = Model(input_steps, embedding_size, hidden_size, vocabs, multi_turn, None)
     model.build(tokenizer, language)
     return model
 
@@ -45,15 +45,21 @@ def train(mode):
     # - the real length of the sentence (int) to be able to recognize padding
     # - an output sequence (list of IOB annotations --> strings, padded)
     # - an output intent (string)
-    training_samples = data.adjust_sequences(train_data)
+    multi_turn = train_data['meta'].get('multi_turn', False)
+    if multi_turn:
+        train_data = data.collapse_multi_turn_sessions(train_data)
+        input_steps *= 2
+    training_samples = data.adjust_sequences(train_data, input_steps)
     print('train samples', len(training_samples['data']))
     if test_data:
-        test_samples = data.adjust_sequences(test_data)
+        if multi_turn:
+            test_data = data.collapse_multi_turn_sessions(test_data)
+        test_samples = data.adjust_sequences(test_data, input_steps)
         print('test samples', len(test_samples['data']))
     # get the vocabularies for input, slot and intent
     vocabs = data.get_vocabularies(training_samples)
     # and get the model
-    model = get_model(vocabs, training_samples['meta']['tokenizer'], training_samples['meta']['language'])
+    model = get_model(vocabs, training_samples['meta']['tokenizer'], training_samples['meta']['language'], multi_turn, input_steps)
     global_init_op = tf.global_variables_initializer()
     table_init_op = tf.tables_initializer()
     saver = tf.train.Saver()

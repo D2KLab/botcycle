@@ -14,6 +14,33 @@ def flatten(list_of_lists):
     """Flattens from two-dimensional list to one-dimensional list"""
     return [item for sublist in list_of_lists for item in sublist]
 
+def collapse_multi_turn_sessions(dataset):
+    """Turns sessions into lists of messages with previous intent and previous bot turn (words and slot annotations)"""
+    sessions = dataset['data']
+    dataset['data'] = []
+    # hold the previous intent value, initialized to some value (not important)
+    previous_intent = dataset['meta']['intent_types'][0]
+    previous_bot_turn = []
+    previous_bot_slots = []
+    for s in sessions:
+        for m in s:
+            #print('before')
+            #print(m)
+            if m['turn'] == 'b':
+                # this is the bot turn
+                previous_bot_turn = m['words']
+                previous_bot_slots = m['slots']
+            else:
+                m['previous_intent'] = previous_intent
+                m['bot_turn_actual_length'] = len(previous_bot_turn)
+                m['words'] = previous_bot_turn + m['words']
+                # TODO check this last modification also on slots
+                m['slots'] = previous_bot_slots + m['slots']
+                m['length'] += m['bot_turn_actual_length']
+                dataset['data'].append(m)
+            #print('after')
+            #print(m['words'])
+    return dataset
 
 def load_data(dataset_name, mode='measures'):
     """Loads the dataset and returns it.
