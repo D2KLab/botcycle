@@ -1,1 +1,0 @@
-mongoexport --db botcycle --collection messages --jsonArray --out /exported/en_messages.json
