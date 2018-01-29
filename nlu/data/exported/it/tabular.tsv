@@ -195,7 +195,7 @@ b	Il tuo viaggio non ha né un punto di partenza né un punto di arrivo
 u	vorrei andare a scuola in bici	plan_trip			scuola
 b	Il tuo viaggio inizia a Santa Monica, CA e finisce a Kansas City, MO. Non puoi prendere una bici in una città e portarla in un'altra!				
 u					
-b	Ok ho la tua posizione					
+b	Ok ho la tua posizione				
 u	Voglio una bici	search_bike			
 b	Puoi trovare 3 bici libere alla stazione 01.  Annenberg Community Beach House				
 u	una bici da piazza castello a torino esposizioni	plan_trip	piazza castello		torino esposizioni
