@@ -23,16 +23,20 @@ def main(lang):
     
     nlu_lookup = {}
 
-    entitity_names = set()
+    entity_names = set()
 
     for nlu_entry in nlu_raw:
         intent = nlu_entry.get('intent', None)
         if intent:
             intent = intent['value']
         entities = nlu_entry.get('entities', None)
-        text = nlu_entry.get('text', None) or nlu_entry['_text']
+        try:
+            text = nlu_entry.get('text', None) or nlu_entry['_text']
+        except:
+            pass
         nlu_lookup[text] = {'intent': intent, 'entities': entities}
-        entitity_names.update([k for k,v in entities.items()])
+        if entities:
+            entity_names.update([k for k,v in entities.items()])
 
     # perform a group by: 1 get contiguous by chat_id, 2 group by
     messages_raw.sort(key=lambda m: m['chat_id'])
@@ -40,7 +44,10 @@ def main(lang):
     for key, values in itertools.groupby(messages_raw, lambda m: m['chat_id']):
         messages = []
         for m in values:
-            date = dateutil.parser.parse(m.get('time',{}).get('$date', None))
+            try:
+                date = dateutil.parser.parse(m.get('time',{}).get('$date', None))
+            except:
+                date = datetime.datetime.fromtimestamp(m.get('time', {}).get('$date', 0)/1000)
             if not last_update or date > last_update:
                 messages.append(m)
                 if not newest_update or date > newest_update:
@@ -51,9 +58,10 @@ def main(lang):
     
     print('latest message at', newest_update)
 
-    entitity_names.remove('intent')
+    entity_names.remove('intent')
+    entity_names = sorted(list(entity_names))
     
-    field_names = ['role', 'text', 'intent'] + list(entitity_names)
+    field_names = ['role', 'text', 'intent'] + entity_names
 
     with open(lang + '/tabular.tsv', 'a', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=field_names, delimiter='\t')
@@ -76,12 +84,17 @@ def main(lang):
                 nlu_out = nlu_lookup.get(text, None)
                 if nlu_out:
                     row['intent'] = nlu_out['intent']
-                    for k,v in nlu_out['entities'].items():
-                        try:
-                            row[k] = v['value']
-                        except:
-                            print(k,v)
-                            traceback.print_exc()
+                    if nlu_out['entities']:
+                        #if not isinstance(nlu_out['entities'], dict):
+                        #    nlu_out['entities'] = nlu_out['entities'][0]
+                        for k,v in nlu_out['entities'].items():
+                            try:
+                                if not isinstance(v, dict):
+                                    v = v[0]
+                                row[k] = v['value']
+                            except:
+                                print(k,v)
+                                traceback.print_exc()
                 writer.writerow(row)
 
             writer.writerow({})
