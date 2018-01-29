@@ -1,0 +1,294 @@
+role	text	intent	from	location	to
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+					
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+u	voglio una bici	search_bike			
+b	Dove sei?				
+u					
+b	Ok ho la tua posizione				
+b	Puoi trovare 7 bici libere alla stazione Ferrucci				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	trovami una bici	search_bike			
+b	Puoi trovare 2 bici libere alla stazione Ferrucci				
+u	sono a torino	set_position		torino	
+b	Ok ho la tua posizione				
+
+u	Ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	Trovami una bici	search_bike			
+b	Puoi trovare 9 bici libere alla stazione Castello 2				
+u	👍				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	trovami	ask_position			
+b	La tua frase non contiene un intento				
+u	dove sono?	ask_position			
+b	Dove sei?				
+u					
+b	Ok ho la tua posizione				
+u	trovami una bici	search_bike			
+b	Puoi trovare 5 bici libere alla stazione Bolzano				
+u	sono a torino	set_position		torino	
+b	Ok ho la tua posizione				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+					
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+u	trovami una bici	search_bike			
+b	Dove sei?				
+u					
+b	Ok ho la tua posizione				
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	sono a Torino	set_position		Torino	
+b	Ok ho la tua posizione				
+					
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+					
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+					
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+u	sono in via borsellino torino	set_position		via borsellino torino	
+b	Ok ho la tua posizione				
+u	trovami una bici	search_bike			
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	chi sei?	info			
+b	"Sono BotCycle e posso darti informazioni sul servizio di bike sharing nella tua città.
+Prova a chiedermi qualcosa! ;)"				
+u	ok	end_discussion			
+b	ok	end_discussion			
+u	puoi lavorare a pagno?	city_supported		pagno	
+u	Ciao	greeting		Ciao	
+b	Ciao! Come posso aiutarti?				
+u	Trovami una bici	search_bike			
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	Funzioni a los Angeles?	city_supported		los Angeles	
+b	Sì, Los Angeles, CA è supportata				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	dove sono?	ask_position			
+b	Dove sei?				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	sono a torino	set_position		torino	
+b	Ok ho la tua posizione				
+u	voglio una bici	search_bike			
+b	Puoi trovare 11 bici libere alla stazione Castello 2				
+u	grazie	thank			
+b	Prego!				
+					
+u	/start				
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+					
+u	/start				
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+u	Ciao!	greeting		Ciao!	
+b	Ciao! Come posso aiutarti?				
+u	Vorrei una bicicletta a Torino Porta Susa	search_bike		Torino Porta Susa	
+b	Puoi trovare 1 bici libere alla stazione Bolzano				
+u	👍				
+u	Grazie	thank		Grazie	
+b	Prego!				
+u	Vorrei parcheggiare una bicicletta nei pressi del Politecnico di Torino	search_slot		Politecnico di Torino	
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	👍				
+u	Vorrei prendere una bicicletta nei pressi del Politecnico di Torino	search_bike		Politecnico di Torino	
+b	Puoi trovare 2 bici libere alla stazione Politecnico 2				
+u	👍				
+u	Quali città sono supportate?	city_supported			
+u	Ciao	greeting		Ciao	
+b	Ciao! Come posso aiutarti?				
+u	Quali città sono supportate?	city_supported			
+u	Vorrei una bicicletta vicino a Piazza Castello	search_bike			Piazza Castello
+b	Dove sei?				
+u	A Torino	set_position		Torino	
+b	Ok ho la tua posizione				
+u	Vorrei una bicicletta vicino a Piazza Castello	search_bike			Piazza Castello
+b	Puoi trovare 15 bici libere alla stazione Castello 2				
+u	👍				
+u	Vorrei una bicicletta nei dintorni	search_bike			
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	Vorrei prendere una bicicletta	search_bike			
+b	Puoi trovare 18 bici libere alla stazione Cariboo St / Rail Path				
+u	👎				
+u	Dove posso parcheggiare la bici vicino a Torino Porta Nuova?	search_slot		Torino Porta Nuova	
+b	Puoi trovare 11 parcheggi liberi alla stazione Porta Nuova 1				
+u	👍				
+u	Come posso raggiungere Pozzo Strada da Piazza Castello?	plan_trip	Piazza Castello		Pozzo Strada
+b	Il tuo viaggio non ha né un punto di partenza né un punto di arrivo				
+u	Una bicicletta a Piazza Castello	search_bike		Piazza Castello	
+b	Puoi trovare 3 bici libere alla stazione Castello 2				
+					
+u	/start				
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+u	Ciao	greeting		Ciao	
+b	Ciao! Come posso aiutarti?				
+u	Mi serve una bici per andare al museo egizio	plan_trip			museo egizio
+b	La tua frase non contiene un intento				
+u	Ciao	greeting		Ciao	
+b	Ciao! Come posso aiutarti?				
+u	Mi serve una bici	search_bike			
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+					
+u	ciao	greeting			
+b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
+b	Ciao! Come posso aiutarti?				
+u	ciao	greeting			
+u					
+b	Perché mi hai mandato other?				
+u	voglio andare da torino a new york	plan_trip	torino		new york
+b	Il tuo viaggio non ha né un punto di partenza né un punto di arrivo				
+u	voglio andare in spagna	plan_trip			spagna
+b	Il tuo viaggio non ha né un punto di partenza né un punto di arrivo				
+u	voglio andare a new york	plan_trip			new york
+b	Dove sei?				
+u	sono a torino	set_position		torino	
+b	Ok ho la tua posizione				
+u	voglio andare a new york	plan_trip			new york
+b	Il tuo viaggio inizia a  Torino e finisce a New York, NY. Non puoi prendere una bici in una città e portarla in un'altra!				
+u	puoi lavorare a pagno?	city_supported		pagno	
+b	La città supportata più vicina è Saluzzo				
+u	funzioni a saluzzo?	city_supported		saluzzo	
+b	Sì, Saluzzo è supportata				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	Ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	Dammi una bici al poli	search_bike		poli	
+b	Puoi trovare 8 bici libere alla stazione 605 - Virginia St & Florida Ave				
+u	Dammi una bici a piazza castello	search_bike		piazza castello	
+b	Puoi trovare 1 bici libere alla stazione Castello 2				
+u					
+b	Ok ho la tua posizione				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	hi				
+b	La tua frase non contiene un intento				
+u	sono al politecnico	set_position		politecnico	
+b	La tua frase non contiene un intento				
+u	sono al politecnico di torino	set_position		politecnico di torino	
+b	Ok ho la tua posizione				
+u	voglio una bici	search_bike			
+b	Puoi trovare 4 bici libere alla stazione 01.  Annenberg Community Beach House				
+u	Posso prenotare una bici?	book_bike			
+b	Puoi trovare 6 bici libere alla stazione 01.  Annenberg Community Beach House				
+u	posso prenotare una bici?	book_bike			
+b	Puoi trovare 6 bici libere alla stazione 01.  Annenberg Community Beach House				
+u	Grazie mille	thank			
+b	Prego!				
+u	prenota una bici in piazza castello	book_bike		piazza castello	
+b	Puoi trovare 18 bici libere alla stazione Castello 2				
+u	vorrei andare a scuola in bici	plan_trip			scuola
+b	Il tuo viaggio non ha né un punto di partenza né un punto di arrivo				
+u	vorrei andare a scuola in bici	plan_trip			scuola
+b	Il tuo viaggio inizia a Santa Monica, CA e finisce a Kansas City, MO. Non puoi prendere una bici in una città e portarla in un'altra!				
+u					
+b	Ok ho la tua posizione					
+u	Voglio una bici	search_bike			
+b	Puoi trovare 3 bici libere alla stazione 01.  Annenberg Community Beach House				
+u	una bici da piazza castello a torino esposizioni	plan_trip	piazza castello		torino esposizioni
+b	Puoi trovare 6 bici libere alla stazione Torino Esposizioni				
+u	voglio una bici per andare da piazza castello a rondo della forca	plan_trip	piazza castello		rondo della forca
+b	Puoi trovare 7 bici libere alla stazione Castello 2				
+b	Puoi trovare 10 parcheggi liberi alla stazione Consolata				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	funzioni a pagno?	city_supported		pagno	
+b	La città supportata più vicina è Saluzzo				
+u	voglio una bici a saluzzo	search_bike		saluzzo	
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	dammi una bici	search_bike			
+b	Puoi trovare 9 bici libere alla stazione O.G.R.				
+u	voglio andare in piazza castello	plan_trip			piazza castello
+b	Puoi trovare 9 bici libere alla stazione O.G.R.				
+b	Puoi trovare 3 parcheggi liberi alla stazione Castello 2				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	dammi una bici	search_bike			
+b	Puoi trovare 9 bici libere alla stazione O.G.R.				
+u	prenotami una bici in parco ruffini	book_bike		parco_ruffini	
+b	Mi dispiace ma non posso prenotare le bici				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	dammi una bici	search_bike			
+b	Puoi trovare 5 bici libere alla stazione O.G.R.				
+u	grazie	thank			
+b	Prego!				
+u	voglio andare dal museo egizio di Torino a san salvario	plan_trip	museo egizio di Torino		san salvario
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	voglio andare dal museo egizio di Torino a san salvario	plan_trip	museo egizio di Torino		san salvario
+b	Il tuo viaggio inizia a Genova e finisce a Denver, CO. Non puoi prendere una bici in una città e portarla in un'altra!				
+u	localizzami	ask_position			
+b	La tua frase non contiene un intento				
+u	trovami	ask_position			
+b	La tua frase non contiene un intento				
+u	dove sono?	ask_position			
+b	Dove sei?				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	voglio parcheggiare	search_slot			
+b	Il tuo viaggio non ha né un punto di partenza né un punto di arrivo				
+u	ho bisogno di una bicicletta	search_bike			
+b	Puoi trovare 5 bici libere alla stazione O.G.R.				
+u	voglio una bicicletta vicino a via delle rosine 3	search_bike		via delle rosine 3	
+b	Puoi trovare 7 bici libere alla stazione Lake & Merrett				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	voglio una bicicletta vicino a via delle rosine 3	search_bike		via delle rosine 3	
+b	Puoi trovare 8 bici libere alla stazione Maria Vittoria				
+u	dove posso parcheggiare in via pier carlo boggio?	search_slot		via pier carlo boggio	
+b	Puoi trovare 5 parcheggi liberi alla stazione Ferrucci				
+u	grazie!	thank			
+b	Prego!				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	sono in piazza castello	set_position		piazza castello	
+b	Ok ho la tua posizione				
+u	sono in piazza castello e voglio andare a cordusio	plan_trip	piazza castello		cordusio
+b	Ok ho la tua posizione				
+u	sono in piazza castello milano	set_position		piazza castello milano	
+b	Ok ho la tua posizione				
+u	voglio andare da cadorna a cordusio	plan_trip	cadorna		cordusio
+b	Il tuo viaggio inizia a Varese e finisce a Milano. Non puoi prendere una bici in una città e portarla in un'altra!				
+u	voglio andare da cairoli a cordusio	plan_trip	cairoli		cordusio
+b	Impossibile trovare le informazioni. Qualcosa è andato male!				
+u	voglio andare da piazza castello a lingotto	plan_trip	piazza castello		lingotto
+b	Pui trovare 10 bici libere alla stazione Castello 2 e 3 parcheggi liberi alla stazione Pio VII 2				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u					
+b	Ok ho la tua posizione				
+u	Voglio una bici	search_bike			
+b	Puoi trovare 6 bici libere alla stazione Nizza 1				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	Voglio una bici	search_bike			
+b	Puoi trovare 9 bici libere alla stazione Nizza 1				
+u	ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u	Ehi ciao	greeting			
+b	Ciao! Come posso aiutarti?				
+u					
+b	Ok ho la tua posizione				
+u	Trovami una bici	search_bike			
+b	Puoi trovare 6 bici libere alla stazione Station n°007				
+					

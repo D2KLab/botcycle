@@ -1,0 +1,372 @@
+role	text	intent	from	location	to
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	Is carignano supported?	city_supported		carignano	
+b	Nearest supported city is Torino				
+u	Ok thanks	thank			
+					
+u	Hey	greeting			
+b	Hi there! How can I help?				
+u	Is saluzzo supported?	city_supported		saluzzo	
+b	Yes, Saluzzo is supported				
+u	Is carignano supported?	city_supported		carignano	
+b	Nearest supported city is Torino				
+u	Is Torino supported?	city_supported		Torino	
+b	Yes, Torino is supported				
+u	i am in torino	set_position		torino	
+b	Ok I got your position				
+u	find me a bike	search_bike			
+b	You can find 3 free bikes at station Galileo Ferraris 6				
+u	thanks!	thank			
+b	You're welcome!				
+u	where can I park?	search_slot			
+b	You can find 5 free slots at station Galileo Ferraris 6				
+					
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	find me a bike	search_bike			
+b	Where are you?				
+u	near politecnico di torino	search_bike		politecnico di torino	
+b	You can find 3 free bikes at station Galileo Ferraris 6				
+u	thanks	thank			
+b	You're welcome!				
+					
+u	hello	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	how  r u?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+					
+u	Hello	greeting			
+b	Hi there! How can I help?				
+u	What can you do	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	A bike in Singapore 	search_bike		Singapore	
+b	Impossible to find informations. Something went wrong!				
+u	Hi	greeting			
+b	Hi there! How can I help?				
+u	What can you do	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	Please find me a bike in Singapore 	search_bike		Singapore	
+b	Impossible to find informations. Something went wrong!				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	hello	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	how are you doing?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+					
+u	Hello 	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hola	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+					
+u	hi dear	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	I need a bike	search_bike			
+b	Where are you?				
+u	BOLIVIA				
+b	Your sentence does not have an intent	search_bike		BOLIVIA	
+					
+u	:)	thank			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	You're welcome!				
+					
+u	 Hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	hello	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hello 	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	give me a bike	search_bike			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Where are you?				
+u	I am in palazzo madama in torino	set_position		palazzo madama in torino	
+b	Ok I got your position				
+b	You can find 8 free bikes at station Castello 2				
+u	I want to go to torino porta nuova	plan_trip			torino porta nuova
+b	You can find 14 free bikes at station Castello 2 and 2 free slots at station Porta Nuova 2				
+					
+u	Hello 	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hey	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	hola	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	Give me more information about bike	search_bike			
+b	Where are you?				
+u	Nice airport	set_location		Nice airport	
+b	You can find 5 free bikes at station Marina 2&3				
+u	👍				
+u	Ok	end_discussion		Ok	
+					
+u	Hi 	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	hello	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	hello	greeting			
+b	Hi there! How can I help?				
+u	Find me a bike	search_bike			
+b	Where are you?				
+u	Residenza borsellino torino	set_position		Residenza borsellino torino	
+b	Ok I got your position				
+u	Find me a bike	search_bike			
+b	You can find 2 free bikes at station Ferrucci				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	i want a bike	search_bike			
+b	Where are you?				
+u	i am in torino	set_position		torino	
+b	Ok I got your position				
+u	give me a bike	search_bike			
+b	You can find 10 free bikes at station Ferrucci				
+u	thanks	thank			
+b	You're welcome!				
+u	I'm in Piazza Castello Torino	search_bike		Piazza Castello Torino	
+b	Ok I got your position				
+u	i'm looking for a bike	search_bike			
+b	You can find 9 free bikes at station Ferrucci				
+					
+u	hi	greeting			
+b	Hi there! How can I help?				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	I'm in via Vignale 21 Torino	set_position		via Vignale 21 Torino	
+					
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	I'm looking for a bike	search_bike			
+b	Where are you?				
+u	via vignale 21, torino	search_bike		via vignale 21, torino	
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	I'm looking for a bike	search_bike			
+b	Where are you?				
+u	I'm in Piazza Castello Torino	search_bike		Piazza Castello Torino	
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	i'm looking for a bike	search_bike			
+b	Where are you?				
+u	next to Porta Susa	search_bike		Porta Susa	
+b	You can find 3 bikes at station				
+u	I'm next to Porta Susa, Torino	set_position		Porta Susa, Torino	
+					
+u	/start				
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	I am BotCycle. Try to ask me something about bike sharing!				
+u	hi!	greeting			
+b	Hi there! How can I help?				
+u	What Can you do?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	There are some bike near me?	search_bike			
+b	You can find 18 free bikes at station Orient Heights T Stop - Bennington St at Saratoga St				
+u	I am in Turin	set_position		Turin	
+b	Ok I got your position				
+u	There are bike near me?	search_bike			
+b	You can find 18 free bikes at station Orient Heights T Stop - Bennington St at Saratoga St				
+					
+u	/start				
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+u	hello!	greeting			
+b	Hi there! How can I help?				
+u	help me	ask_position			
+b	Where are you?				
+u	coggiola	set_position		coggiola	
+b	Your sentence does not have an intent				
+u	I am in Coggiola	set_position		Coggiola	
+b	Ok I got your position				
+u	and now?				
+b	Your sentence does not have an intent				
+u	What can I ask you?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	bike sharing coggiola	search_bike			
+b	You can find 1 free bikes at station Stazione Ferroviaria				
+u	👎				
+u	It is very far from me				
+b	Your sentence does not have an intent				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	give me a bike	search_bike			
+b	Where are you?				
+u	i am in torino	set_position		torino	
+b	Ok I got your position				
+u	Hi there!	greeting			
+b	Hi there! How can I help?				
+u	find me a bike	search_bike			
+b	You can find 7 free bikes at station Castello 2				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	find me a bike	search_bike			
+b	You can find 11 free bikes at station Castello 2				
+u	hi there	greeting			
+b	Hi there! How can I help?				
+u	Hey	greeting			
+b	Hi there! How can I help?				
+u	find me a bike	search_bike			
+b	You can find 13 free bikes at station Castello 2				
+u	👍				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	i am at politecnico	set_position		politecnico	
+b	Ok I got your position				
+u	i am at politecnico di torino	set_position		politecnico di torino	
+b	Ok I got your position				
+u	give me a bike	search_bike			
+b	You can find 17 free bikes at station Politecnico 1				
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	can you work?	city_supported			
+b	Nearest supported city is Torino				
+u	Find me a bike near Central Park	search_bike		Central Park	
+b	Impossible to find informations. Something went wrong!				
+u	Find me a bike near Central Park	search_bike		Central Park	
+b	Impossible to find informations. Something went wrong!				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	find me a bike	search_bike			
+b	You can find 11 free bikes at station Politecnico 1				
+u	Find me a bike near Central Park	search_bike		Central Park	
+b	You can find 1 free bikes at station 14th St Ferry Terminal				
+u	Find me a parking near Central Park	search_slot		Central Park	
+b	You can find 1 free slots at station 14th St Ferry Terminal				
+u	Find me a bike near Central Park	search_bike		Central Park	
+b	You can find 1 free bikes at station 14th St Ferry Terminal				
+u	find me a bike near Big Ben	search_bike		Big Ben	
+b	You can find 1 free bikes at station 200202 - Storey's Gate, Westminster				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	give me a bike near polito	search_bike		polito	
+b	You can find 4 free bikes at station Kellogg Community College				
+u	can you work in tokyo?	city_supported		tokyo	
+b	Nearest supported city is 富山市				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	I am at ismb	set_position		ismb	
+b	Ok I got your position				
+u	i am at istituto superiore mario boella	set_position		istituto superiore mario boella	
+b	Ok I got your position				
+u	I am at politecnico di torino	set_position		politecnico di torino	
+b	Ok I got your position				
+u	find me a bike	search_bike			
+b	You can find 8 free bikes at station Politecnico 1				
+u	where can I leave the bike?	search_slot			
+b	You can find 11 free slots at station Politecnico 1				
+u	find me a bike	search_bike			
+b	You can find 8 free bikes at station Politecnico 1				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	I am near Big Ben	set_position		Big Ben	
+b	Ok I got your position				
+u	I am near Big Ben Tower	set_position		Big Ben Tower	
+b	Ok I got your position				
+u	Find me a bike	search_bike			
+b	You can find 16 free bikes at station 200231 - Abingdon Green, Westminster				
+u	hi	greeting			
+b	Hi there! How can I help?				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	i want to go to piazza massaua	plan_trip			piazza massaua
+b	Where are you?				
+u	I'm in piazza castello, Torino	set_position		piazza castello, Torino	
+b	I didn't manage to extract a position from your sentence				
+b	Where are you?				
+u	I'm in piazza castello, Torino	set_position		piazza castello, Torino	
+b	I didn't manage to extract a position from your sentence				
+b	Where are you?				
+u	I'm in piazza castello	set_position		piazza castello	
+b	Ok I got your position				
+b	You can find 14 free bikes at station Castello 2				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	I'm in piazza castello, Torino	set_position		piazza castello, Torino	
+b	I didn't manage to extract a position from your sentence				
+u	I'm in piazza castello, Torino	set_position		piazza castello, Torino	
+b	I didn't manage to extract a position from your sentence				
+u	I'm in piazza castello	set_position		piazza castello	
+b	Ok I got your position				
+u	I'm in piazza castello, Torino	set_position		piazza castello, Torino	
+b	Ok I got your position				
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	i want to go to via borsellino torino	plan_trip			via borsellino torino
+b	Where are you?				
+u	i am at piazza carducci torino	set_position		piazza carducci torino	
+b	Ok I got your position				
+b	You can find 10 free bikes at station Carducci				
+u	i want to go to via paolo borsellino Torino 	plan_trip			via paolo borsellino Torino
+b	You can find 10 free bikes at station Carducci and 6 free slots at station O.G.R.				
+					
+u	Hi! I need a bike	search_bike			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	You can find 5 free bikes at station Marina 2&3				
+					
