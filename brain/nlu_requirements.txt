@@ -1,4 +1,4 @@
-tensorflow
+tensorflow>=1.5
 sklearn
 matplotlib
 scipy

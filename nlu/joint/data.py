@@ -8,20 +8,36 @@ import json
 import os
 import random
 import numpy as np
+from spacy.gold import iob_to_biluo, tags_to_entities
 
 
 def flatten(list_of_lists):
     """Flattens from two-dimensional list to one-dimensional list"""
     return [item for sublist in list_of_lists for item in sublist]
 
-def collapse_multi_turn_sessions(dataset):
+def multi_turn_to_single_turn(dataset):
+    """Convert to single turn the dataset, flattening sessions but only keeping features of current turn"""
+    sessions = dataset['data']
+    dataset['data'] = []
+    for s in sessions:
+        for m in s:
+            if m['turn'] == 'u' and m['length']:
+                # some sentences are empty
+                dataset['data'].append(m)
+
+    print('you are forcing a multi-turn dataset into a single-turn one')
+    return dataset
+
+def collapse_multi_turn_sessions(dataset, force_single_turn):
     """Turns sessions into lists of messages with previous intent and previous bot turn (words and slot annotations)"""
+    # TODO force_single_turn should be considered better, eliminating function multi_turn_to_single_turn
     sessions = dataset['data']
     dataset['data'] = []
     # hold the previous intent value, initialized to some value (not important)
     previous_intent = dataset['meta']['intent_types'][0]
     previous_bot_turn = []
     previous_bot_slots = []
+    intent_changes = []
     for s in sessions:
         for m in s:
             #print('before')
@@ -30,16 +46,21 @@ def collapse_multi_turn_sessions(dataset):
                 # this is the bot turn
                 previous_bot_turn = m['words']
                 previous_bot_slots = m['slots']
-            else:
+            elif m['length']:
+                # some sentences are empty
                 m['previous_intent'] = previous_intent
                 m['bot_turn_actual_length'] = len(previous_bot_turn)
-                m['words'] = previous_bot_turn + m['words']
-                # TODO check this last modification also on slots
-                m['slots'] = previous_bot_slots + m['slots']
-                m['length'] += m['bot_turn_actual_length']
+                if force_single_turn != 'no_all' and force_single_turn != 'no_bot_turn':
+                    m['words'] = previous_bot_turn + m['words']
+                    m['slots'] = previous_bot_slots + m['slots']
+                    m['length'] += m['bot_turn_actual_length']
+                intent_changes.append(previous_intent != m['intent'])
                 dataset['data'].append(m)
+                previous_intent = m['intent']
             #print('after')
             #print(m['words'])
+
+    print('intent changes: {} over {} samples'.format(sum(intent_changes), len(intent_changes)))
     return dataset
 
 def load_data(dataset_name, mode='measures'):
@@ -180,3 +201,19 @@ def get_language_model_name(language):
         return 'it_vectors_wiki_lg'
 
     return language
+
+
+'''the results are not usable at inference time easily, because offsets are in terms of word index, not character ones'''
+def sequence_iob_to_ents(iob_sequence):
+    """From the sequence of IOB shaped (n_samples, seq_max_len) to label:start-end array"""
+    #print(decoder_prediction, intent[0], intent_score)
+    # clean up <EOS> and <PAD>
+    result = []
+    for line in iob_sequence:
+        line = [t if (t != '<EOS>' and t != '<PAD>' and t != 0) else 'O' for t in line]
+        #print(line)
+        line = iob_to_biluo(line)
+        entities_offsets = tags_to_entities(line)
+        entity_text = ['{}:{}-{}'.format(label, start, end) for (label, start, end) in entities_offsets]
+        result.append(entity_text)
+    return result
