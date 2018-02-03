@@ -4,7 +4,6 @@ import os
 import json
 import time
 import tensorflow as tf
-from tensorflow.python import debug as tf_debug
 import numpy as np
 from sklearn.metrics import accuracy_score
 
@@ -19,7 +18,7 @@ hidden_size = 100
 # size of batch
 batch_size = 16
 # number of training epochs
-epoch_num = 1
+epoch_num = 10
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
