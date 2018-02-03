@@ -19,13 +19,19 @@ hidden_size = 100
 # size of batch
 batch_size = 16
 # number of training epochs
-epoch_num = 10
+epoch_num = 1
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
 DATASET = os.environ.get('DATASET', 'atis')
 OUTPUT_FOLDER = os.environ.get('OUTPUT_FOLDER', 'last')
 MODE = os.environ.get('MODE', None)
+if not MODE:
+    # for those two datasets, default to train full
+    if DATASET == 'wit_en' or DATASET == 'wit_it':
+        MODE = 'runtime'
+    else:
+        MODE = 'measures'
 # the type of recurrent unit on the multi-turn: rnn or CRF
 RECURRENT_MULTITURN=os.environ.get('RECURRENT_MULTITURN','rnn')
 
@@ -35,11 +41,15 @@ if FORCE_SINGLE_TURN:
     OUTPUT_FOLDER += '_single_' + FORCE_SINGLE_TURN
 if RECURRENT_MULTITURN != 'rnn':
     OUTPUT_FOLDER += '_' + RECURRENT_MULTITURN
-# don't overwrite anything
-OUTPUT_FOLDER += str(time.time())
+if MODE=='measures':
+    # don't overwrite anything
+    #OUTPUT_FOLDER += str(time.time())
+    pass
+
+print('environment variables:')
+print('DATASET:', DATASET, '\nOUTPUT_FOLDER:', OUTPUT_FOLDER, '\nMODE:', MODE, '\nRECURRENT_MULTITURN:', RECURRENT_MULTITURN, '\nFORCE_SINGLE_TURN:', FORCE_SINGLE_TURN)
 
 def get_model(vocabs, tokenizer, language, multi_turn, input_steps):
-    # TODO batch_size unset. For now needed in CRF self.batch_size, but should solve
     model = Model(input_steps, embedding_size, hidden_size, vocabs, multi_turn, None, RECURRENT_MULTITURN)
     model.build(tokenizer, language)
     return model
@@ -48,7 +58,6 @@ def get_model(vocabs, tokenizer, language, multi_turn, input_steps):
 def train(mode):
     # maximum length of sentences
     input_steps = 50
-    print(mode)
     # load the train and dev datasets
     test_data, train_data = data.load_data(DATASET, mode)
     # fix the random seeds
@@ -60,22 +69,21 @@ def train(mode):
     # - an output sequence (list of IOB annotations --> strings, padded)
     # - an output intent (string)
     multi_turn = train_data['meta'].get('multi_turn', False)
-    if multi_turn and FORCE_SINGLE_TURN == 'no_all':
-        # multi-turn sessions, but chosen to use single turn network
-        multi_turn = False
-        train_data = data.multi_turn_to_single_turn(train_data)
+    print('multi_turn:', multi_turn)
     if multi_turn:
+        input_steps *=2
         train_data = data.collapse_multi_turn_sessions(train_data, FORCE_SINGLE_TURN)
-        input_steps *= 2
     training_samples = data.adjust_sequences(train_data, input_steps)
     print('train samples', len(training_samples['data']))
     if test_data:
         if multi_turn:
             test_data = data.collapse_multi_turn_sessions(test_data, FORCE_SINGLE_TURN)
-        if FORCE_SINGLE_TURN == 'no_all':
-            test_data = data.multi_turn_to_single_turn(test_data)
         test_samples = data.adjust_sequences(test_data, input_steps)
         print('test samples', len(test_samples['data']))
+
+    # turn off multi_turn for the required additional feeds and previous intent RNN
+    if multi_turn and FORCE_SINGLE_TURN == 'no_all' or FORCE_SINGLE_TURN == 'no_previous_intent':
+        multi_turn = False
     # get the vocabularies for input, slot and intent
     vocabs = data.get_vocabularies(training_samples)
     # and get the model
@@ -101,7 +109,8 @@ def train(mode):
     }
     if multi_turn:
         print('i am multi turn')
-        history['intent_change'] = np.zeros((epoch_num))
+        # wrong idea: actually the intent f1 is the wanted measure
+        #history['intent_change'] = np.zeros((epoch_num))
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
@@ -190,10 +199,11 @@ def train(mode):
             if multi_turn:
                 # evaluate the intent transitions in samples and the transition inferred
                 true_intent_changes, pred_intent_changes = list(zip(*[(prev != true, prev != pred) for prev, pred, true in zip(previous_intents, pred_intents, true_intents)]))
-                f1_changes = metrics.f1_for_intents(true_intent_changes, pred_intent_changes)
+                #f1_changes = metrics.f1_for_intents(true_intent_changes, pred_intent_changes)
                 true_positives, true_negatives = list(zip(*[(true and pred, not true and not pred) for true, pred in zip(true_intent_changes, pred_intent_changes)]))
-                print("F1 score INTENT CHANGE for epoch {}: {} with {} true positives and {} true negatives over {} samples".format(epoch, f1_changes, sum(true_positives), sum(true_negatives), len(true_positives)))
-                history['intent_change'][epoch] = f1_changes
+                #print("F1 score INTENT CHANGE for epoch {}: {} with {} true positives and {} true negatives over {} samples".format(epoch, f1_changes, sum(true_positives), sum(true_negatives), len(true_positives)))
+                print("INTENT CHANGE statistics for epoch {}: {} true positives and {} true negatives over {} samples".format(epoch, sum(true_positives), sum(true_negatives), len(true_positives)))
+                #history['intent_change'][epoch] = f1_changes
 
     real_folder = MY_PATH + '/results/' + OUTPUT_FOLDER + '/' + DATASET + '/'
     if not os.path.exists(real_folder):
@@ -218,11 +228,4 @@ def save_history(history, file_path):
         json.dump(history_serializable, out_file)
 
 if __name__ == '__main__':
-    # for those two datasets, default to train full
-    if (DATASET == 'wit_en' or DATASET == 'wit_it') and not MODE:
-        #train('measures') # not possible until reset py_func (2 declared)
-        train('runtime')
-    else:
-        if not MODE:
-            MODE = 'measures'
-        train(MODE)
+    train(MODE)

@@ -15,22 +15,8 @@ def flatten(list_of_lists):
     """Flattens from two-dimensional list to one-dimensional list"""
     return [item for sublist in list_of_lists for item in sublist]
 
-def multi_turn_to_single_turn(dataset):
-    """Convert to single turn the dataset, flattening sessions but only keeping features of current turn"""
-    sessions = dataset['data']
-    dataset['data'] = []
-    for s in sessions:
-        for m in s:
-            if m['turn'] == 'u' and m['length']:
-                # some sentences are empty
-                dataset['data'].append(m)
-
-    print('you are forcing a multi-turn dataset into a single-turn one')
-    return dataset
-
-def collapse_multi_turn_sessions(dataset, force_single_turn):
+def collapse_multi_turn_sessions(dataset, force_single_turn=False):
     """Turns sessions into lists of messages with previous intent and previous bot turn (words and slot annotations)"""
-    # TODO force_single_turn should be considered better, eliminating function multi_turn_to_single_turn
     sessions = dataset['data']
     dataset['data'] = []
     # hold the previous intent value, initialized to some value (not important)
@@ -46,19 +32,18 @@ def collapse_multi_turn_sessions(dataset, force_single_turn):
                 # this is the bot turn
                 previous_bot_turn = m['words']
                 previous_bot_slots = m['slots']
-            elif m['length']:
+            elif m['turn'] == 'u' and m['length']:
                 # some sentences are empty
                 m['previous_intent'] = previous_intent
                 m['bot_turn_actual_length'] = len(previous_bot_turn)
                 if force_single_turn != 'no_all' and force_single_turn != 'no_bot_turn':
+                    # concatenation of bot words
                     m['words'] = previous_bot_turn + m['words']
                     m['slots'] = previous_bot_slots + m['slots']
                     m['length'] += m['bot_turn_actual_length']
                 intent_changes.append(previous_intent != m['intent'])
                 dataset['data'].append(m)
                 previous_intent = m['intent']
-            #print('after')
-            #print(m['words'])
 
     print('intent changes: {} over {} samples'.format(sum(intent_changes), len(intent_changes)))
     return dataset
@@ -68,7 +53,10 @@ def load_data(dataset_name, mode='measures'):
     
     if mode='measures' (default), returns [test_data, train_data]
     
-    if mode='runtime', returns [None, all the data together], to do a full training to be used at runtime"""
+    if mode='runtime', returns [None, all the data together], to do a full training to be used at runtime
+    
+    if mode='validate', returns[validate_data, train_data]
+        """
     path = 'data/' + dataset_name + '/preprocessed'
 
     fold_files = os.listdir(path)
@@ -88,6 +76,11 @@ def load_data(dataset_name, mode='measures'):
         for split in data_splitted:
             result['data'].extend(split['data'])
         return None, result
+    elif mode == 'validate':
+        print('you are running on the validation fold!!!')
+        with open(path + '/' + final_test) as json_file:
+            validate = json.load(json_file)
+            return [validate, data_splitted[1]]
     else:
         raise ValueError('mode unsupported:' + mode)
 
@@ -165,7 +158,7 @@ def spacy_wrapper(embedding_size, language, nlp, words_numpy):
         # put back together the sentence in order to get the word embeddings with context (only for languages without vectors)
         # TODO skip this if always word vectors, since if word vectors are part of the model, they are fixed and can get them simply by doing lookup
         # unless contextual vectors can be built also when vectors are there
-        sentence = ' '.join(words)
+        sentence = ' '.join(words).replace(' \'', '\'')
         if language == 'en' or language == 'it':
             # only make_doc instead of calling nlp, much faster
             doc = nlp.make_doc(sentence)

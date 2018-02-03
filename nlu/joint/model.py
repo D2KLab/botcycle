@@ -22,7 +22,6 @@ class Model:
         # this variable changes the architecture from single turn to multi-turn
         self.multi_turn = multi_turn
         # choose between RNN or CRF for the intent combination
-        print(intent_combination, multi_turn)
         self.intent_combination = (intent_combination or 'rnn') if multi_turn else None
 
         # define the placeholders for inputs to the graph
@@ -108,23 +107,23 @@ class Model:
         intent_logits = tf.add(tf.matmul(encoder_final_state_h, intent_W), intent_b)
         if self.intent_combination == 'crf':
             previous_intent_ids = self.intentEmbedder.get_indexes_from_words_tensor(self.previous_intent)
-            print('shape of previous_intent_ids', tf.shape(previous_intent_ids))
+            #print('shape of previous_intent_ids', tf.shape(previous_intent_ids))
             previous_intent_one_hot = tf.one_hot(previous_intent_ids, depth=self.intentEmbedder.vocab_size, dtype=tf.float32, axis=1)
             # transpose from (intent_n, batch_size) to (batch_size, intent_n)
             #previous_intent_one_hot = tf.transpose(previous_intent_one_hot, [1, 0])
-            print('shape of previous_intent_one_hot', tf.shape(previous_intent_one_hot), 'intent_dict_size', self.intentEmbedder.vocab_size)
+            #print('shape of previous_intent_one_hot', tf.shape(previous_intent_one_hot), 'intent_dict_size', self.intentEmbedder.vocab_size)
             # the unary scores are [previous_intent_logits, current_intent_logits] put together in shape (batch_size,2,intent_n)
             unary_scores = tf.stack([previous_intent_one_hot, intent_logits], 1)
-            print('shape of unary scores', tf.shape(unary_scores))
+            #print('shape of unary scores', tf.shape(unary_scores))
             #unary_scores = tf.transpose(unary_scores, [])
             gold_tags = tf.stack([previous_intent_ids, intent_ids_targets], 1)
-            print('shape of gold tags', tf.shape(gold_tags))
+            #print('shape of gold tags', tf.shape(gold_tags))
             # cast the gold tags to in32
             gold_tags = tf.to_int32(gold_tags)
             #sequence_lengths = tf.constant(2, dtype=tf.int32, shape=[self.batch_size])
             sequence_lengths = tf.fill((batch_size_tensor,), 2)
             log_likelihood, transition_params = tf.contrib.crf.crf_log_likelihood(unary_scores, gold_tags, sequence_lengths)
-            print(log_likelihood, transition_params)
+            #print(log_likelihood, transition_params)
             # the loss of the CRF is kept to the backpropagation
             loss_crf = tf.reduce_mean(-log_likelihood)
             #unary_real_scores = tf.contrib.crf.crf_unary_score(gold_tags, sequence_lengths, unary_scores)
@@ -132,7 +131,7 @@ class Model:
             viterbi_sequence, viterbi_score = tf.contrib.crf.crf_decode(unary_scores, transition_params, sequence_lengths)
             # transpose from (batch, time) to (time, batch)
             intents_major_timesteps = tf.transpose(viterbi_sequence, [1, 0])
-            print('intents_major_timesteps', tf.shape(intents_major_timesteps))
+            #print('intents_major_timesteps', tf.shape(intents_major_timesteps))
             # take the output intent, intents_major_timesteps should be [previous_intent, current_intent]
             intent_id = intents_major_timesteps[1]
             intent_id = tf.to_int64(intent_id)
@@ -143,9 +142,10 @@ class Model:
                 previous_intent_one_hot = tf.one_hot(previous_intent_ids, depth=self.intentEmbedder.vocab_size, dtype=tf.float32)
                 self.intent_combiner = GRUCell(self.intentEmbedder.vocab_size)
                 # apply the GRU cell once: from input (current logits, previous intent as state) to output (next logits, next output the same as next logits in GRU)
-                print(intent_logits)
-                intent_logits, _ = self.intent_combiner.call(intent_logits, previous_intent_one_hot)
-                print(intent_logits)
+                #print(intent_logits)
+                #self.intent_combiner.build()
+                intent_logits, _ = self.intent_combiner(intent_logits, previous_intent_one_hot)
+                #print(intent_logits)
             # take the argmax
             intent_id = tf.argmax(intent_logits, axis=1)
         # and translate to the corresponding string
@@ -292,34 +292,34 @@ class Model:
         else:
             previous_intent, bot_turn_length = None, None
         #print(seq_in, length)
-        try:
-            if mode == 'train':
-                output_feeds = [self.train_op, self.loss, self.decoder_prediction,
-                                self.intent, self.mask]
-                feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
-                            self.encoder_inputs_actual_length: length,
-                            self.decoder_targets: seq_out,
-                            self.intent_targets: intent}
-            if mode in ['test']:
-                output_feeds = [self.decoder_prediction, self.intent]
-                feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
-                            self.encoder_inputs_actual_length: length}
-            
-            if self.multi_turn:
-                feed_dict.update({
-                    self.previous_intent: previous_intent,
-                    self.bot_turn_actual_length: bot_turn_length
-                })
+        #try:
+        if mode == 'train':
+            output_feeds = [self.train_op, self.loss, self.decoder_prediction,
+                            self.intent, self.mask]
+            feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
+                        self.encoder_inputs_actual_length: length,
+                        self.decoder_targets: seq_out,
+                        self.intent_targets: intent}
+        if mode in ['test']:
+            output_feeds = [self.decoder_prediction, self.intent]
+            feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
+                        self.encoder_inputs_actual_length: length}
+        
+        if self.multi_turn:
+            feed_dict.update({
+                self.previous_intent: previous_intent,
+                self.bot_turn_actual_length: bot_turn_length
+            })
 
-            results = sess.run(output_feeds, feed_dict=feed_dict)
-            if mode in ['test']:
-                slots_batch, intent_batch = results
-                for idx, slots in enumerate(slots_batch):
-                    slots_batch[idx] = np.array([slot.decode('utf-8') for slot in slots])
-                for idx, intent in enumerate(intent_batch):
-                    intent_batch[idx] = intent.decode('utf-8')
-                results = slots_batch, intent_batch
-        except Exception as e:
-            traceback.print_exc()
-            print(seq_in, length)
+        results = sess.run(output_feeds, feed_dict=feed_dict)
+        if mode in ['test']:
+            slots_batch, intent_batch = results
+            for idx, slots in enumerate(slots_batch):
+                slots_batch[idx] = np.array([slot.decode('utf-8') for slot in slots])
+            for idx, intent in enumerate(intent_batch):
+                intent_batch[idx] = intent.decode('utf-8')
+            results = slots_batch, intent_batch
+        #except Exception as e:
+        #    traceback.print_exc()
+        #    print(seq_in, length)
         return results

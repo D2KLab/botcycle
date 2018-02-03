@@ -5,6 +5,7 @@ set -e
 
 pushd nlu
 export DATASET=kvret
+export MODE=validate # go on final_test now
 
 # train and eval multi-turn approach
 make train_joint
@@ -17,4 +18,6 @@ FORCE_SINGLE_TURN=no_previous_intent make train_joint
 # multi-turn with CRF
 RECURRENT_MULTITURN=crf make train_joint
 
+cd joint
+python train_crf.py validate
 popd
