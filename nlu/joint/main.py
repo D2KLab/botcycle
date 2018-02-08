@@ -32,13 +32,13 @@ if not MODE:
     else:
         MODE = 'measures'
 # the type of recurrent unit on the multi-turn: rnn or CRF
-RECURRENT_MULTITURN=os.environ.get('RECURRENT_MULTITURN','rnn')
+RECURRENT_MULTITURN=os.environ.get('RECURRENT_MULTITURN','gru')
 
 # set this to 'no_all', 'no_bot_turn', 'no_previous_intent' for a partial single-turned net on multi-turn datasets
 FORCE_SINGLE_TURN = os.environ.get('FORCE_SINGLE_TURN', False)
 if FORCE_SINGLE_TURN:
     OUTPUT_FOLDER += '_single_' + FORCE_SINGLE_TURN
-if RECURRENT_MULTITURN != 'rnn':
+if RECURRENT_MULTITURN != 'gru':
     OUTPUT_FOLDER += '_' + RECURRENT_MULTITURN
 if MODE=='measures':
     # don't overwrite anything
@@ -172,7 +172,7 @@ def train(mode):
                 #print("slot accuracy: {}, intent accuracy: {}".format(slot_acc, intent_acc))
             pred_iob_a = np.vstack(pred_iob)
             # pred_iob_a is of shape (n_test_samples, sequence_len)
-            print("pred_iob_a: ", pred_iob_a.shape)
+            #print("pred_iob_a: ", pred_iob_a.shape)
             true_slots_iob = np.array([sample['slots'] for sample in test_samples['data']])[:pred_iob_a.shape[0]]
             f1_intents = metrics.f1_for_intents(true_intents, pred_intents)
             accuracy_intents = accuracy_score(true_intents, pred_intents)

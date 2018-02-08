@@ -22,7 +22,7 @@ class Model:
         # this variable changes the architecture from single turn to multi-turn
         self.multi_turn = multi_turn
         # choose between RNN or CRF for the intent combination
-        self.intent_combination = (intent_combination or 'rnn') if multi_turn else None
+        self.intent_combination = (intent_combination or 'gru') if multi_turn else None
 
         # define the placeholders for inputs to the graph
         # the input words are a tensor of type string.
@@ -140,11 +140,17 @@ class Model:
                 # in this case some more steps need to be done before argmax/softmax
                 previous_intent_ids = self.intentEmbedder.get_indexes_from_words_tensor(self.previous_intent)
                 previous_intent_one_hot = tf.one_hot(previous_intent_ids, depth=self.intentEmbedder.vocab_size, dtype=tf.float32)
-                self.intent_combiner = GRUCell(self.intentEmbedder.vocab_size)
-                # apply the GRU cell once: from input (current logits, previous intent as state) to output (next logits, next output the same as next logits in GRU)
-                #print(intent_logits)
-                #self.intent_combiner.build()
-                intent_logits, _ = self.intent_combiner(intent_logits, previous_intent_one_hot)
+                if self.intent_combination == 'gru':
+                    self.intent_combiner = GRUCell(self.intentEmbedder.vocab_size)
+                    # apply the GRU cell once: from input (current logits, previous intent as state) to output (next logits, next output the same as next logits in GRU)
+                    #print(intent_logits)
+                    #self.intent_combiner.build()
+                    intent_logits, _ = self.intent_combiner(intent_logits, previous_intent_one_hot)
+                else:
+                    # LSTM
+                    self.intent_combiner = BasicLSTMCell(self.intentEmbedder.vocab_size)
+                    previous_state = LSTMStateTuple(c=previous_intent_one_hot, h=previous_intent_one_hot)
+                    intent_logits, _ = self.intent_combiner(intent_logits, previous_state)
                 #print(intent_logits)
             # take the argmax
             intent_id = tf.argmax(intent_logits, axis=1)

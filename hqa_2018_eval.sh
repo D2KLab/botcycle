@@ -18,6 +18,12 @@ FORCE_SINGLE_TURN=no_previous_intent make train_joint
 # multi-turn with CRF
 RECURRENT_MULTITURN=crf make train_joint
 
+# LSTM
+export RECURRENT_MULTITURN=lstm
+make train_joint
+# multi-turn without bot utterances
+FORCE_SINGLE_TURN=no_bot_turn make train_joint
+
 cd joint
 python train_crf.py validate
 popd

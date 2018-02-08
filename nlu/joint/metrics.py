@@ -48,7 +48,7 @@ def accuracy_for_sequence_batch(true_batch, pred_batch, eos_token='<EOS>'):
     true, pred = get_data_from_sequence_batch(true_batch, pred_batch, eos_token)
     return accuracy_score(true, pred)
 
-def f1_for_intents(true, pred, average="micro"):
+def f1_for_intents(true, pred, average='micro'):
     return f1_score(true, pred, average=average)
 
 def plot_f1_history(file_name, history):
