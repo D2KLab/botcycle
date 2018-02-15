@@ -12,11 +12,11 @@ create_it_embeddings:
 preprocess:
 	pushd data && python preprocess.py && popd
 
-extract_messages:
-	pushd data/exported && bash export.sh && popd
+export_messages:
+	pushd data && bash export.sh && popd
 
-create_multiturn:
-	echo "TODO from tsv to gold format"
+extract_tsv:
+	pushd data && python extract_tsv.py en && python extract_tsv.py it && popd
 
 train_atis_entities:
 	DATASET=atis MAX_ITERATIONS=300 python -m spacy_entities.train

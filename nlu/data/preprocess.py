@@ -308,7 +308,7 @@ def wit_preprocess(path, nlp):
 
     meta = {
         'tokenizer': 'spacy',
-        'language': path[4:],
+        'language': path[-2:],
         'intent_types': intent_types,
         'slot_types': slot_types
     }
@@ -537,12 +537,14 @@ def kvret_cleanup(nlp, source_json, slot_types):
         }
     }
 
-def multiturn_preprocess(lang_name, nlp):
+def multiturn_preprocess(path, nlp):
     """Preprocesses the TSV dataset to build properly structured json files as for the kvret preprocessed ones"""
     sessions = []
     intent_types = set()
     session = []
-    with open('exported/' + lang_name + '/tabular.tsv') as tsvfile:
+    source_dir = path + '/source/'
+    output_dir = path + '/preprocessed/'
+    with open(source_dir + 'tabular.tsv') as tsvfile:
         reader = csv.DictReader(tsvfile, delimiter='\t')
         fields = reader.fieldnames
         # entities are placed after role, text, intent
@@ -592,7 +594,7 @@ def multiturn_preprocess(lang_name, nlp):
     intent_types = list(sorted(intent_types))
     meta = {
         'tokenizer': 'spacy',
-        'language': lang_name,
+        'language': path[-2:],
         'slot_types': slot_types,
         'intent_types': intent_types,
         'multi_turn': True
@@ -608,24 +610,22 @@ def multiturn_preprocess(lang_name, nlp):
     
     train, dev, final_test = (dataset[folds_indexes[0] + folds_indexes[1] + folds_indexes[2]], dataset[folds_indexes[3]], dataset[folds_indexes[4]])
 
-    path = 'multiturn_' + lang_name + '/preprocessed/'
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-
-    with open(path + 'fold_train.json', 'w') as outfile:
+    with open(output_dir + 'fold_train.json', 'w') as outfile:
         json.dump({
             'data': train.tolist(),
             'meta': meta
         }, outfile)
     
-    with open(path + 'fold_test.json', 'w') as outfile:
+    with open(output_dir + 'fold_test.json', 'w') as outfile:
         json.dump({
             'data': dev.tolist(),
             'meta': meta
         }, outfile)
     
-    with open(path + '/final_test.json', 'w') as outfile:
+    with open(output_dir + '/final_test.json', 'w') as outfile:
         json.dump({
             'data': final_test.tolist(),
             'meta': meta
@@ -671,8 +671,8 @@ def main():
         wit_preprocess('wit_en', nlp_en)
         wit_preprocess('wit_it', nlp_it)
         kvret_preprocess(nlp_en)
-        multiturn_preprocess('en', nlp_en)
-        multiturn_preprocess('it', nlp_it)
+        multiturn_preprocess('multiturn_en', nlp_en)
+        multiturn_preprocess('multiturn_it', nlp_it)
     elif which == 'atis':
         atis_preprocess()
     elif which == 'nlu-benchnark':
@@ -684,9 +684,9 @@ def main():
     elif which == 'kvret':
         kvret_preprocess(nlp_en)
     elif which == 'multiturn_en':
-        multiturn_preprocess('en', nlp_en)
+        multiturn_preprocess('multiturn_en', nlp_en)
     elif which  == 'multiturn_it':
-        multiturn_preprocess('it', nlp_it)
+        multiturn_preprocess('multiturn_it', nlp_it)
 
 
 if __name__ == '__main__':

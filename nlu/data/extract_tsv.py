@@ -5,16 +5,21 @@ import traceback
 import dateutil.parser
 import datetime
 import plac
+import os
 
 def main(lang):
+    source_dir = 'exported/' + lang + '/'
+    output_dir = 'multiturn_' + lang + '/source/'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     # for old dumps use '/messages_heroku.json' and '/messages_heroku_slack.json'
-    with open(lang + '/messages.json') as json_file:
+    with open(source_dir + 'messages.json') as json_file:
         messages_raw = json.load(json_file)
     # for old dumps use '/nlu_history_heroku.json' and '/nlu_history_heroku_slack.json'
-    with open(lang + '/nlu_history.json') as json_file:
+    with open(source_dir + 'nlu_history.json') as json_file:
         nlu_raw = json.load(json_file)
     try:
-        with open(lang + '/stats.json') as json_file:
+        with open(output_dir + 'stats.json') as json_file:
             stats = json.load(json_file)
     except:
         stats = {}
@@ -35,17 +40,17 @@ def main(lang):
         entities = nlu_entry.get('entities', None)
         # translate from --> from.location, to --> to.location (type.role)
         slots = {}
-        for key, value in entities.items():
-            if not isinstance(value, dict):
-                value = value[0]
-            print(value)
-            role = value.get('role', None)
-            entity = value.get('_entity')
-            if role:
-                slot_name = '{}.{}'.format(role, entity)
-            else:
-                slot_name = entity
-            slots[slot_name] = value
+        if entities:
+            for key, value in entities.items():
+                if not isinstance(value, dict):
+                    value = value[0]
+                role = value.get('role', None)
+                entity = value.get('_entity')
+                if role:
+                    slot_name = '{}.{}'.format(role, entity)
+                else:
+                    slot_name = entity
+                slots[slot_name] = value
         try:
             text = nlu_entry.get('text', None) or nlu_entry['_text']
         except:
@@ -79,7 +84,7 @@ def main(lang):
     
     field_names = ['role', 'text', 'intent'] + slot_names
 
-    with open(lang + '/tabular.tsv', 'a', newline='') as tsvfile:
+    with open(output_dir + 'tabular.tsv', 'a', newline='') as tsvfile:
         writer = csv.DictWriter(tsvfile, fieldnames=field_names, delimiter='\t')
 
         if not last_update:
@@ -117,7 +122,7 @@ def main(lang):
 
     # update statistics
     stats['last_update'] = newest_update.isoformat()
-    with open(lang + '/stats.json', 'w') as json_file:
+    with open(output_dir + 'stats.json', 'w') as json_file:
         json.dump(stats, json_file)
 
 
