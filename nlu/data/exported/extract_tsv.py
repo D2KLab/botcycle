@@ -8,7 +8,7 @@ import plac
 
 def main(lang):
     # for old dumps use '/messages_heroku.json' and '/messages_heroku_slack.json'
-    with open(lang + '/messages_heroku_slack.json') as json_file:
+    with open(lang + '/messages.json') as json_file:
         messages_raw = json.load(json_file)
     # for old dumps use '/nlu_history_heroku.json' and '/nlu_history_heroku_slack.json'
     with open(lang + '/nlu_history.json') as json_file:
