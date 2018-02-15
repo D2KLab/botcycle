@@ -722,3 +722,170 @@ b	You can find 3 free bikes at station Castello 2
 u	where am i?	ask_position			
 b	Where are you?				
 					
+u	Hi!	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Your sentence does not have an intent				
+u	Is Torino supported?	city_supported		Torino	
+b	Yes, Torino is supported				
+u	so find me a bike near Politecnico di Torino	search_bike		Politecnico di Torino	
+b	You can find 4 free bikes at station Politecnico 2				
+u	thanks	thank			
+b	You're welcome!				
+u	ok	end_discussion			
+u	I would like to go to Politecnico di Torino, Torino	plan_trip			Politecnico di Torino, Torino
+b	Where are you?				
+u	i am at Porta Nuova Station	set_position		Porta Nuova Station	
+b	Ok I got your position				
+u	I would like to go to Politecnico di Torino, Torino	plan_trip			Politecnico di Torino, Torino
+b	You can find 7 free bikes at station Porta Nuova 1				
+b	You can find 20 empty slots at station Politecnico 1				
+u	ok	end_discussion			
+u	Hi!	greeting			
+b	Your sentence does not have an intent				
+u	What can you do?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	ok. I need a bike in beverly hills	search_bike		beverly hills	
+b	You can find 3 free bikes at station 90. 34th St / Pico Blvd				
+u	ok	end_discussion			
+u	I don't know where to leave the bike	search_slot			
+b	You can find 9 empty slots at station Marina 2&3				
+u	I am in Wilshire blvd	set_position		Wilshire blvd	
+b	Ok I got your position				
+u	find me a free slot	search_slot			
+b	You can find 11 empty slots at station Ciudad Deportiva de Gran Canaria				
+u	Thanks	thank			
+b	You're welcome!				
+u	ok	end_discussion			
+u	can you find informations in Seattle?	city_supported		Seattle	
+b	Nearest supported city is Victoria				
+u	oh what a pity!				
+b	Your sentence does not have an intent				
+u	ok	end_discussion			
+					
+u	hi	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+u	how does this work?	info			
+b	Your sentence does not have an intent				
+u	what I can do?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	alright, thanks! so, I'm looking for a ride from my home to Politecnico di Torino	plan_trip	my home		Politecnico di Torino
+u	hi again, are you there?	greeting			
+b	Hi there! How can I help?				
+u	I'm looking for a bike	search_bike			
+b	Where are you?				
+u	Piazza Castello Torino	search_bike		Piazza Castello Torino	
+b	Your trip has no origin and no destination				
+u	I'm in Piazza Castello, Torino	set_position		Piazza Castello, Torino	
+b	Ok I got your position				
+u	I should reach via Giulia di Barolo 21, Torino	plan_trip			via Giulia di Barolo 21, Torino
+b	Your trip has no origin and no destination				
+u	going to Via Giulia di Barolo 21, Torino	plan_trip			Via Giulia di Barolo 21, Torino
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	I'm in Corso Casale Torino	set_position		Corso Casale Torino	
+b	Ok I got your position				
+u	I would like to go to Politecnico di Torino, Torino	plan_trip			Politecnico di Torino, Torino
+b	You can find 9 free bikes at station Carrara				
+b	You can find 20 empty slots at station Politecnico 1				
+u	great thanks! can you please book a bike?	booking			
+b	You're welcome!				
+u	can you please book me a bike?	booking			
+b	Sorry but you can't book bikes				
+u	alright, thanks!	thank			
+b	You're welcome!				
+
+u	hi	greeting			
+b	Hi there! How can I help?				
+u	I'd like to reach Piazza Vittorio Veneto, Torino from my home that is located in Via Sommacampagna 47 Torino	plan_trip	Via Sommacampagna 47 Torino		Piazza Vittorio Veneto, Torino
+b	You can find 9 free bikes at station Carrara				
+b	You can find 1 empty slots at station Vittorio Veneto 2				
+u	alright, thanks	thank			
+b	You're welcome!				
+u	which cities are supported?	city_supported			
+b	Nearest supported city is Washington, DC				
+u	seriously?				
+b	Your sentence does not have an intent				
+					
+u	hey	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Your sentence does not have an intent				
+u	hey there! how does it work?	info			
+b	Hi there! How can I help?				
+u	I want to know what you are able to do	info			
+b	Where are you?				
+u	I am in ISMB, torino	set_position		ISMB, torino	
+b	Ok I got your position				
+
+u	start again	greeting			
+b	Your sentence does not have an intent				
+u	I want a bike	search_bike			
+b	You can find 5 free bikes at station Marina 2&3				
+u	locate me first	ask_position			
+b	Where are you?				
+u	Turin, Via Castelfidardo	set_position		Turin, Via Castelfidardo	
+b	Your sentence does not have an intent				
+u	I am in Via Castelfidardo, Turin	set_position		Via Castelfidardo, Turin	
+b	Ok I got your position				
+u	find me a bike	search_bike			
+b	You can find 6 free bikes at station Politecnico 4				
+u	thanks!	thank			
+b	You're welcome!				
+u	can you give me more information about the area?				
+b	Unexpected intent: city_supported				
+u	can I have info about the area?				
+b	Your sentence does not have an intent				
+u	I want information about the area				
+b	Your sentence does not have an intent				
+u	ok	end_discussion			
+
+u	hi botcycle	greeting			
+b	Hi there! How can I help?				
+u	I wanna go to Lingotto	plan_trip			Lingotto
+b	You can find 9 free bikes at station Politecnico 4				
+b	You can find 5 empty slots at station Pio VII 2				
+u	any bikes in the area?	search_bike			
+b	You can find 6 free bikes at station E 11 St & Broadway				
+u	ok	end_discussion			
+
+u	hi bot	greeting			
+b	Hi there! How can I help?				
+u	are you there?	greeting			
+b	Your sentence does not have an intent				
+u	I want to have information about the area where I am right now				
+b	You can find 8 empty slots at station Politecnico 4				
+u	I am not at Politecnico now	ask_position			
+b	Ok I got your position				
+u	wrong position!	ask_position			
+b	Where are you?				
+u	I am in Settimo Torinese right now	set_position		Settimo Torinese	
+b	Ok I got your position				
+u	now give information about this area please				
+b	Your sentence does not have an intent				
+u	information about this area				
+b	Your sentence does not have an intent				
+u	gimme a bike	search_bike			
+b	You can find 13 free bikes at station Carrara				
+u	ok thanks	thank			
+b	You're welcome!				
+u	hey bot	greeting			
+b	Hi there! How can I help?				
+u	can I have some information about places around Politecnico?			Politecnico	
+b	Nearest supported city is Cd de México				
+u	can I have information about places around Central Park?			Central Park	
+b	Your sentence does not have an intent				
+u	do you know where I can leave a bike near Politecnico di Torino	search_slot		Politecnico di Torino	
+b	You can find 20 empty slots at station Politecnico 1				
+u	great thanks	thank			
+b	You're welcome!				
+
+u	can I have some information about places around Politecnico di Torino?			Politecnico di Torino	
+b	Nearest supported city is Torino				
+u	information about places in Torino!			Torino	
+b	Yes, Torino is supported				
+u	thanks	thank			
+b	You're welcome!				
+					
