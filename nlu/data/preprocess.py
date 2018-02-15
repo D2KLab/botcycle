@@ -6,6 +6,7 @@ import os
 import re
 import numpy as np
 import spacy
+import csv
 from spacy.gold import biluo_tags_from_offsets
 from sklearn.model_selection import StratifiedShuffleSplit
 
@@ -536,6 +537,102 @@ def kvret_cleanup(nlp, source_json, slot_types):
         }
     }
 
+def multiturn_preprocess(lang_name, nlp):
+    """Preprocesses the TSV dataset to build properly structured json files as for the kvret preprocessed ones"""
+    sessions = []
+    intent_types = set()
+    session = []
+    with open('exported/' + lang_name + '/tabular.tsv') as tsvfile:
+        reader = csv.DictReader(tsvfile, delimiter='\t')
+        fields = reader.fieldnames
+        # entities are placed after role, text, intent
+        slot_types = fields[3:]
+        for row in reader:
+            turn = row['role']
+            intent = row['intent']
+            sentence = row['text']
+            annots = []
+            if not turn:
+                # session separator
+                # save current session if necessary (some sentences)
+                if session:
+                    sessions.append(session)
+                # begin new session
+                session = []
+            else:
+                # continue session
+                if turn == 'u' and intent:
+                    # it's the user turn, the user sentences without intent are not considered
+                    intent_types.add(intent)
+                
+                    for slot_type in slot_types:
+                        entity = row[slot_type].strip()
+                        if entity:
+                            match = re.search(re.escape(entity), sentence)
+                            if match:
+                                annots.append((match.start(), match.end(), slot_type))
+                            else:
+                                print('entity didn\'t match:', entity)
+                
+                
+                words, slots = displacement_annotations_to_iob(sentence, annots, nlp)
+                message = {'turn': turn, 'words': words, 'length': len(words), 'slots': slots, 'intent': intent}
+                if turn == 'b' or (turn== 'u' and intent):
+                    session.append(message)
+
+        if session:
+            # append last session in case empty line was not here (should not happen)
+            sessions.append(session)
+            session = []
+
+    # IOB slot types now
+    slot_types = ['O'] + ['B-' + s for s in slot_types] + ['I-' + s for s in slot_types]
+
+    slot_types = list(sorted(slot_types))
+    intent_types = list(sorted(intent_types))
+    meta = {
+        'tokenizer': 'spacy',
+        'language': lang_name,
+        'slot_types': slot_types,
+        'intent_types': intent_types,
+        'multi_turn': True
+    }
+    dataset = np.array(sessions)
+
+    # TODO: this is not stratified, because each session has different intents inside!!!
+    # look at sss.split y parameter, always the same 0
+    sss = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=dataset.size)
+    folds_indexes = []
+    for train_idx, test_idx in sss.split(np.zeros(dataset.size), np.zeros(dataset.size)):
+        folds_indexes.append(test_idx.tolist())
+    
+    train, dev, final_test = (dataset[folds_indexes[0] + folds_indexes[1] + folds_indexes[2]], dataset[folds_indexes[3]], dataset[folds_indexes[4]])
+
+    path = 'multiturn_' + lang_name + '/preprocessed/'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+    with open(path + 'fold_train.json', 'w') as outfile:
+        json.dump({
+            'data': train.tolist(),
+            'meta': meta
+        }, outfile)
+    
+    with open(path + 'fold_test.json', 'w') as outfile:
+        json.dump({
+            'data': dev.tolist(),
+            'meta': meta
+        }, outfile)
+    
+    with open(path + '/final_test.json', 'w') as outfile:
+        json.dump({
+            'data': final_test.tolist(),
+            'meta': meta
+        }, outfile)
+
+
+
 
 def load_nlp(lang_name='en'):
     nlp = spacy.load(lang_name)
@@ -574,6 +671,8 @@ def main():
         wit_preprocess('wit_en', nlp_en)
         wit_preprocess('wit_it', nlp_it)
         kvret_preprocess(nlp_en)
+        multiturn_preprocess('en', nlp_en)
+        multiturn_preprocess('it', nlp_it)
     elif which == 'atis':
         atis_preprocess()
     elif which == 'nlu-benchnark':
@@ -584,6 +683,10 @@ def main():
         wit_preprocess('wit_it', nlp_it)
     elif which == 'kvret':
         kvret_preprocess(nlp_en)
+    elif which == 'multiturn_en':
+        multiturn_preprocess('en', nlp_en)
+    elif which  == 'multiturn_it':
+        multiturn_preprocess('it', nlp_it)
 
 
 if __name__ == '__main__':

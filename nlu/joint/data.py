@@ -42,8 +42,10 @@ def collapse_multi_turn_sessions(dataset, force_single_turn=False):
                     m['slots'] = previous_bot_slots + m['slots']
                     m['length'] += m['bot_turn_actual_length']
                 intent_changes.append(previous_intent != m['intent'])
-                dataset['data'].append(m)
-                previous_intent = m['intent']
+                if m['intent']:
+                    # only append the user sentences with intent
+                    dataset['data'].append(m)
+                    previous_intent = m['intent']
 
     print('intent changes: {} over {} samples'.format(sum(intent_changes), len(intent_changes)))
     return dataset
