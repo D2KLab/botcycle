@@ -143,7 +143,7 @@ b	Where are you?
 u	Nice airport	set_position		Nice airport	
 b	You can find 5 free bikes at station Marina 2&3				
 u	👍				
-u	Ok	end_discussion		Ok	
+u	Ok	end_discussion			
 					
 u	Hi 	greeting			
 b	Welcome! I am BotCycle and can give you bike sharing informations				
@@ -182,13 +182,13 @@ b	Hi there! How can I help?
 u	hi	greeting			
 b	Welcome! I am BotCycle and can give you bike sharing informations				
 b	Hi there! How can I help?				
-u	I'm in via Vignale 21 Torino	set_position		via Vignale 21 Torino	
+u	I'm in via Eusebio Bava 21 Torino	set_position		via Eusebio Bava 21 Torino	
 					
 u	hi	greeting			
 b	Hi there! How can I help?				
 u	I'm looking for a bike	search_bike			
 b	Where are you?				
-u	via vignale 21, torino	search_bike		via vignale 21, torino	
+u	via eusebio bava 21, torino	search_bike		via eusebio bava 21, torino	
 
 u	hi	greeting			
 b	Hi there! How can I help?				
@@ -464,7 +464,7 @@ u	how are you?	info
 b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
 Try to ask me something! ;)"				
 					
-u	hi	greeting		hi	
+u	hi	greeting			
 b	Hi there! How can I help?				
 					
 u	/start	greeting			
@@ -478,7 +478,7 @@ u	can you work in Borgo San Dalmazzo?	city_supported		Borgo San Dalmazzo
 b	Nearest supported city is Cuneo				
 u	locate a bike near Borgo San Dalmazzo	search_bike		Borgo San Dalmazzo	
 b	You can find 5 free bikes at station 8. Park Palazzi Finanziari				
-u	👍			👍	
+u	👍				
 u	rent a bike next to Cuneo	find_bike		Cuneo	
 b	Where are you?				
 u					
@@ -494,7 +494,7 @@ u	where do you work in Lazio?	city_supported		Lazio
 b	Nearest supported city is Frosinone				
 u	where can I leave my bike in Torino?	search_slot		Torino	
 b	You can find 16 empty slots at station Castello 2				
-u	👍			👍	
+u	👍				
 u	give me the path from Piazza Sabotino to Porta Nuova	plan_trip	Piazza Sabotino		Porta Nuova
 b	You can find 10 free bikes at station Peschiera				
 b	Impossible to find informations				
@@ -506,7 +506,7 @@ b	"I am BotCycle, a bot that can give you informations about bike sharing in you
 Try to ask me something! ;)"				
 u	where can I rent a bike in Turin?	search_bike		Turin	
 b	You can find 2 free bikes at station Castello 2				
-u	👍			👍	
+u	👍				
 u	I am in Piazza Sabotino in Torino	set_position		Piazza Sabotino	
 b	Ok I got your position				
 u	I want to go to Cinema Reposi in Torino	plan_trip			Cinema Reposi in Torino
@@ -528,17 +528,17 @@ b	Your trip has no origin and no destination
 u	how can I go from my position to Via Roma?	plan_trip	my position		Via Roma
 b	Impossible to find informations				
 b	You can find 10 empty slots at station Milwaukee Ave & Cuyler Ave				
-u	👎			👎	
+u	👎				
 u	I want to go from Via Roma in Cuneo to Corso Giolitti in Cuneo	plan_trip	Via Roma in Cuneo		Corso Giolitti in Cuneo
 b	Your trip has no origin and no destination				
 u	find me a free slot in via Roma	search_slot		via Roma	
 b	You can find 10 empty slots at station Milwaukee Ave & Cuyler Ave				
-u	👎			👎	
+u	👎				
 u	Please work in Cuneo	city_supported		Cuneo	
 b	Yes, Cuneo is supported				
 u	find a bike near Via Roma in Cuneo	search_bike		Via Roma in Cuneo	
 b	You can find 4 free bikes at station Milwaukee Ave & Cuyler Ave				
-u	👎			👎	
+u	👎				
 					
 u	/start	greeting			
 b	Welcome! I am BotCycle and can give you bike sharing informations				
