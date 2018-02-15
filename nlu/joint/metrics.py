@@ -48,7 +48,7 @@ def accuracy_for_sequence_batch(true_batch, pred_batch, eos_token='<EOS>'):
     true, pred = get_data_from_sequence_batch(true_batch, pred_batch, eos_token)
     return accuracy_score(true, pred)
 
-def f1_for_intents(true, pred, average="micro"):
+def f1_for_intents(true, pred, average='micro'):
     return f1_score(true, pred, average=average)
 
 def plot_f1_history(file_name, history):
@@ -63,3 +63,22 @@ def plot_f1_history(file_name, history):
     plt.grid()
     print(file_name)
     plt.savefig(file_name)
+
+def f1_slots(true_slots_batch, pred_slots_batch):
+    """compute f1 from lists of slots, unordered. As what is said in 'What is left to be understood in ATIS'"""
+    true_positives_count = true_slots_count = found_slots_count = 0
+    for true_slots, pred_slots in zip(true_slots_batch, pred_slots_batch):
+        #print(true_slots)
+        #print(pred_slots)
+        for ts in true_slots:
+            if ts in pred_slots:
+                true_positives_count += 1
+        true_slots_count += len(true_slots)
+        found_slots_count += len(pred_slots)
+    try:
+        recall = true_positives_count / true_slots_count
+        precision = true_positives_count / found_slots_count
+        f1 = (2 * recall * precision) / (recall + precision)
+    except ZeroDivisionError:
+        f1 = 0
+    return f1

@@ -8,19 +8,55 @@ import json
 import os
 import random
 import numpy as np
+from spacy.gold import iob_to_biluo, tags_to_entities
 
 
 def flatten(list_of_lists):
     """Flattens from two-dimensional list to one-dimensional list"""
     return [item for sublist in list_of_lists for item in sublist]
 
+def collapse_multi_turn_sessions(dataset, force_single_turn=False):
+    """Turns sessions into lists of messages with previous intent and previous bot turn (words and slot annotations)"""
+    sessions = dataset['data']
+    dataset['data'] = []
+    # hold the previous intent value, initialized to some value (not important)
+    previous_intent = dataset['meta']['intent_types'][0]
+    previous_bot_turn = []
+    previous_bot_slots = []
+    intent_changes = []
+    for s in sessions:
+        for m in s:
+            #print('before')
+            #print(m)
+            if m['turn'] == 'b':
+                # this is the bot turn
+                previous_bot_turn = m['words']
+                previous_bot_slots = m['slots']
+            elif m['turn'] == 'u' and m['length']:
+                # some sentences are empty
+                m['previous_intent'] = previous_intent
+                m['bot_turn_actual_length'] = len(previous_bot_turn)
+                if force_single_turn != 'no_all' and force_single_turn != 'no_bot_turn':
+                    # concatenation of bot words
+                    m['words'] = previous_bot_turn + m['words']
+                    m['slots'] = previous_bot_slots + m['slots']
+                    m['length'] += m['bot_turn_actual_length']
+                intent_changes.append(previous_intent != m['intent'])
+                dataset['data'].append(m)
+                previous_intent = m['intent']
+
+    print('intent changes: {} over {} samples'.format(sum(intent_changes), len(intent_changes)))
+    return dataset
 
 def load_data(dataset_name, mode='measures'):
     """Loads the dataset and returns it.
     
     if mode='measures' (default), returns [test_data, train_data]
     
-    if mode='runtime', returns [None, all the data together], to do a full training to be used at runtime"""
+    if mode='runtime', returns [None, all the data together], to do a full training to be used at runtime
+    
+    if mode='validate', returns[validate_data, train_data]
+        """
     path = 'data/' + dataset_name + '/preprocessed'
 
     fold_files = os.listdir(path)
@@ -40,6 +76,11 @@ def load_data(dataset_name, mode='measures'):
         for split in data_splitted:
             result['data'].extend(split['data'])
         return None, result
+    elif mode == 'validate':
+        print('you are running on the validation fold!!!')
+        with open(path + '/' + final_test) as json_file:
+            validate = json.load(json_file)
+            return [validate, data_splitted[1]]
     else:
         raise ValueError('mode unsupported:' + mode)
 
@@ -117,7 +158,7 @@ def spacy_wrapper(embedding_size, language, nlp, words_numpy):
         # put back together the sentence in order to get the word embeddings with context (only for languages without vectors)
         # TODO skip this if always word vectors, since if word vectors are part of the model, they are fixed and can get them simply by doing lookup
         # unless contextual vectors can be built also when vectors are there
-        sentence = ' '.join(words)
+        sentence = ' '.join(words).replace(' \'', '\'')
         if language == 'en' or language == 'it':
             # only make_doc instead of calling nlp, much faster
             doc = nlp.make_doc(sentence)
@@ -153,3 +194,19 @@ def get_language_model_name(language):
         return 'it_vectors_wiki_lg'
 
     return language
+
+
+'''the results are not usable at inference time easily, because offsets are in terms of word index, not character ones'''
+def sequence_iob_to_ents(iob_sequence):
+    """From the sequence of IOB shaped (n_samples, seq_max_len) to label:start-end array"""
+    #print(decoder_prediction, intent[0], intent_score)
+    # clean up <EOS> and <PAD>
+    result = []
+    for line in iob_sequence:
+        line = [t if (t != '<EOS>' and t != '<PAD>' and t != 0) else 'O' for t in line]
+        #print(line)
+        line = iob_to_biluo(line)
+        entities_offsets = tags_to_entities(line)
+        entity_text = ['{}:{}-{}'.format(label, start, end) for (label, start, end) in entities_offsets]
+        result.append(entity_text)
+    return result

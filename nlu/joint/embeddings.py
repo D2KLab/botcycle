@@ -4,15 +4,22 @@ from .data import spacy_wrapper, get_language_model_name
 
 class EmbeddingsFromScratch(object):
   
-    def __init__(self, vocab, name, embedding_size):
+    def __init__(self, vocab, name, embedding_size, allow_unknown=False):
         """
         vocab is a list of words
+        allow_unknown is safely used for labels
         """
-        vocab = list(vocab) + ['<UNK>']
+        vocab = list(vocab)
+        out_of_word = -1
+        out_of_index = '<UNK>'
         self.vocab_size = len(vocab)
+        if allow_unknown:
+            self.vocab_size += 1
+            vocab += ['<UNK>']
+            out_of_word = self.vocab_size - 1 # last is <UNK>
         vocab_tensor = tf.constant(vocab)
-        self.word2index = tf.contrib.lookup.index_table_from_tensor(vocab_tensor, default_value=self.vocab_size - 1)
-        self.index2word = tf.contrib.lookup.index_to_string_table_from_tensor(vocab_tensor, default_value='<UNK>')
+        self.word2index = tf.contrib.lookup.index_table_from_tensor(vocab_tensor, default_value=out_of_word)
+        self.index2word = tf.contrib.lookup.index_to_string_table_from_tensor(vocab_tensor, default_value=out_of_index)
         """
         self.word2index = {}
         self.index2word = {}

@@ -1,14 +1,15 @@
 import sys
+import traceback
 import tensorflow as tf
 from tensorflow.contrib import layers
 import numpy as np
-from tensorflow.contrib.rnn import BasicLSTMCell, LSTMStateTuple
+from tensorflow.contrib.rnn import BasicLSTMCell, LSTMStateTuple, GRUCell
 from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddings, spacy_wrapper
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 class Model:
-    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, batch_size=None):
+    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, multi_turn=False, batch_size=None, intent_combination=None):
         # save the parameters
         self.input_steps = input_steps
         self.embedding_size = embedding_size
@@ -17,6 +18,11 @@ class Model:
         # also save the vocabularies, used by embedders
         self.vocabs = vocabs
         self.input_embedding_size = 300
+
+        # this variable changes the architecture from single turn to multi-turn
+        self.multi_turn = multi_turn
+        # choose between RNN or CRF for the intent combination
+        self.intent_combination = (intent_combination or 'gru') if multi_turn else None
 
         # define the placeholders for inputs to the graph
         # the input words are a tensor of type string.
@@ -30,6 +36,12 @@ class Model:
         self.decoder_targets = tf.placeholder(tf.string, [batch_size, input_steps], name='decoder_targets')
         # Placeholder for the output intent, used in train mode as truth value
         self.intent_targets = tf.placeholder(tf.string, [batch_size], name='intent_targets')
+
+        if self.multi_turn:
+            # this parameter will help understanding what is bot turn and what is user turn, never used
+            self.bot_turn_actual_length = tf.placeholder(tf.int32, [batch_size], name='bot_turn_actual_length')
+            # this instead is the previous intent
+            self.previous_intent = tf.placeholder(tf.string, [batch_size], name='previous_intent')
         
 
     def build(self, tokenizer='space', language='en'):
@@ -46,11 +58,16 @@ class Model:
         self.wordsEmbedder = FixedEmbeddings(tokenizer, language)
         self.input_embedding_size = self.wordsEmbedder.embedding_size
         #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
-        self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, 'slot', self.embedding_size)
+        self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, 'slot', self.embedding_size, True)
+        print('intent vocab', intent_vocab)
         self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, 'intent', self.embedding_size)
 
         # the embedded inputs
         self.encoder_inputs_embedded = self.wordsEmbedder.get_word_embeddings(self.words_inputs)
+
+
+        # The intent gold values
+        intent_ids_targets = self.intentEmbedder.get_indexes_from_words_tensor(self.intent_targets)
 
         # Encoder
 
@@ -88,8 +105,55 @@ class Model:
 
         # perform the feed-forward layer
         intent_logits = tf.add(tf.matmul(encoder_final_state_h, intent_W), intent_b)
-        # take the argmax
-        intent_id = tf.argmax(intent_logits, axis=1)
+        if self.intent_combination == 'crf':
+            previous_intent_ids = self.intentEmbedder.get_indexes_from_words_tensor(self.previous_intent)
+            #print('shape of previous_intent_ids', tf.shape(previous_intent_ids))
+            previous_intent_one_hot = tf.one_hot(previous_intent_ids, depth=self.intentEmbedder.vocab_size, dtype=tf.float32, axis=1)
+            # transpose from (intent_n, batch_size) to (batch_size, intent_n)
+            #previous_intent_one_hot = tf.transpose(previous_intent_one_hot, [1, 0])
+            #print('shape of previous_intent_one_hot', tf.shape(previous_intent_one_hot), 'intent_dict_size', self.intentEmbedder.vocab_size)
+            # the unary scores are [previous_intent_logits, current_intent_logits] put together in shape (batch_size,2,intent_n)
+            unary_scores = tf.stack([previous_intent_one_hot, intent_logits], 1)
+            #print('shape of unary scores', tf.shape(unary_scores))
+            #unary_scores = tf.transpose(unary_scores, [])
+            gold_tags = tf.stack([previous_intent_ids, intent_ids_targets], 1)
+            #print('shape of gold tags', tf.shape(gold_tags))
+            # cast the gold tags to in32
+            gold_tags = tf.to_int32(gold_tags)
+            #sequence_lengths = tf.constant(2, dtype=tf.int32, shape=[self.batch_size])
+            sequence_lengths = tf.fill((batch_size_tensor,), 2)
+            log_likelihood, transition_params = tf.contrib.crf.crf_log_likelihood(unary_scores, gold_tags, sequence_lengths)
+            #print(log_likelihood, transition_params)
+            # the loss of the CRF is kept to the backpropagation
+            loss_crf = tf.reduce_mean(-log_likelihood)
+            #unary_real_scores = tf.contrib.crf.crf_unary_score(gold_tags, sequence_lengths, unary_scores)
+            #print('unary_real_scores', tf.shape(unary_real_scores))
+            viterbi_sequence, viterbi_score = tf.contrib.crf.crf_decode(unary_scores, transition_params, sequence_lengths)
+            # transpose from (batch, time) to (time, batch)
+            intents_major_timesteps = tf.transpose(viterbi_sequence, [1, 0])
+            #print('intents_major_timesteps', tf.shape(intents_major_timesteps))
+            # take the output intent, intents_major_timesteps should be [previous_intent, current_intent]
+            intent_id = intents_major_timesteps[1]
+            intent_id = tf.to_int64(intent_id)
+        else:
+            if self.multi_turn:
+                # in this case some more steps need to be done before argmax/softmax
+                previous_intent_ids = self.intentEmbedder.get_indexes_from_words_tensor(self.previous_intent)
+                previous_intent_one_hot = tf.one_hot(previous_intent_ids, depth=self.intentEmbedder.vocab_size, dtype=tf.float32)
+                if self.intent_combination == 'gru':
+                    self.intent_combiner = GRUCell(self.intentEmbedder.vocab_size)
+                    # apply the GRU cell once: from input (current logits, previous intent as state) to output (next logits, next output the same as next logits in GRU)
+                    #print(intent_logits)
+                    #self.intent_combiner.build()
+                    intent_logits, _ = self.intent_combiner(intent_logits, previous_intent_one_hot)
+                else:
+                    # LSTM
+                    self.intent_combiner = BasicLSTMCell(self.intentEmbedder.vocab_size)
+                    previous_state = LSTMStateTuple(c=previous_intent_one_hot, h=previous_intent_one_hot)
+                    intent_logits, _ = self.intent_combiner(intent_logits, previous_state)
+                #print(intent_logits)
+            # take the argmax
+            intent_id = tf.argmax(intent_logits, axis=1)
         # and translate to the corresponding string
         self.intent = self.intentEmbedder.get_words_from_indexes(intent_id)
         # make this tensor retrievable by name at test time
@@ -200,9 +264,6 @@ class Model:
         # TODO 0 depends on the id associated to '<PAD>'. Change it to slotEmbedder.get_id('<PAD>')
         self.mask = tf.to_float(tf.not_equal(self.decoder_targets_true_length, self.slotEmbedder.get_indexes_from_words_list(['<PAD>'])[0]))
 
-        # For the intent
-        intent_ids_targets = self.intentEmbedder.get_indexes_from_words_tensor(self.intent_targets)
-
 
         # Losses definitions
         # for the slots, using builtin sequence_loss
@@ -214,7 +275,10 @@ class Model:
             logits=intent_logits)
         loss_intent = tf.reduce_mean(cross_entropy)
         # Combine the losses
-        self.loss = loss_slot + loss_intent
+        if self.intent_combination == 'crf':
+            self.loss = loss_slot + loss_crf
+        else:
+            self.loss = loss_slot + loss_intent
         optimizer = tf.train.AdamOptimizer(name="a_optimizer")
         self.grads, self.vars = zip(*optimizer.compute_gradients(self.loss))
         #print("vars for loss function: ", self.vars)
@@ -229,17 +293,29 @@ class Model:
             print('mode is not supported', file=sys.stderr)
             sys.exit(1)
         seq_in, length, seq_out, intent = list(zip(*[(sample['words'], sample['length'], sample['slots'], sample['intent']) for sample in train_batch]))
+        if self.multi_turn:
+            previous_intent, bot_turn_length = list(zip(*[(sample['previous_intent'], sample['bot_turn_actual_length']) for sample in train_batch]))
+        else:
+            previous_intent, bot_turn_length = None, None
+        #print(seq_in, length)
+        #try:
         if mode == 'train':
             output_feeds = [self.train_op, self.loss, self.decoder_prediction,
                             self.intent, self.mask]
             feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
-                         self.encoder_inputs_actual_length: length,
-                         self.decoder_targets: seq_out,
-                         self.intent_targets: intent}
+                        self.encoder_inputs_actual_length: length,
+                        self.decoder_targets: seq_out,
+                        self.intent_targets: intent}
         if mode in ['test']:
             output_feeds = [self.decoder_prediction, self.intent]
             feed_dict = {self.words_inputs: np.transpose(seq_in, [1, 0]),
-                         self.encoder_inputs_actual_length: length}
+                        self.encoder_inputs_actual_length: length}
+        
+        if self.multi_turn:
+            feed_dict.update({
+                self.previous_intent: previous_intent,
+                self.bot_turn_actual_length: bot_turn_length
+            })
 
         results = sess.run(output_feeds, feed_dict=feed_dict)
         if mode in ['test']:
@@ -249,4 +325,7 @@ class Model:
             for idx, intent in enumerate(intent_batch):
                 intent_batch[idx] = intent.decode('utf-8')
             results = slots_batch, intent_batch
+        #except Exception as e:
+        #    traceback.print_exc()
+        #    print(seq_in, length)
         return results
