@@ -18,7 +18,7 @@ hidden_size = 100
 # size of batch
 batch_size = 16
 # number of training epochs
-epoch_num = 10
+epoch_num = 50
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -103,7 +103,7 @@ def train(mode):
     history = {
         'intent_f1': np.zeros((epoch_num)),
         'slot_sequence_f1': np.zeros((epoch_num)),
-        'intent_accuracy': np.zeros((epoch_num)),
+        #'intent_accuracy': np.zeros((epoch_num)), # accuracy on single-label classification tasks is the same as micro-f1
         'slots_f1': np.zeros((epoch_num)) #TODO this must be solved in a util function in data ? sequence of IOB to slots: value+role+entity comparison
     }
     if multi_turn:
@@ -175,7 +175,7 @@ def train(mode):
             #print("pred_iob_a: ", pred_iob_a.shape)
             true_slots_iob = np.array([sample['slots'] for sample in test_samples['data']])[:pred_iob_a.shape[0]]
             f1_intents = metrics.f1_for_intents(true_intents, pred_intents)
-            accuracy_intents = accuracy_score(true_intents, pred_intents)
+            #accuracy_intents = accuracy_score(true_intents, pred_intents)
             f1_slots_iob = metrics.f1_for_sequence_batch(true_slots_iob, pred_iob_a)
             # convert IOB to slots stringified LABEL:START_IDX-END_IDX for comparison
             #print(pred_iob_a)
@@ -188,11 +188,11 @@ def train(mode):
             print('epoch {} ended'.format(epoch))
             print("F1 score SEQUENCE for epoch {}: {}".format(epoch, f1_slots_iob))
             print("F1 score INTENTS for epoch {}: {}".format(epoch, f1_intents))
-            print("Accuracy INTENTS for epoch {}: {}".format(epoch, accuracy_intents))
+            #print("Accuracy INTENTS for epoch {}: {}".format(epoch, accuracy_intents))
             print("F1 SLOTS for epoch {}: {}".format(epoch, f1_slots))
             history['intent_f1'][epoch] = f1_intents
             history['slot_sequence_f1'][epoch] = f1_slots_iob
-            history['intent_accuracy'][epoch] = accuracy_intents
+            #history['intent_accuracy'][epoch] = accuracy_intents
             history['slots_f1'][epoch] = f1_slots
 
             if multi_turn:

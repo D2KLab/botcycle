@@ -65,7 +65,7 @@ If you have the dependencies installed on your host (directly or indirectly via 
 Instead if you want to train the models from the containers the steps are the following:
 
 - start one of the bot containers (`docker start CONTAINER_NAME` or using `docker-compose start`)
-- enter interactively in it: `docker exec -it CONTAINER_NAME`
+- enter interactively in it: `docker exec -it CONTAINER_NAME bash`
 - go to the makefile location: `cd /nlu`
 - run the correct make target: `make build_models`
 - exit from the container
