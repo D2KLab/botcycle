@@ -1,2 +1,7 @@
 messages.json
 nlu_history.json
+# other files for old dumps
+messages_heroku.json
+messages_heroku_slack.json
+nlu_history_heroku.json
+nlu_history_heroku_slack.json

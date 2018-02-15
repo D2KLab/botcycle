@@ -106,6 +106,8 @@ def process(msg, sendMessage):
                 sendMessageFunction(chat_id, response)
 
             elif intent['value'] == 'end_discussion':
+                response = output_sentences.get(LANGUAGE, 'END_DISCUSSION')
+                sendMessageFunction(chat_id, response)
                 persistence.save_end_of_sequence(chat_id)
 
             else:
@@ -194,7 +196,7 @@ def search_place(place_name):
     try:
         response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?key=' +
                                 os.environ['MAPS_TOKEN'] + '&address=' + place_name).json()
-    except Exception as e:
+    except Exception:
         print(output_sentences.get(LANGUAGE, 'GEOCODING_ERROR').format(searched=place_name))
 
     places_found = response['results']

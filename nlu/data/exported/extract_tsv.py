@@ -7,8 +7,10 @@ import datetime
 import plac
 
 def main(lang):
-    with open(lang + '/messages.json') as json_file:
+    # for old dumps use '/messages_heroku.json' and '/messages_heroku_slack.json'
+    with open(lang + '/messages_heroku_slack.json') as json_file:
         messages_raw = json.load(json_file)
+    # for old dumps use '/nlu_history_heroku.json' and '/nlu_history_heroku_slack.json'
     with open(lang + '/nlu_history.json') as json_file:
         nlu_raw = json.load(json_file)
     try:
@@ -16,6 +18,7 @@ def main(lang):
             stats = json.load(json_file)
     except:
         stats = {}
+    # for old dumps, earlier in time, use None directly
     last_update = stats.get('last_update', None)
     if last_update:
         last_update = dateutil.parser.parse(last_update)
