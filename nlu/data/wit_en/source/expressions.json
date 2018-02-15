@@ -1,7 +1,46 @@
 {
   "data" : [
     {
+      "text" : "Are there any free slots near stazione lingotto?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"stazione lingotto\"",
+          "start" : 30,
+          "end" : 47
+        }
+      ]
+    },
+    {
+      "text" : "Are there any stations near stazione lingotto?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"stazione lingotto\"",
+          "start" : 28,
+          "end" : 45
+        }
+      ]
+    },
+    {
       "text" : "Bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Can I have a bike ?",
       "entities" : [
         {
           "entity" : "intent",
@@ -25,11 +64,119 @@
       ]
     },
     {
+      "text" : "Can you work in torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 16,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "Can you work in torino?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 16,
+          "end" : 22
+        }
+      ]
+    },
+    {
       "text" : "Cool thanks",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "Find bike stations near Vinzaglio, Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Vinzaglio, Torino\"",
+          "start" : 24,
+          "end" : 41
+        }
+      ]
+    },
+    {
+      "text" : "Find me a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Find me a bike near Central Park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Central Park\"",
+          "start" : 20,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "Find me a bike near National Park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"National Park\"",
+          "start" : 20,
+          "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "Find me a parking near Central Park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Central Park\"",
+          "start" : 23,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "Find the nearest bike station",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
         }
       ]
     },
@@ -70,7 +217,43 @@
       ]
     },
     {
+      "text" : "Hello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hello.",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hey",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
       "text" : "Hey bro!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hey man",
       "entities" : [
         {
           "entity" : "intent",
@@ -88,11 +271,89 @@
       ]
     },
     {
+      "text" : "Hi bot",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hi there",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hi there!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
       "text" : "Hi there. I need a bike",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Hi!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hi! I need a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Hi,",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hi, i want a bike near Largo Orbassano.",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Largo Orbassano\"",
+          "start" : 23,
+          "end" : 38
+        }
+      ]
+    },
+    {
+      "text" : "Hii",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
         }
       ]
     },
@@ -113,6 +374,46 @@
       ]
     },
     {
+      "text" : "How can I reach Porta Susa?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Porta Susa\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "How many cities are supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        }
+      ]
+    },
+    {
+      "text" : "How many free spots are near Largo Orbassano?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Largo Orbassano\"",
+          "start" : 29,
+          "end" : 44
+        }
+      ]
+    },
+    {
       "text" : "I WANT to go to venaria",
       "entities" : [
         {
@@ -125,6 +426,21 @@
           "role" : "to",
           "start" : 16,
           "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "I am  from  china",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"china\"",
+          "start" : 12,
+          "end" : 17
         }
       ]
     },
@@ -159,6 +475,36 @@
       ]
     },
     {
+      "text" : "I am at Saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Saluzzo\"",
+          "start" : 8,
+          "end" : 15
+        }
+      ]
+    },
+    {
+      "text" : "I am at ismb",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"ismb\"",
+          "start" : 8,
+          "end" : 12
+        }
+      ]
+    },
+    {
       "text" : "I am at nizza",
       "entities" : [
         {
@@ -189,6 +535,21 @@
       ]
     },
     {
+      "text" : "I am at politecnico di torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico di torino\"",
+          "start" : 8,
+          "end" : 29
+        }
+      ]
+    },
+    {
       "text" : "I am at polito",
       "entities" : [
         {
@@ -204,6 +565,51 @@
       ]
     },
     {
+      "text" : "I am at porta nuova Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova Torino\"",
+          "start" : 8,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "I am at reggia di venaria and i need a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"reggia di venaria\"",
+          "start" : 8,
+          "end" : 25
+        }
+      ]
+    },
+    {
+      "text" : "I am at residenza borsellino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"residenza borsellino\"",
+          "start" : 8,
+          "end" : 28
+        }
+      ]
+    },
+    {
       "text" : "I am at saluzzo",
       "entities" : [
         {
@@ -215,6 +621,21 @@
           "value" : "\"saluzzo\"",
           "start" : 8,
           "end" : 15
+        }
+      ]
+    },
+    {
+      "text" : "I am at supercinema venaria, what is the nearest bike station?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"supercinema venaria\"",
+          "start" : 8,
+          "end" : 27
         }
       ]
     },
@@ -264,11 +685,277 @@
       ]
     },
     {
+      "text" : "I am at via vigone torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via vigone torino\"",
+          "start" : 8,
+          "end" : 25
+        }
+      ]
+    },
+    {
+      "text" : "I am in Coggiola",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Coggiola\"",
+          "start" : 8,
+          "end" : 16
+        }
+      ]
+    },
+    {
+      "text" : "I am in ISMB, torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"ISMB, torino\"",
+          "start" : 8,
+          "end" : 20
+        }
+      ]
+    },
+    {
+      "text" : "I am in Pakistan",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Pakistan\"",
+          "start" : 8,
+          "end" : 16
+        }
+      ]
+    },
+    {
+      "text" : "I am in Piazza Sabotino in Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piazza Sabotino in Torino\"",
+          "start" : 8,
+          "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "I am in Settimo Torinese right now",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Settimo Torinese\"",
+          "start" : 8,
+          "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "I am in Turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Turin\"",
+          "start" : 8,
+          "end" : 13
+        }
+      ]
+    },
+    {
+      "text" : "I am in Via Castelfidardo, Turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Via Castelfidardo, Turin\"",
+          "start" : 8,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "I am in borgaro, are there any bike stations?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"borgaro\"",
+          "start" : 8,
+          "end" : 15
+        }
+      ]
+    },
+    {
+      "text" : "I am in corso palestro 31, which is the nearest bike station?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"corso palestro 31\"",
+          "start" : 8,
+          "end" : 25
+        }
+      ]
+    },
+    {
+      "text" : "I am in palazzo madama in torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"palazzo madama in torino\"",
+          "start" : 8,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "I am in torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 8,
+          "end" : 14
+        }
+      ]
+    },
+    {
+      "text" : "I am near Big Ben",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Big Ben\"",
+          "start" : 10,
+          "end" : 17
+        }
+      ]
+    },
+    {
+      "text" : "I am near Big Ben Tower",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Big Ben Tower\"",
+          "start" : 10,
+          "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "I am not at Politecnico now",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico\"",
+          "start" : 12,
+          "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "I am searching for a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "I don't know where to leave the bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
       "text" : "I need a bike",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "I need to go to pozzo strada from porta palazzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pozzo strada\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 28
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta palazzo\"",
+          "role" : "from",
+          "start" : 34,
+          "end" : 47
         }
       ]
     },
@@ -288,11 +975,228 @@
       ]
     },
     {
+      "text" : "I wanna go to Lingotto",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Lingotto\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "I wanna go to Polito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Polito\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 20
+        }
+      ]
+    },
+    {
+      "text" : "I wanna go to politecnico di torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico di torino\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 35
+        }
+      ]
+    },
+    {
       "text" : "I want a bike",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "I want a bike in Singapore",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Singapore\"",
+          "start" : 17,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "I want a bike in boston",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"boston\"",
+          "start" : 17,
+          "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "I want a bike in chicago",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"chicago\"",
+          "start" : 17,
+          "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "I want a bike in turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"turin\"",
+          "start" : 17,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "I want a bike near 52 Beekman St, New York, New York 10038",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"52 Beekman St, New York, New York 10038\"",
+          "start" : 19,
+          "end" : 58
+        }
+      ]
+    },
+    {
+      "text" : "I want a park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "I want to go from Via Roma in Cuneo to Corso Giolitti in Cuneo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Via Roma in Cuneo\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 35
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Corso Giolitti in Cuneo\"",
+          "role" : "to",
+          "start" : 39,
+          "end" : 62
+        }
+      ]
+    },
+    {
+      "text" : "I want to go from murazzi to reggia di venaria",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"murazzi\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 25
+        },
+        {
+          "entity" : "location",
+          "value" : "\"reggia di venaria\"",
+          "role" : "to",
+          "start" : 29,
+          "end" : 46
+        }
+      ]
+    },
+    {
+      "text" : "I want to go from torino to brescia",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 24
+        },
+        {
+          "entity" : "location",
+          "value" : "\"brescia\"",
+          "role" : "to",
+          "start" : 28,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "I want to go to Cinema Reposi in Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Cinema Reposi in Torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 39
         }
       ]
     },
@@ -313,6 +1217,22 @@
       ]
     },
     {
+      "text" : "I want to go to Porta Nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Porta Nuova\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 27
+        }
+      ]
+    },
+    {
       "text" : "I want to go to Torino esposizioni",
       "entities" : [
         {
@@ -325,6 +1245,38 @@
           "role" : "to",
           "start" : 16,
           "end" : 34
+        }
+      ]
+    },
+    {
+      "text" : "I want to go to Via Roma in Cuneo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Via Roma in Cuneo\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "I want to go to central park new york",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"central park new york\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 37
         }
       ]
     },
@@ -393,6 +1345,38 @@
       ]
     },
     {
+      "text" : "I want to go to the Museo Egizio",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"the Museo Egizio\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "I want to go to torino porta nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino porta nuova\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 34
+        }
+      ]
+    },
+    {
       "text" : "I want to go to venaria",
       "entities" : [
         {
@@ -405,6 +1389,77 @@
           "role" : "to",
           "start" : 16,
           "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "I want to park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "I would like to go to Politecnico di Torino, Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico di Torino, Torino\"",
+          "role" : "to",
+          "start" : 22,
+          "end" : 51
+        }
+      ]
+    },
+    {
+      "text" : "I'd like to leave a bike next to piazza vittorio veneto",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza vittorio veneto\"",
+          "role" : "to",
+          "start" : 33,
+          "end" : 55
+        }
+      ]
+    },
+    {
+      "text" : "I'm in Piazza Castello Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piazza Castello Torino\"",
+          "start" : 7,
+          "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "I'm in pagno",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 7,
+          "end" : 12
         }
       ]
     },
@@ -424,6 +1479,115 @@
       ]
     },
     {
+      "text" : "I'm in via Vignale 21 Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via Vignale 21 Torino\"",
+          "start" : 7,
+          "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "I'm looking for a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "I'm near Saluzzo, is there a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Saluzzo\"",
+          "start" : 9,
+          "end" : 16
+        }
+      ]
+    },
+    {
+      "text" : "I'm next to Porta Susa, Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Porta Susa, Torino\"",
+          "role" : "to",
+          "start" : 12,
+          "end" : 30
+        }
+      ]
+    },
+    {
+      "text" : "I'm not here",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "Is Torino supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 3,
+          "end" : 9
+        }
+      ]
+    },
+    {
+      "text" : "Is carignano supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"carignano\"",
+          "start" : 3,
+          "end" : 12
+        }
+      ]
+    },
+    {
+      "text" : "Is saluzzo supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 3,
+          "end" : 10
+        }
+      ]
+    },
+    {
       "text" : "Locate me",
       "entities" : [
         {
@@ -433,11 +1597,209 @@
       ]
     },
     {
+      "text" : "Ok",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
+      "text" : "Ok I need a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Please find me another free slot near reggia di venaria",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"reggia di venaria\"",
+          "start" : 38,
+          "end" : 55
+        }
+      ]
+    },
+    {
+      "text" : "Please work in Cuneo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Cuneo\"",
+          "start" : 15,
+          "end" : 20
+        }
+      ]
+    },
+    {
+      "text" : "Search a bike in Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 17,
+          "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "So you know a way from Berlin to Hamburg",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Berlin\"",
+          "role" : "from",
+          "start" : 23,
+          "end" : 29
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Hamburg\"",
+          "role" : "to",
+          "start" : 33,
+          "end" : 40
+        }
+      ]
+    },
+    {
+      "text" : "Tell me the bikes in Turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Turin\"",
+          "start" : 21,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "Thank you",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
       "text" : "Thanks",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "There are some bike near me?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "Were is a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "What Can you do?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
+      "text" : "What can I ask you?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
+      "text" : "What can you do",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
+      "text" : "What city do you manage?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        }
+      ]
+    },
+    {
+      "text" : "What is the nearest station to supercinema?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"supercinema\"",
+          "role" : "to",
+          "start" : 31,
+          "end" : 42
+        }
+      ]
+    },
+    {
+      "text" : "What you can do?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
+      "text" : "Where am I?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
         }
       ]
     },
@@ -469,6 +1831,24 @@
       ]
     },
     {
+      "text" : "Where can I park?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "Which is the nearest bike station?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
       "text" : "Who are you?",
       "entities" : [
         {
@@ -487,6 +1867,80 @@
       ]
     },
     {
+      "text" : "alright, thanks",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "alright, thanks!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "alright, thanks! so, I'm looking for a ride from my home to Politecnico di Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"my home\"",
+          "role" : "from",
+          "start" : 49,
+          "end" : 56
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico di Torino\"",
+          "role" : "to",
+          "start" : 60,
+          "end" : 81
+        }
+      ]
+    },
+    {
+      "text" : "and how many bikes there are here?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "any bikes in the area?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "are you available in Torino?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 21,
+          "end" : 27
+        }
+      ]
+    },
+    {
       "text" : "ask my position",
       "entities" : [
         {
@@ -497,6 +1951,15 @@
     },
     {
       "text" : "bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "bike nearby?",
       "entities" : [
         {
           "entity" : "intent",
@@ -538,6 +2001,15 @@
       ]
     },
     {
+      "text" : "bye",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
       "text" : "can I use you in Cuneo?",
       "entities" : [
         {
@@ -549,6 +2021,74 @@
           "value" : "\"Cuneo\"",
           "start" : 17,
           "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "can i find free slots near posta susa?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"posta susa\"",
+          "start" : 27,
+          "end" : 37
+        }
+      ]
+    },
+    {
+      "text" : "can i go from lingotto to piazza castello?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"lingotto\"",
+          "start" : 14,
+          "end" : 22
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "to",
+          "start" : 26,
+          "end" : 41
+        }
+      ]
+    },
+    {
+      "text" : "can i go to savigliano by bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"savigliano\"",
+          "role" : "to",
+          "start" : 12,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "can you find informations in Seattle?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Seattle\"",
+          "start" : 29,
+          "end" : 36
         }
       ]
     },
@@ -573,6 +2113,75 @@
         {
           "entity" : "intent",
           "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "can you please book me a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"booking\""
+        }
+      ]
+    },
+    {
+      "text" : "can you work in Borgo San Dalmazzo?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Borgo San Dalmazzo\"",
+          "start" : 16,
+          "end" : 34
+        }
+      ]
+    },
+    {
+      "text" : "can you work in Cuneo?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Cuneo\"",
+          "start" : 16,
+          "end" : 21
+        }
+      ]
+    },
+    {
+      "text" : "can you work in tokyo?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"tokyo\"",
+          "start" : 16,
+          "end" : 21
+        }
+      ]
+    },
+    {
+      "text" : "can you work in torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 16,
+          "end" : 22
         }
       ]
     },
@@ -612,6 +2221,21 @@
         {
           "entity" : "intent",
           "value" : "\"city_supported\""
+        }
+      ]
+    },
+    {
+      "text" : "do you know where I can leave a bike near Politecnico di Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico di Torino\"",
+          "start" : 42,
+          "end" : 63
         }
       ]
     },
@@ -670,11 +2294,50 @@
       ]
     },
     {
+      "text" : "do you work in new york?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"new york\"",
+          "start" : 15,
+          "end" : 23
+        }
+      ]
+    },
+    {
       "text" : "done",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
+      "text" : "find a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "find a bike near Via Roma in Cuneo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Via Roma in Cuneo\"",
+          "start" : 17,
+          "end" : 34
         }
       ]
     },
@@ -703,6 +2366,36 @@
       ]
     },
     {
+      "text" : "find me a bike near Big Ben",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Big Ben\"",
+          "start" : 20,
+          "end" : 27
+        }
+      ]
+    },
+    {
+      "text" : "find me a bike near Polito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Polito\"",
+          "start" : 20,
+          "end" : 26
+        }
+      ]
+    },
+    {
       "text" : "find me a bike near piazza castello",
       "entities" : [
         {
@@ -714,6 +2407,87 @@
           "value" : "\"piazza castello\"",
           "start" : 20,
           "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "find me a bike near piazza vittorio",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza vittorio\"",
+          "start" : 20,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "find me a free slot",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "find me a free slot in via Roma",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via Roma\"",
+          "start" : 23,
+          "end" : 31
+        }
+      ]
+    },
+    {
+      "text" : "find me a free slot near porta nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova\"",
+          "start" : 25,
+          "end" : 36
+        }
+      ]
+    },
+    {
+      "text" : "find me a parking",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "find me a place to park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "find me a slot",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
         }
       ]
     },
@@ -754,6 +2528,15 @@
       ]
     },
     {
+      "text" : "gimme a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
       "text" : "give me  a bike",
       "entities" : [
         {
@@ -787,6 +2570,66 @@
       ]
     },
     {
+      "text" : "give me a bike in milano",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"milano\"",
+          "start" : 18,
+          "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "give me a bike in new york",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"new york\"",
+          "start" : 18,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "give me a bike in nice",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"nice\"",
+          "start" : 18,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "give me a bike in rome",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"rome\"",
+          "start" : 18,
+          "end" : 22
+        }
+      ]
+    },
+    {
       "text" : "give me a bike near piazza castello torino",
       "entities" : [
         {
@@ -798,6 +2641,21 @@
           "value" : "\"piazza castello torino\"",
           "start" : 20,
           "end" : 42
+        }
+      ]
+    },
+    {
+      "text" : "give me a bike near piazza statuto torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza statuto torino\"",
+          "start" : 20,
+          "end" : 41
         }
       ]
     },
@@ -828,6 +2686,21 @@
           "value" : "\"porta palazzo\"",
           "start" : 20,
           "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "give me a bike near torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino\"",
+          "start" : 20,
+          "end" : 26
         }
       ]
     },
@@ -888,6 +2761,29 @@
       ]
     },
     {
+      "text" : "give me the path from Piazza Sabotino to Porta Nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piazza Sabotino\"",
+          "role" : "from",
+          "start" : 22,
+          "end" : 37
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Porta Nuova\"",
+          "role" : "to",
+          "start" : 41,
+          "end" : 52
+        }
+      ]
+    },
+    {
       "text" : "good!",
       "entities" : [
         {
@@ -897,7 +2793,52 @@
       ]
     },
     {
+      "text" : "goodbye",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
+      "text" : "great thanks",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "great thanks! can you please book a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"booking\""
+        }
+      ]
+    },
+    {
+      "text" : "hellloo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
       "text" : "hello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hello again",
       "entities" : [
         {
           "entity" : "intent",
@@ -915,7 +2856,25 @@
       ]
     },
     {
+      "text" : "hello my friend",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
       "text" : "hello there!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hello!",
       "entities" : [
         {
           "entity" : "intent",
@@ -951,7 +2910,85 @@
       ]
     },
     {
+      "text" : "hi again, are you there?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hi bot",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hi botcycle",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hi dear",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hi there I need a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
       "text" : "hi there!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hi!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "hi, I'm at stazione porta susa torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"stazione porta susa torino\"",
+          "start" : 11,
+          "end" : 37
+        }
+      ]
+    },
+    {
+      "text" : "hiiiiiiii",
       "entities" : [
         {
           "entity" : "intent",
@@ -965,6 +3002,75 @@
         {
           "entity" : "intent",
           "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "how can I go from my position to Via Roma?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"my position\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 29
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Via Roma\"",
+          "role" : "to",
+          "start" : 33,
+          "end" : 41
+        }
+      ]
+    },
+    {
+      "text" : "how can I go from unito to polito?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"unito\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 23
+        },
+        {
+          "entity" : "location",
+          "value" : "\"polito\"",
+          "role" : "to",
+          "start" : 27,
+          "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "how can I go from unito to san salvario?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"unito\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 23
+        },
+        {
+          "entity" : "location",
+          "value" : "\"san salvario\"",
+          "role" : "to",
+          "start" : 27,
+          "end" : 39
         }
       ]
     },
@@ -996,6 +3102,29 @@
           "value" : "\"piazza vittorio veneto torino\"",
           "role" : "to",
           "start" : 16,
+          "end" : 45
+        }
+      ]
+    },
+    {
+      "text" : "how can i go from lingotto to piazza castello?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"lingotto\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 26
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "to",
+          "start" : 30,
           "end" : 45
         }
       ]
@@ -1040,6 +3169,15 @@
       ]
     },
     {
+      "text" : "how many free bikes are here",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
       "text" : "i AM at porta susa",
       "entities" : [
         {
@@ -1051,6 +3189,36 @@
           "value" : "\"porta susa\"",
           "start" : 8,
           "end" : 18
+        }
+      ]
+    },
+    {
+      "text" : "i am at Porta Nuova Station",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Porta Nuova Station\"",
+          "start" : 8,
+          "end" : 27
+        }
+      ]
+    },
+    {
+      "text" : "i am at accademia albertina",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"accademia albertina\"",
+          "start" : 8,
+          "end" : 27
         }
       ]
     },
@@ -1115,6 +3283,21 @@
       ]
     },
     {
+      "text" : "i am at istituto superiore mario boella",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"istituto superiore mario boella\"",
+          "start" : 8,
+          "end" : 39
+        }
+      ]
+    },
+    {
       "text" : "i am at istituto superiore mario boella torino",
       "entities" : [
         {
@@ -1126,6 +3309,21 @@
           "value" : "\"istituto superiore mario boella torino\"",
           "start" : 8,
           "end" : 46
+        }
+      ]
+    },
+    {
+      "text" : "i am at milano",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"milano\"",
+          "start" : 8,
+          "end" : 14
         }
       ]
     },
@@ -1220,6 +3418,21 @@
       ]
     },
     {
+      "text" : "i am at piazza carducci torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza carducci torino\"",
+          "start" : 8,
+          "end" : 30
+        }
+      ]
+    },
+    {
       "text" : "i am at piazza castello",
       "entities" : [
         {
@@ -1250,6 +3463,21 @@
       ]
     },
     {
+      "text" : "i am at piazza massaua",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza massaua\"",
+          "start" : 8,
+          "end" : 22
+        }
+      ]
+    },
+    {
       "text" : "i am at piazza massaua torino",
       "entities" : [
         {
@@ -1259,6 +3487,21 @@
         {
           "entity" : "location",
           "value" : "\"piazza massaua torino\"",
+          "start" : 8,
+          "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "i am at piazza statuto torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza statuto torino\"",
           "start" : 8,
           "end" : 29
         }
@@ -1306,6 +3549,36 @@
           "value" : "\"politecnico di torino\"",
           "start" : 8,
           "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "i am at polito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"polito\"",
+          "start" : 8,
+          "end" : 14
+        }
+      ]
+    },
+    {
+      "text" : "i am at porta nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova\"",
+          "start" : 8,
+          "end" : 19
         }
       ]
     },
@@ -1370,6 +3643,21 @@
       ]
     },
     {
+      "text" : "i am at porta susa torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta susa torino\"",
+          "start" : 8,
+          "end" : 25
+        }
+      ]
+    },
+    {
       "text" : "i am at residenza borsellino torino",
       "entities" : [
         {
@@ -1381,6 +3669,21 @@
           "value" : "\"residenza borsellino torino\"",
           "start" : 8,
           "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "i am at saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 8,
+          "end" : 15
         }
       ]
     },
@@ -1411,6 +3714,21 @@
           "value" : "\"torino porta nuova\"",
           "start" : 8,
           "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "i am at unito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"unito\"",
+          "start" : 8,
+          "end" : 13
         }
       ]
     },
@@ -1460,6 +3778,21 @@
       ]
     },
     {
+      "text" : "i am at via comba fredda",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via comba fredda\"",
+          "start" : 8,
+          "end" : 24
+        }
+      ]
+    },
+    {
       "text" : "i am at via paolo borsellino 38 torino",
       "entities" : [
         {
@@ -1505,6 +3838,21 @@
       ]
     },
     {
+      "text" : "i am in Los Angeles",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Los Angeles\"",
+          "start" : 8,
+          "end" : 19
+        }
+      ]
+    },
+    {
       "text" : "i am in china",
       "entities" : [
         {
@@ -1520,6 +3868,156 @@
       ]
     },
     {
+      "text" : "i am in corso vittorio torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"corso vittorio torino\"",
+          "start" : 8,
+          "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "i am in firenze",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"firenze\"",
+          "start" : 8,
+          "end" : 15
+        }
+      ]
+    },
+    {
+      "text" : "i am in milano",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"milano\"",
+          "start" : 8,
+          "end" : 14
+        }
+      ]
+    },
+    {
+      "text" : "i am in new york",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"new york\"",
+          "start" : 8,
+          "end" : 16
+        }
+      ]
+    },
+    {
+      "text" : "i am in nice",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"nice\"",
+          "start" : 8,
+          "end" : 12
+        }
+      ]
+    },
+    {
+      "text" : "i am in pagno",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 8,
+          "end" : 13
+        }
+      ]
+    },
+    {
+      "text" : "i am in piazza carducci torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza carducci torino\"",
+          "start" : 8,
+          "end" : 30
+        }
+      ]
+    },
+    {
+      "text" : "i am in piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "start" : 8,
+          "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "i am in piazza castello torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello torino\"",
+          "start" : 8,
+          "end" : 30
+        }
+      ]
+    },
+    {
+      "text" : "i am in piazza giosuè carducci torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza giosuè carducci torino\"",
+          "start" : 8,
+          "end" : 37
+        }
+      ]
+    },
+    {
       "text" : "i am in piazza massaua",
       "entities" : [
         {
@@ -1531,6 +4029,21 @@
           "value" : "\"piazza massaua\"",
           "start" : 8,
           "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "i am in piazza massaua torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza massaua torino\"",
+          "start" : 8,
+          "end" : 29
         }
       ]
     },
@@ -1565,6 +4078,36 @@
       ]
     },
     {
+      "text" : "i am in politecnico",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico\"",
+          "start" : 8,
+          "end" : 19
+        }
+      ]
+    },
+    {
+      "text" : "i am in politecnico di torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico di torino\"",
+          "start" : 8,
+          "end" : 29
+        }
+      ]
+    },
+    {
       "text" : "i am in politecnico di torino sede centrale",
       "entities" : [
         {
@@ -1576,6 +4119,126 @@
           "value" : "\"politecnico di torino sede centrale\"",
           "start" : 8,
           "end" : 43
+        }
+      ]
+    },
+    {
+      "text" : "i am in polito",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"polito\"",
+          "start" : 8,
+          "end" : 14
+        }
+      ]
+    },
+    {
+      "text" : "i am in porta nuova torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova torino\"",
+          "start" : 8,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "i am in porta palazzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta palazzo\"",
+          "start" : 8,
+          "end" : 21
+        }
+      ]
+    },
+    {
+      "text" : "i am in porta susa torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta susa torino\"",
+          "start" : 8,
+          "end" : 25
+        }
+      ]
+    },
+    {
+      "text" : "i am in residenza borsellino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"residenza borsellino\"",
+          "start" : 8,
+          "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "i am in rome",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"rome\"",
+          "start" : 8,
+          "end" : 12
+        }
+      ]
+    },
+    {
+      "text" : "i am in saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 8,
+          "end" : 15
+        }
+      ]
+    },
+    {
+      "text" : "i am in torin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torin\"",
+          "start" : 8,
+          "end" : 13
         }
       ]
     },
@@ -1595,6 +4258,66 @@
       ]
     },
     {
+      "text" : "i am in torino piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino piazza castello\"",
+          "start" : 8,
+          "end" : 30
+        }
+      ]
+    },
+    {
+      "text" : "i am in torino porta nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"torino porta nuova\"",
+          "start" : 8,
+          "end" : 26
+        }
+      ]
+    },
+    {
+      "text" : "i am in via Paolo Borsellino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via Paolo Borsellino\"",
+          "start" : 8,
+          "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "i am in via borsellino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via borsellino\"",
+          "start" : 8,
+          "end" : 22
+        }
+      ]
+    },
+    {
       "text" : "i am in via delle rosine 3 torino",
       "entities" : [
         {
@@ -1606,6 +4329,36 @@
           "value" : "\"via delle rosine 3 torino\"",
           "start" : 8,
           "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "i am in via paolo borsellino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via paolo borsellino\"",
+          "start" : 8,
+          "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "i am in via paolo borsellino torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via paolo borsellino torino\"",
+          "start" : 8,
+          "end" : 35
         }
       ]
     },
@@ -2083,6 +4836,70 @@
       ]
     },
     {
+      "text" : "i wanna go to Politecnico di Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico di Torino\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "i wanna go to los angeles",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"los angeles\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 25
+        }
+      ]
+    },
+    {
+      "text" : "i wanna go to porta nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 25
+        }
+      ]
+    },
+    {
+      "text" : "i wanna go to venaria",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"venaria\"",
+          "role" : "to",
+          "start" : 14,
+          "end" : 21
+        }
+      ]
+    },
+    {
       "text" : "i want a bike",
       "entities" : [
         {
@@ -2161,6 +4978,21 @@
       ]
     },
     {
+      "text" : "i want a bike in saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 17,
+          "end" : 24
+        }
+      ]
+    },
+    {
       "text" : "i want a bike in via boggio torino",
       "entities" : [
         {
@@ -2172,6 +5004,21 @@
           "value" : "\"via boggio torino\"",
           "start" : 17,
           "end" : 34
+        }
+      ]
+    },
+    {
+      "text" : "i want a bike near pagno",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 19,
+          "end" : 24
         }
       ]
     },
@@ -2272,6 +5119,52 @@
           "role" : "to",
           "start" : 17,
           "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "i want to go from central park to manhattan",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"central park\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 30
+        },
+        {
+          "entity" : "location",
+          "value" : "\"manhattan\"",
+          "role" : "to",
+          "start" : 34,
+          "end" : 43
+        }
+      ]
+    },
+    {
+      "text" : "i want to go from lingotto to piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"lingotto\"",
+          "role" : "from",
+          "start" : 18,
+          "end" : 26
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "to",
+          "start" : 30,
+          "end" : 45
         }
       ]
     },
@@ -2377,6 +5270,70 @@
       ]
     },
     {
+      "text" : "i want to go to castello del valentino torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"castello del valentino torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 45
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to central park",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"central park\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 28
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to central park NYC",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"central park NYC\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to chinatown los angeles",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"chinatown los angeles\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 37
+        }
+      ]
+    },
+    {
       "text" : "i want to go to honolulu",
       "entities" : [
         {
@@ -2389,6 +5346,22 @@
           "role" : "to",
           "start" : 16,
           "end" : 24
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to manhattan",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"manhattan\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 25
         }
       ]
     },
@@ -2457,6 +5430,38 @@
       ]
     },
     {
+      "text" : "i want to go to piazza carducci",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza carducci\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 31
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to piazza carducci torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza carducci torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 38
+        }
+      ]
+    },
+    {
       "text" : "i want to go to piazza castello",
       "entities" : [
         {
@@ -2469,6 +5474,22 @@
           "role" : "to",
           "start" : 16,
           "end" : 31
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to piazza massaua",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza massaua\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 30
         }
       ]
     },
@@ -2521,6 +5542,54 @@
       ]
     },
     {
+      "text" : "i want to go to politecnico di torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico di torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 37
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to porta nuova",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 27
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to porta nuova torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta nuova torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 34
+        }
+      ]
+    },
+    {
       "text" : "i want to go to porta palazzo",
       "entities" : [
         {
@@ -2533,6 +5602,22 @@
           "role" : "to",
           "start" : 16,
           "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to porta susa",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta susa\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 26
         }
       ]
     },
@@ -2569,6 +5654,22 @@
       ]
     },
     {
+      "text" : "i want to go to turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"turin\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 21
+        }
+      ]
+    },
+    {
       "text" : "i want to go to venaria",
       "entities" : [
         {
@@ -2585,6 +5686,38 @@
       ]
     },
     {
+      "text" : "i want to go to via borsellino torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via borsellino torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 37
+        }
+      ]
+    },
+    {
+      "text" : "i want to go to via paolo borsellino Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via paolo borsellino Torino\"",
+          "role" : "to",
+          "start" : 16,
+          "end" : 43
+        }
+      ]
+    },
+    {
       "text" : "i want to go to villeneuve-loubet",
       "entities" : [
         {
@@ -2597,6 +5730,21 @@
           "role" : "to",
           "start" : 16,
           "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "i want to leave my bike near porta susa",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta susa\"",
+          "start" : 29,
+          "end" : 39
         }
       ]
     },
@@ -2705,6 +5853,51 @@
       ]
     },
     {
+      "text" : "i'm at piazza castello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "start" : 7,
+          "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "i'm at porta susa station turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"porta susa station turin\"",
+          "start" : 7,
+          "end" : 31
+        }
+      ]
+    },
+    {
+      "text" : "i'm at stazione porta susa torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"stazione porta susa torino\"",
+          "start" : 7,
+          "end" : 33
+        }
+      ]
+    },
+    {
       "text" : "i'm at via Pier carlo boggio 61",
       "entities" : [
         {
@@ -2720,6 +5913,38 @@
       ]
     },
     {
+      "text" : "i'm going to via vignale 21",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via vignale 21\"",
+          "role" : "to",
+          "start" : 13,
+          "end" : 27
+        }
+      ]
+    },
+    {
+      "text" : "i'm going to via vignale 21 turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via vignale 21 turin\"",
+          "role" : "to",
+          "start" : 13,
+          "end" : 33
+        }
+      ]
+    },
+    {
       "text" : "i'm in San Salvario",
       "entities" : [
         {
@@ -2731,6 +5956,97 @@
           "value" : "\"San Salvario\"",
           "start" : 7,
           "end" : 19
+        }
+      ]
+    },
+    {
+      "text" : "i'm in pagno",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 7,
+          "end" : 12
+        }
+      ]
+    },
+    {
+      "text" : "i'm in turin, porta susa station",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"turin, porta susa station\"",
+          "start" : 7,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "i'm in turin, porta susa station, how many free bikes there are?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"turin, porta susa station\"",
+          "start" : 7,
+          "end" : 32
+        }
+      ]
+    },
+    {
+      "text" : "i'm looking for a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "i'm looking for a bike from piazza vittorio till politecnico di torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza vittorio\"",
+          "role" : "from",
+          "start" : 28,
+          "end" : 43
+        },
+        {
+          "entity" : "location",
+          "value" : "\"politecnico di torino\"",
+          "start" : 49,
+          "end" : 70
+        }
+      ]
+    },
+    {
+      "text" : "i'm near saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 9,
+          "end" : 16
         }
       ]
     },
@@ -2765,6 +6081,60 @@
       ]
     },
     {
+      "text" : "i'm not in turin",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "i'm searching a bike near saluzzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 26,
+          "end" : 33
+        }
+      ]
+    },
+    {
+      "text" : "is pagno supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"pagno\"",
+          "start" : 3,
+          "end" : 8
+        }
+      ]
+    },
+    {
+      "text" : "is saluzzo supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"saluzzo\"",
+          "start" : 3,
+          "end" : 10
+        }
+      ]
+    },
+    {
       "text" : "is there a place to leave the bike near via boggio torino?",
       "entities" : [
         {
@@ -2795,7 +6165,55 @@
       ]
     },
     {
+      "text" : "is turin supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"turin\"",
+          "start" : 3,
+          "end" : 8
+        }
+      ]
+    },
+    {
+      "text" : "leave a bike",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "locate a bike near Borgo San Dalmazzo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Borgo San Dalmazzo\"",
+          "start" : 19,
+          "end" : 37
+        }
+      ]
+    },
+    {
       "text" : "locate me",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "locate me first",
       "entities" : [
         {
           "entity" : "intent",
@@ -2809,6 +6227,45 @@
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "my position is wrong",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "no, i'm searching a bike near lingotto",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"lingotto\"",
+          "start" : 30,
+          "end" : 38
+        }
+      ]
+    },
+    {
+      "text" : "not in washington, in turin!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"turin\"",
+          "start" : 22,
+          "end" : 27
         }
       ]
     },
@@ -2827,6 +6284,39 @@
         {
           "entity" : "intent",
           "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
+      "text" : "ok thanks",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "ok, thanks",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "ok. I need a bike in beverly hills",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"beverly hills\"",
+          "start" : 21,
+          "end" : 34
         }
       ]
     },
@@ -2920,6 +6410,22 @@
       ]
     },
     {
+      "text" : "rent a bike next to Cuneo",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Cuneo\"",
+          "role" : "to",
+          "start" : 20,
+          "end" : 25
+        }
+      ]
+    },
+    {
       "text" : "reserve me a bike",
       "entities" : [
         {
@@ -2959,11 +6465,50 @@
       ]
     },
     {
+      "text" : "search bikes in ujjain",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"ujjain\"",
+          "start" : 16,
+          "end" : 22
+        }
+      ]
+    },
+    {
       "text" : "search for a bike",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "share location",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "so find me a bike near Politecnico di Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Politecnico di Torino\"",
+          "start" : 23,
+          "end" : 44
         }
       ]
     },
@@ -3021,6 +6566,39 @@
         {
           "entity" : "intent",
           "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "thanks!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "there are free bikes near lingotto station?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"lingotto station\"",
+          "start" : 26,
+          "end" : 42
+        }
+      ]
+    },
+    {
+      "text" : "there is a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
         }
       ]
     },
@@ -3095,6 +6673,15 @@
       ]
     },
     {
+      "text" : "what are you able to do?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
       "text" : "what can you do for me?",
       "entities" : [
         {
@@ -3122,6 +6709,24 @@
       ]
     },
     {
+      "text" : "where am I?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "where am i",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
       "text" : "where am i?",
       "entities" : [
         {
@@ -3141,6 +6746,30 @@
     },
     {
       "text" : "where can I leave a bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
+      "text" : "where can I leave my bike in Torino?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 29,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "where can I leave the bike",
       "entities" : [
         {
           "entity" : "intent",
@@ -3191,11 +6820,35 @@
       ]
     },
     {
+      "text" : "where can I park?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        }
+      ]
+    },
+    {
       "text" : "where can I pick a bike?",
       "entities" : [
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "where can I rent a bike in Turin?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Turin\"",
+          "start" : 27,
+          "end" : 32
         }
       ]
     },
@@ -3290,6 +6943,48 @@
       ]
     },
     {
+      "text" : "where do you work in Piemonte?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Piemonte\"",
+          "start" : 21,
+          "end" : 29
+        }
+      ]
+    },
+    {
+      "text" : "where i am?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "where is the nearest bike?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "which cities are supported?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"city_supported\""
+        }
+      ]
+    },
+    {
       "text" : "who am I talking to?",
       "entities" : [
         {
@@ -3327,6 +7022,24 @@
     },
     {
       "text" : "wow thanks!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "wrong position!",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"ask_position\""
+        }
+      ]
+    },
+    {
+      "text" : "you have been helpful",
       "entities" : [
         {
           "entity" : "intent",

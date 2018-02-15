@@ -108,6 +108,15 @@
       ]
     },
     {
+      "text" : "Ehi ciao",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
       "text" : "Funzioni a los Angeles?",
       "entities" : [
         {
@@ -397,6 +406,21 @@
       ]
     },
     {
+      "text" : "dove posso parcheggiare in via pier carlo boggio?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"search_slot\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via pier carlo boggio\"",
+          "start" : 27,
+          "end" : 48
+        }
+      ]
+    },
+    {
       "text" : "dove posso parcheggiare vicino a via madama cristina 23?",
       "entities" : [
         {
@@ -516,6 +540,15 @@
     },
     {
       "text" : "grazie",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"thank\""
+        }
+      ]
+    },
+    {
+      "text" : "grazie!",
       "entities" : [
         {
           "entity" : "intent",
@@ -669,6 +702,21 @@
       ]
     },
     {
+      "text" : "sono a Torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"Torino\"",
+          "start" : 7,
+          "end" : 13
+        }
+      ]
+    },
+    {
       "text" : "sono a torino",
       "entities" : [
         {
@@ -725,6 +773,44 @@
           "value" : "\"piazza castello\"",
           "start" : 8,
           "end" : 23
+        }
+      ]
+    },
+    {
+      "text" : "sono in piazza castello e voglio andare a cordusio",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "from",
+          "start" : 8,
+          "end" : 23
+        },
+        {
+          "entity" : "location",
+          "value" : "\"cordusio\"",
+          "role" : "to",
+          "start" : 42,
+          "end" : 50
+        }
+      ]
+    },
+    {
+      "text" : "sono in piazza castello milano",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"set_position\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello milano\"",
+          "start" : 8,
+          "end" : 30
         }
       ]
     },
@@ -852,6 +938,75 @@
           "value" : "\"torino\"",
           "start" : 16,
           "end" : 22
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare da cadorna a cordusio",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"cadorna\"",
+          "role" : "from",
+          "start" : 17,
+          "end" : 24
+        },
+        {
+          "entity" : "location",
+          "value" : "\"cordusio\"",
+          "role" : "to",
+          "start" : 27,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare da cairoli a cordusio",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"cairoli\"",
+          "role" : "from",
+          "start" : 17,
+          "end" : 24
+        },
+        {
+          "entity" : "location",
+          "value" : "\"cordusio\"",
+          "role" : "to",
+          "start" : 27,
+          "end" : 35
+        }
+      ]
+    },
+    {
+      "text" : "voglio andare da piazza castello a lingotto",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"piazza castello\"",
+          "role" : "from",
+          "start" : 17,
+          "end" : 32
+        },
+        {
+          "entity" : "location",
+          "value" : "\"lingotto\"",
+          "role" : "to",
+          "start" : 35,
+          "end" : 43
         }
       ]
     },
