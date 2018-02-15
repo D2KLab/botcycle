@@ -26,20 +26,33 @@ def main(lang):
     
     nlu_lookup = {}
 
-    entity_names = set()
+    slot_names = set()
 
     for nlu_entry in nlu_raw:
         intent = nlu_entry.get('intent', None)
         if intent:
             intent = intent['value']
         entities = nlu_entry.get('entities', None)
+        # translate from --> from.location, to --> to.location (type.role)
+        slots = {}
+        for key, value in entities.items():
+            if not isinstance(value, dict):
+                value = value[0]
+            print(value)
+            role = value.get('role', None)
+            entity = value.get('_entity')
+            if role:
+                slot_name = '{}.{}'.format(role, entity)
+            else:
+                slot_name = entity
+            slots[slot_name] = value
         try:
             text = nlu_entry.get('text', None) or nlu_entry['_text']
         except:
             pass
-        nlu_lookup[text] = {'intent': intent, 'entities': entities}
-        if entities:
-            entity_names.update([k for k,v in entities.items()])
+        nlu_lookup[text] = {'intent': intent, 'slots': slots}
+        if slots:
+            slot_names.update([k for k,v in slots.items()])
 
     # perform a group by: 1 get contiguous by chat_id, 2 group by
     messages_raw.sort(key=lambda m: m['chat_id'])
@@ -61,13 +74,13 @@ def main(lang):
     
     print('latest message at', newest_update)
 
-    entity_names.remove('intent')
-    entity_names = sorted(list(entity_names))
+    slot_names.remove('intent')
+    slot_names = sorted(list(slot_names))
     
-    field_names = ['role', 'text', 'intent'] + entity_names
+    field_names = ['role', 'text', 'intent'] + slot_names
 
-    with open(lang + '/tabular.tsv', 'a', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=field_names, delimiter='\t')
+    with open(lang + '/tabular.tsv', 'a', newline='') as tsvfile:
+        writer = csv.DictWriter(tsvfile, fieldnames=field_names, delimiter='\t')
 
         if not last_update:
             # write the header only once
@@ -89,13 +102,11 @@ def main(lang):
                     nlu_out = nlu_lookup.get(text, None)
                     if nlu_out:
                         row['intent'] = nlu_out['intent']
-                        if nlu_out['entities']:
-                            #if not isinstance(nlu_out['entities'], dict):
-                            #    nlu_out['entities'] = nlu_out['entities'][0]
-                            for k,v in nlu_out['entities'].items():
+                        if nlu_out['slots']:
+                            #if not isinstance(nlu_out['slots'], dict):
+                            #    nlu_out['slots'] = nlu_out['slots'][0]
+                            for k,v in nlu_out['slots'].items():
                                 try:
-                                    if not isinstance(v, dict):
-                                        v = v[0]
                                     row[k] = v['value']
                                 except:
                                     print(k,v)

@@ -1,4 +1,4 @@
-role	text	intent	from	location	to
+role	text	intent	from.location	location	to.location
 u	ciao	greeting			
 b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
 b	Ciao! Come posso aiutarti?				
@@ -70,7 +70,7 @@ Prova a chiedermi qualcosa! ;)"
 u	ok	end_discussion			
 b	ok	end_discussion			
 u	puoi lavorare a pagno?	city_supported		pagno	
-u	Ciao	greeting		Ciao	
+u	Ciao	greeting			
 b	Ciao! Come posso aiutarti?				
 u	Trovami una bici	search_bike			
 b	Impossibile trovare le informazioni. Qualcosa è andato male!				
@@ -94,12 +94,12 @@ b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike shari
 					
 u	/start				
 b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
-u	Ciao!	greeting		Ciao!	
+u	Ciao!	greeting			
 b	Ciao! Come posso aiutarti?				
 u	Vorrei una bicicletta a Torino Porta Susa	search_bike		Torino Porta Susa	
 b	Puoi trovare 1 bici libere alla stazione Bolzano				
 u	👍				
-u	Grazie	thank		Grazie	
+u	Grazie	thank			
 b	Prego!				
 u	Vorrei parcheggiare una bicicletta nei pressi del Politecnico di Torino	search_slot		Politecnico di Torino	
 b	Impossibile trovare le informazioni. Qualcosa è andato male!				
@@ -108,7 +108,7 @@ u	Vorrei prendere una bicicletta nei pressi del Politecnico di Torino	search_bik
 b	Puoi trovare 2 bici libere alla stazione Politecnico 2				
 u	👍				
 u	Quali città sono supportate?	city_supported			
-u	Ciao	greeting		Ciao	
+u	Ciao	greeting			
 b	Ciao! Come posso aiutarti?				
 u	Quali città sono supportate?	city_supported			
 u	Vorrei una bicicletta vicino a Piazza Castello	search_bike			Piazza Castello
@@ -133,11 +133,11 @@ b	Puoi trovare 3 bici libere alla stazione Castello 2
 					
 u	/start				
 b	Benvenuto! Sono BotCycle e posso darti informazioni sul servizio di bike sharing				
-u	Ciao	greeting		Ciao	
+u	Ciao	greeting			
 b	Ciao! Come posso aiutarti?				
 u	Mi serve una bici per andare al museo egizio	plan_trip			museo egizio
 b	La tua frase non contiene un intento				
-u	Ciao	greeting		Ciao	
+u	Ciao	greeting			
 b	Ciao! Come posso aiutarti?				
 u	Mi serve una bici	search_bike			
 b	Impossibile trovare le informazioni. Qualcosa è andato male!				
@@ -222,7 +222,7 @@ u	ciao	greeting
 b	Ciao! Come posso aiutarti?				
 u	dammi una bici	search_bike			
 b	Puoi trovare 9 bici libere alla stazione O.G.R.				
-u	prenotami una bici in parco ruffini	book_bike		parco_ruffini	
+u	prenotami una bici in parco ruffini	book_bike		parco ruffini	
 b	Mi dispiace ma non posso prenotare le bici				
 u	ciao	greeting			
 b	Ciao! Come posso aiutarti?				

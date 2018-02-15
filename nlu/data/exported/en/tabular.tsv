@@ -1,4 +1,4 @@
-role	text	intent	from	location	to
+role	text	intent	from.location	location	to.location
 u	hi	greeting			
 b	Welcome! I am BotCycle and can give you bike sharing informations				
 b	Hi there! How can I help?				
