@@ -889,3 +889,28 @@ b	Yes, Torino is supported
 u	thanks	thank			
 b	You're welcome!				
 					
+u	Hi				
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Your sentence does not have an intent				
+u	What can I do?	info			
+b	"I am BotCycle, a bot that can give you informations about bike sharing in your city.
+Try to ask me something! ;)"				
+u	do you have bike sharing in Nuremberg?	city_supported		Nuremberg	
+b	Yes, Nürnberg is supported				
+u	where are bike stations?	search_bike			
+b	Impossible to find a place named ?				
+u	I'm at Jakobsplatz, Nuremberg	set_position		Jakobsplatz, Nuremberg	
+b	Ok I got your position				
+b	Impossible to find a place named ?				
+					
+u	Hi kim here.	greeting			
+b	Welcome! I am BotCycle and can give you bike sharing informations				
+b	Hi there! How can I help?				
+					
+u	Hi!	greeting			
+b	Hi there! How can I help?				
+u	I want a bike in Singapore	search_bike		Singapore	
+b	Impossible to find informations. Something went wrong!				
+u	Hi there!	greeting			
+b	Hi there! How can I help?				
+					

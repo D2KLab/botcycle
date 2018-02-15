@@ -10,4 +10,4 @@ mongoexport --host mongodb --db botcycle_it --collection nlu_history --jsonArray
 #mongoexport --db botcycle_heroku_slack --collection nlu_history --jsonArray --out en/nlu_history_heroku_slack.json
 
 python extract_tsv.py en
-#python extract_tsv.py it
+python extract_tsv.py it

@@ -55,7 +55,7 @@ def main(lang):
                 messages.append(m)
                 if not newest_update or date > newest_update:
                     newest_update = date
-        if (messages):
+        if messages:
             print('chat id', key, 'has', len(messages), 'new messages')
             sessions.append(messages)
     
@@ -84,20 +84,22 @@ def main(lang):
                     'role': role,
                     'text': text
                 }
-                nlu_out = nlu_lookup.get(text, None)
-                if nlu_out:
-                    row['intent'] = nlu_out['intent']
-                    if nlu_out['entities']:
-                        #if not isinstance(nlu_out['entities'], dict):
-                        #    nlu_out['entities'] = nlu_out['entities'][0]
-                        for k,v in nlu_out['entities'].items():
-                            try:
-                                if not isinstance(v, dict):
-                                    v = v[0]
-                                row[k] = v['value']
-                            except:
-                                print(k,v)
-                                traceback.print_exc()
+                if role == 'u':
+                    # search nlu entry only for user turns
+                    nlu_out = nlu_lookup.get(text, None)
+                    if nlu_out:
+                        row['intent'] = nlu_out['intent']
+                        if nlu_out['entities']:
+                            #if not isinstance(nlu_out['entities'], dict):
+                            #    nlu_out['entities'] = nlu_out['entities'][0]
+                            for k,v in nlu_out['entities'].items():
+                                try:
+                                    if not isinstance(v, dict):
+                                        v = v[0]
+                                    row[k] = v['value']
+                                except:
+                                    print(k,v)
+                                    traceback.print_exc()
                 writer.writerow(row)
 
             writer.writerow({})
