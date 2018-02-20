@@ -53,10 +53,14 @@ def process(msg, sendMessage):
 
         if msg['text'] == '👍':
             # TODO collect positive feedback
+            sendMessageFunction(
+                chat_id, output_sentences.get(LANGUAGE, 'THANK'))
             return
 
         if msg['text'] == '👎':
             # TODO collect negative feedback
+            sendMessageFunction(
+                chat_id, output_sentences.get(LANGUAGE, 'THANK'))
             return
 
         # TODO this is to test facebook login
