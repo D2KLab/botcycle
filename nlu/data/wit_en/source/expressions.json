@@ -40,6 +40,15 @@
       ]
     },
     {
+      "text" : "Bye",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
       "text" : "Can I have a bike ?",
       "entities" : [
         {
@@ -217,7 +226,25 @@
       ]
     },
     {
+      "text" : "Good bye",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"end_discussion\""
+        }
+      ]
+    },
+    {
       "text" : "Hello",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"greeting\""
+        }
+      ]
+    },
+    {
+      "text" : "Hello!",
       "entities" : [
         {
           "entity" : "intent",
@@ -1795,6 +1822,15 @@
       ]
     },
     {
+      "text" : "What’s that?",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"info\""
+        }
+      ]
+    },
+    {
       "text" : "Where am I?",
       "entities" : [
         {
@@ -2362,6 +2398,29 @@
         {
           "entity" : "intent",
           "value" : "\"search_bike\""
+        }
+      ]
+    },
+    {
+      "text" : "find me a bike from corso vinzaglio torino to via principe amedeo torino",
+      "entities" : [
+        {
+          "entity" : "intent",
+          "value" : "\"plan_trip\""
+        },
+        {
+          "entity" : "location",
+          "value" : "\"corso vinzaglio torino\"",
+          "role" : "from",
+          "start" : 20,
+          "end" : 42
+        },
+        {
+          "entity" : "location",
+          "value" : "\"via principe amedeo torino\"",
+          "role" : "to",
+          "start" : 46,
+          "end" : 72
         }
       ]
     },
