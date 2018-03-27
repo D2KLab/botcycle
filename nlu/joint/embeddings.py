@@ -83,9 +83,9 @@ class WhitespaceTokenizer(object):
 
 
 class FixedEmbeddings(object):
-    def __init__(self, tokenizer='space', language='en'):
+    def __init__(self, tokenizer, language, word_embeddings):
         self.language = language
-        language_model_name = get_language_model_name(language)
+        language_model_name = get_language_model_name(language, word_embeddings)
 
         import spacy
         self.nlp = spacy.load(language_model_name)

@@ -14,7 +14,7 @@ def load_data(test_type='test'):
     with open(path + 'fold_train.json') as json_file:
         train = json.load(json_file)
     
-    if test_type == 'validate':
+    if test_type == 'finaltest':
         test_file = 'final_test.json'
     else:
         test_file = 'fold_test.json'

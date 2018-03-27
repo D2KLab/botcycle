@@ -39,4 +39,4 @@ To update the contents with the last messages logged in the operational database
 - run `make export_messages` to export the mongoDB collections `messages.json` and `nlu_history.json` into the folder `exported/xx/`
 - run `make extract_tsv` to append the new messages to the `multiturn_xx/source/tabular.tsv` file and update the last extraction time in the file `multiturn_xx/source/stats.json`
 - manually review the annotations on the new lines of the file `multiturn_xx/source/tabular.tsv`
-- run `DATASET=multiturn_xx make preprocess` to save the sessions in a usable format and do the train/test/validate split in the folder `multiturn_xx/preprocessed/`
+- run `DATASET=multiturn_xx make preprocess` to save the sessions in a usable format and do the train/test/finaltest split in the folder `multiturn_xx/preprocessed/`

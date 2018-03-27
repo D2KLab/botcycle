@@ -9,7 +9,7 @@ from .embeddings import EmbeddingsFromScratch, FixedEmbeddings, FineTuneEmbeddin
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 class Model:
-    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, multi_turn=False, batch_size=None, intent_combination=None):
+    def __init__(self, input_steps, embedding_size, hidden_size, vocabs, word_embeddings, recurrent_cell, attention, multi_turn=False, batch_size=None, intent_combination=None):
         # save the parameters
         self.input_steps = input_steps
         self.embedding_size = embedding_size
@@ -18,6 +18,19 @@ class Model:
         # also save the vocabularies, used by embedders
         self.vocabs = vocabs
         self.input_embedding_size = 300
+        # one between 'large', 'small', 'medium', 'cnr' (all fixed pretrained) or 'random' (trainable)
+        self.word_embeddings = word_embeddings
+        # one between lstm and gru
+        self.recurrent_cell = recurrent_cell
+        # one between intents, slots, both, none
+        if attention == 'intents' or attention == 'both':
+            self.intent_attention = True
+        else:
+            self.intent_attention = False
+        if attention == 'slots' or attention == 'both':
+            self.slots_attention = True
+        else:
+            self.slots_attention = False
 
         # this variable changes the architecture from single turn to multi-turn
         self.multi_turn = multi_turn
@@ -55,9 +68,11 @@ class Model:
         # For input words embedder, can choose between EmbeddingsFromScratch, FixedEmbeddings, FineTueEmbeddings:
         # choose if input words are trained as part of the model from scratch, or come precomputed, or precomputed+linear transformation
         #self.wordsEmbedder = FineTuneEmbeddings(tokenizer, language)
-        self.wordsEmbedder = FixedEmbeddings(tokenizer, language)
+        if self.word_embeddings == 'random':
+            self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, 'words', self.input_embedding_size, True)
+        else:
+            self.wordsEmbedder = FixedEmbeddings(tokenizer, language, self.word_embeddings)
         self.input_embedding_size = self.wordsEmbedder.embedding_size
-        #self.wordsEmbedder = EmbeddingsFromScratch(input_vocab, self.input_embedding_size)
         self.slotEmbedder = EmbeddingsFromScratch(slot_vocab, 'slot', self.embedding_size, True)
         print('intent vocab', intent_vocab)
         self.intentEmbedder = EmbeddingsFromScratch(intent_vocab, 'intent', self.embedding_size)
@@ -72,8 +87,17 @@ class Model:
         # Encoder
 
         # Definition of cells used for bidirectional RNN encoder
-        encoder_f_cell = BasicLSTMCell(self.hidden_size)
-        encoder_b_cell = BasicLSTMCell(self.hidden_size)
+        if self.recurrent_cell == 'lstm':
+            encoder_f_cell = BasicLSTMCell(self.hidden_size)
+            encoder_b_cell = BasicLSTMCell(self.hidden_size)
+            self.hidden_state_size = self.hidden_size * 2
+        elif self.recurrent_cell == 'gru':
+            encoder_f_cell = GRUCell(self.hidden_size)
+            encoder_b_cell = GRUCell(self.hidden_size)
+            self.hidden_state_size = self.hidden_size
+        else:
+            raise ValueError('invalid cell of type ' + self.recurrent_cell)
+
         # Bidirectional RNN
         # The size of the following four variables：T*B*D，T*B*D，B*D，B*D
         (encoder_fw_outputs, encoder_bw_outputs), (encoder_fw_final_state, encoder_bw_final_state) = \
@@ -89,11 +113,15 @@ class Model:
         # The concatenation is done on the third dimension. Dimensions: (time, batch, hidden_size)
         encoder_outputs = tf.concat((encoder_fw_outputs, encoder_bw_outputs), 2)
         # Also concatenate things for the final state. Dimensions: (batch, hidden_size)
-        encoder_final_state_c = tf.concat(
-            (encoder_fw_final_state.c, encoder_bw_final_state.c), 1)
-        encoder_final_state_h = tf.concat(
-            (encoder_fw_final_state.h, encoder_bw_final_state.h), 1)
-        self.encoder_final_state = LSTMStateTuple(c=encoder_final_state_c, h=encoder_final_state_h)
+        if self.recurrent_cell == 'lstm':
+            encoder_final_state_c = tf.concat(
+                (encoder_fw_final_state.c, encoder_bw_final_state.c), 1)
+            encoder_final_state_h = tf.concat(
+                (encoder_fw_final_state.h, encoder_bw_final_state.h), 1)
+            self.encoder_final_state = LSTMStateTuple(c=encoder_final_state_c, h=encoder_final_state_h)
+        elif self.recurrent_cell == 'gru':
+            encoder_final_state_h = tf.concat((encoder_fw_final_state, encoder_bw_final_state), 1)
+            self.encoder_final_state = encoder_final_state_h
 
 
         # Intent output
@@ -212,20 +240,27 @@ class Model:
 
         # Decoding function
         def decode(helper):
-            # Get the memory representation (for the attention) by making the
-            # encoder outputs dimensions from (time, batch, hidden_size) to (batch, time, hidden_size)
-            memory = tf.transpose(encoder_outputs, [1, 0, 2])
-            # Use the BahdanauAttention on the memory
-            attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
-                num_units=self.hidden_size, memory=memory,
-                memory_sequence_length=self.encoder_inputs_actual_length)
             # The decoding LSTM cell
-            cell = BasicLSTMCell(num_units=self.hidden_size * 2)
-            # that gets wrapped inside the attention mechanism
-            attn_cell = tf.contrib.seq2seq.AttentionWrapper(
-                cell, attention_mechanism, attention_layer_size=self.hidden_size)
-            # and gets wrapped inside a output projection wrapper (weights+biases),
-            # to have an output with logits on the slot labels dimension
+            if self.recurrent_cell == 'lstm':
+                cell = BasicLSTMCell(num_units=self.hidden_state_size)
+            elif self.recurrent_cell == 'gru':
+                cell = GRUCell(num_units=self.hidden_state_size)
+            if self.slots_attention:
+                # Get the memory representation (for the attention) by making the
+                # encoder outputs dimensions from (time, batch, hidden_size) to (batch, time, hidden_size)
+                memory = tf.transpose(encoder_outputs, [1, 0, 2])
+                # Use the BahdanauAttention on the memory
+                attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+                    num_units=self.hidden_size, memory=memory,
+                    memory_sequence_length=self.encoder_inputs_actual_length)
+                # that gets wrapped inside the attention mechanism
+                attn_cell = tf.contrib.seq2seq.AttentionWrapper(
+                    cell, attention_mechanism, attention_layer_size=self.hidden_size)
+                # and gets wrapped inside a output projection wrapper (weights+biases),
+                # to have an output with logits on the slot labels dimension
+            else:
+                # no attention
+                attn_cell = cell
             out_cell = tf.contrib.rnn.OutputProjectionWrapper(
                 attn_cell, self.slotEmbedder.vocab_size
             )

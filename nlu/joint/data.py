@@ -57,7 +57,7 @@ def load_data(dataset_name, mode='measures'):
     
     if mode='runtime', returns [None, all the data together], to do a full training to be used at runtime
     
-    if mode='validate', returns[validate_data, train_data]
+    if mode='finaltest', returns[finaltest, train_data]
         """
     path = 'data/' + dataset_name + '/preprocessed'
 
@@ -78,11 +78,15 @@ def load_data(dataset_name, mode='measures'):
         for split in data_splitted:
             result['data'].extend(split['data'])
         return None, result
-    elif mode == 'validate':
+    elif mode == 'finaltest':
         print('you are running on the validation fold!!!')
-        with open(path + '/' + final_test) as json_file:
-            validate = json.load(json_file)
-            return [validate, data_splitted[1]]
+        try:
+            with open(path + '/' + final_test) as json_file:
+                finaltest = json.load(json_file)
+                return [finaltest, data_splitted[1]]
+        except FileNotFoundError:
+            # some datasets don't have the final test set
+            return data_splitted
     else:
         raise ValueError('mode unsupported:' + mode)
 
@@ -189,11 +193,21 @@ def spacy_wrapper(embedding_size, language, nlp, words_numpy):
     return embeddings_values
 
 
-def get_language_model_name(language):
+def get_language_model_name(language, word_embeddings):
     if language == 'en':
-        return 'en_vectors_web_lg'
+        if word_embeddings == 'large':
+            return 'en_vectors_web_lg'
+        elif word_embeddings == 'small':
+            return 'en_core_web_sm'
+        elif word_embeddings == 'medium':
+            return 'en_core_web_md'
+        else:
+            raise ValueError('wrong value for word embeddings' + word_embeddings)
     if language == 'it':
-        return 'it_vectors_wiki_lg'
+        if word_embeddings == 'large':
+            return 'it_vectors_wiki_lg'
+        else:
+            raise ValueError('wrong value for word embeddings' + word_embeddings)
 
     return language
 

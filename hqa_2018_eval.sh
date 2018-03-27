@@ -26,9 +26,9 @@ pushd joint
 python train_crf.py
 popd
 
-# VALIDATION SET
-export MODE=validate
-export OUTPUT_FOLDER=validate
+# FINAL TEST SET
+export MODE=finaltest
+export OUTPUT_FOLDER=finaltest
 # train and eval multi-turn approach
 make train_joint
 # train and eval single turn
@@ -45,7 +45,7 @@ RECURRENT_MULTITURN=lstm make train_joint
 RECURRENT_MULTITURN=lstm FORCE_SINGLE_TURN=no_bot_turn make train_joint
 # CRF
 pushd joint
-python train_crf.py validate
+python train_crf.py finaltest
 popd
 
 popd

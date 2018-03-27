@@ -18,7 +18,7 @@ hidden_size = 100
 # size of batch
 batch_size = 16
 # number of training epochs
-epoch_num = 50
+epoch_num = 20
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,11 +45,18 @@ if MODE=='measures':
     #OUTPUT_FOLDER += str(time.time())
     pass
 
+WORD_EMBEDDINGS = os.environ.get('WORD_EMBEDDINGS', 'large')
+OUTPUT_FOLDER += '_we_' + WORD_EMBEDDINGS
+RECURRENT_CELL = os.environ.get('RECURRENT_CELL', 'lstm')
+OUTPUT_FOLDER += '_recurrent_cell_' + RECURRENT_CELL
+ATTENTION = os.environ.get('ATTENTION', 'slots') # intents, slots, both, none
+OUTPUT_FOLDER += '_attention_' + ATTENTION
+
 print('environment variables:')
-print('DATASET:', DATASET, '\nOUTPUT_FOLDER:', OUTPUT_FOLDER, '\nMODE:', MODE, '\nRECURRENT_MULTITURN:', RECURRENT_MULTITURN, '\nFORCE_SINGLE_TURN:', FORCE_SINGLE_TURN)
+print('DATASET:', DATASET, '\nOUTPUT_FOLDER:', OUTPUT_FOLDER, '\nMODE:', MODE, '\nRECURRENT_MULTITURN:', RECURRENT_MULTITURN, '\nFORCE_SINGLE_TURN:', FORCE_SINGLE_TURN, '\nWORD_EMBEDDINGS:', WORD_EMBEDDINGS, '\nRECURRENT_CELL:', RECURRENT_CELL, '\nATTENTION:', ATTENTION)
 
 def get_model(vocabs, tokenizer, language, multi_turn, input_steps):
-    model = Model(input_steps, embedding_size, hidden_size, vocabs, multi_turn, None, RECURRENT_MULTITURN)
+    model = Model(input_steps, embedding_size, hidden_size, vocabs, WORD_EMBEDDINGS, RECURRENT_CELL, ATTENTION, multi_turn, None, RECURRENT_MULTITURN)
     model.build(tokenizer, language)
     return model
 
