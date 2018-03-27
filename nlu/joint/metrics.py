@@ -2,6 +2,8 @@ import numpy as np
 import numpy.ma as ma
 from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
