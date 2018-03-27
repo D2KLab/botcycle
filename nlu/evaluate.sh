@@ -9,6 +9,7 @@ export MODE=finaltest
 
 #effects of different word embeddings
 WORD_EMBEDDINGS=random DATASET=wit_it make train_joint
+WORD_EMBEDDINGS=small DATASET=wit_it make train_joint
 WORD_EMBEDDINGS=large DATASET=wit_it make train_joint
 
 WORD_EMBEDDINGS=random DATASET=atis make train_joint

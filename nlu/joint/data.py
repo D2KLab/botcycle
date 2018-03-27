@@ -206,6 +206,8 @@ def get_language_model_name(language, word_embeddings):
     if language == 'it':
         if word_embeddings == 'large':
             return 'it_vectors_wiki_lg'
+        elif word_embeddings == 'small':
+            return 'it_core_news_sm'
         else:
             raise ValueError('wrong value for word embeddings' + word_embeddings)
 
