@@ -157,7 +157,7 @@ def train_and_eval(features='words', test_type='test'):
     f1_intent_majority = f1_score(y_test_collapsed, y_predict_collapsed_majority, average='micro')
     print(f1_intent_all, f1_intent_majority)
 
-    with open('results/crf_' + features + '.json', 'w') as out_file:
+    with open('results/' + test_type + '_crf_' + features + '.json', 'w') as out_file:
         json.dump({'f1_intent_all_agree': f1_intent_all, 'f1_intent_majority': f1_intent_majority}, out_file)
     
     return f1_word_level, f1_intent_all, f1_intent_majority
