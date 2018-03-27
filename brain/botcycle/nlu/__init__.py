@@ -6,7 +6,6 @@ import os
 from multiprocessing.pool import Pool
 
 from .wit import WitWrapper
-from .joint.inference import NeuralNetWrapper
 from .. import persistence
 
 
@@ -28,17 +27,20 @@ class Nlu(object):
         self.type = os.environ.get('NLU', 'both')
         if self.type == 'wit':
             self.real = WitWrapper(token)
-        elif self.type == 'both':
-            self.wit = WitWrapper(token)
-            self.local = NeuralNetWrapper(language, 'wit_{}'.format(language))
-            self.pool = Pool(processes=1)
         else:
-            self.real = NeuralNetWrapper(language, 'wit_{}'.format(language))
+            from .joint.inference import NeuralNetWrapper
+            if self.type == 'both':
+                self.wit = WitWrapper(token)
+                self.local = NeuralNetWrapper(language, 'wit_{}'.format(language))
+                self.pool = Pool(processes=1)
+            else:
+                self.real = NeuralNetWrapper(language, 'wit_{}'.format(language))
 
     def process(self, sentence):
         """
         Turns a sentence into intent,entities
         """
+        #print('nlu called')
         if self.type == 'both':
             # issue both, in separate threads to wait only max(t1,t2) instead of t1+t2
             async_result = self.pool.apply_async(apply_async_wrapper, (self.wit, sentence))
