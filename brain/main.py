@@ -98,7 +98,7 @@ if not websocket_token:
     raise Exception('WEBSOCKET_TOKEN env variable missing!')
 # default location on heroku
 botkit_location = os.environ.get(
-    'BOTKIT_LOCATION', 'botcycle-botkit.herokuapp.com')
+    'BOTKIT_LOCATION', 'botcycle-server.herokuapp.com')
 # default using secured web socket, unless environment variable changes
 ws_proto = os.environ.get('WS_PROTO', 'wss')
 
