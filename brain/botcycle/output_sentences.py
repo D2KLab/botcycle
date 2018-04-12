@@ -43,7 +43,7 @@ sentences = {
         "ERROR_SEARCHING": "Impossibile trovare le informazioni. Qualcosa è andato male!",
         "FREE_BIKES": "Puoi trovare {count} bici libere alla stazione {station_name}",
         "FREE_SLOTS": "Puoi trovare {count} parcheggi liberi alla stazione {station_name}",
-        "TRIP": "Pui trovare {src_count} bici libere alla stazione {src_station_name} e {dst_count} parcheggi liberi alla stazione {dst_station_name}",
+        "TRIP": "Puoi trovare {src_count} bici libere alla stazione {src_station_name} e {dst_count} parcheggi liberi alla stazione {dst_station_name}",
         "GEOCODING_ERROR": "Impossibile trovare un posto chiamato {searched}",
         "RECOMMEND_PLACE": "Potresti provare questo posto interessante: {place_name}",
         "SUPPORTED_AFFIRMATIVE": "Sì, {city} è supportata",
