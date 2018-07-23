@@ -45,9 +45,9 @@ services:
   # container for mongo database
   mongodb:
     image: mongo:latest
-    ports:
-      # map the port of the container to the port of the host, in order to be able to connect via cli
-      - "27017:27017"
+    # map the port of the container to the port of the host, in order to be able to connect via cli
+    #ports:
+      #- "27017:27017"
     volumes:
       - mongo_storage_volume:/data/db
       # this shared folder will contain exported database in json
